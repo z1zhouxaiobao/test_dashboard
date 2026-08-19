@@ -1,0 +1,13 @@
+.git
+.idea
+.vscode
+**/node_modules
+**/target
+frontend/dist
+**/.DS_Store
+**/*.iml
+agent-transcripts
+terminals
+*.log
+frontend/node_modules
+backend/target
