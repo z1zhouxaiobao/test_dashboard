@@ -107,7 +107,7 @@ export const feedbackApi = {
 export const favoriteApi = {
   page: (params) => http.get('/admin/favorites', { params: pageParams(params) }),
   myPage: (params) => http.get('/user/favorites', { params: pageParams(params) }),
-  add: (data) => http.post('/user/favorites', data),
+  add: (data) => http.post('/user/favorites', data, { skipErrorToast: true }),
   adminRemove: (id) => http.delete(`/admin/favorites/${id}`),
   remove: (row) =>
     http.delete('/user/favorites', {

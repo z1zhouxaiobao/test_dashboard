@@ -96,7 +96,7 @@ async function handleRegister() {
 .register-card {
   position: relative;
   z-index: 1;
-  width: 460px;
+  width: min(460px, calc(100vw - 32px));
   padding: 40px 36px;
   background: rgba(255, 255, 255, 0.45);
   backdrop-filter: blur(18px);
@@ -116,5 +116,10 @@ async function handleRegister() {
   margin: 8px 0 0;
   color: #666;
   font-size: 14px;
+}
+@media (max-width: 480px) {
+  .register-card {
+    padding: 28px 18px;
+  }
 }
 </style>

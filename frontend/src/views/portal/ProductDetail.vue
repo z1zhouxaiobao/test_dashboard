@@ -6,11 +6,7 @@
       <h1 class="page-title">{{ detail.name }}</h1>
       <el-tag>{{ detail.category }}</el-tag>
       <p class="summary">{{ detail.summary }}</p>
-      <div class="content" v-html="detail.content || detail.description"></div>
-      <div class="actions">
-        <el-button type="primary" @click="handleConsult">立即咨询</el-button>
-        <el-button @click="handleFavorite">收藏方案</el-button>
-      </div>
+      <div class="content rich-content" v-html="detail.content || detail.description"></div>
     </template>
     <el-empty v-else description="方案不存在" />
   </div>
@@ -18,15 +14,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { productApi, consultationApi, favoriteApi } from '@/api'
-import { useAuthStore } from '@/stores/auth'
+import { useRoute } from 'vue-router'
+import { productApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
 
 const route = useRoute()
-const router = useRouter()
-const auth = useAuthStore()
 const detail = ref(null)
 const loading = ref(true)
 
@@ -40,36 +32,6 @@ onMounted(async () => {
     loading.value = false
   }
 })
-
-function requireLogin() {
-  if (!auth.isLoggedIn) {
-    ElMessage.warning('请先登录')
-    router.push('/login')
-    return false
-  }
-  return true
-}
-
-async function handleConsult() {
-  if (!requireLogin()) return
-  try {
-    await consultationApi.create({
-      productId: detail.value.id,
-      title: `咨询方案：${detail.value.name}`,
-      content: '希望了解该方案的详细报价与部署周期'
-    })
-    ElMessage.success('咨询已提交')
-    router.push('/portal/profile')
-  } catch { /* handled */ }
-}
-
-async function handleFavorite() {
-  if (!requireLogin()) return
-  try {
-    await favoriteApi.add({ targetType: 'PRODUCT', targetId: detail.value.id })
-    ElMessage.success('收藏成功')
-  } catch { /* handled */ }
-}
 </script>
 
 <style scoped>
@@ -88,10 +50,15 @@ async function handleFavorite() {
 .content {
   line-height: 1.8;
   color: #333;
+  overflow-wrap: anywhere;
 }
-.actions {
-  margin-top: 32px;
-  display: flex;
-  gap: 12px;
+.content :deep(img) {
+  max-width: 100%;
+  height: auto;
+}
+@media (max-width: 768px) {
+  .hero-img {
+    max-height: 240px;
+  }
 }
 </style>

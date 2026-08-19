@@ -110,10 +110,37 @@ const stats = [
   font-size: 13px;
   opacity: 0.9;
 }
-@media (max-width: 900px) {
-  .grid,
+@media (max-width: 768px) {
+  .hero-mini {
+    padding: 36px 16px;
+  }
+  .hero-mini h1 {
+    font-size: 24px;
+  }
+  .content {
+    padding: 28px 14px 40px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .visual img {
+    height: 220px;
+  }
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-mini h1 {
+    font-size: 20px;
+  }
   .stats {
     grid-template-columns: 1fr;
+  }
+  .stat-value {
+    font-size: 26px;
   }
 }
 </style>

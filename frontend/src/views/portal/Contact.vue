@@ -9,7 +9,7 @@
           <p><el-icon><Message /></el-icon> contact@liquicool.com</p>
           <p><el-icon><Location /></el-icon> {{ t('address') }}</p>
           <h3 style="margin-top: 24px">{{ t('onlineMsg') }}</h3>
-          <el-form :model="form" label-width="80px">
+          <el-form :model="form" :label-position="isMobile ? 'top' : 'right'" :label-width="isMobile ? undefined : '80px'">
             <el-form-item :label="t('name')">
               <el-input v-model="form.name" />
             </el-form-item>
@@ -30,7 +30,7 @@
       <el-col :xs="24" :md="12">
         <el-card>
           <h3>{{ t('consultTicket') }}</h3>
-          <el-form :model="consultForm" label-width="80px">
+          <el-form :model="consultForm" :label-position="isMobile ? 'top' : 'right'" :label-width="isMobile ? undefined : '80px'">
             <el-form-item :label="t('title')">
               <el-input v-model="consultForm.title" />
             </el-form-item>
@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Phone, Message, Location } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -63,6 +63,12 @@ const router = useRouter()
 const auth = useAuthStore()
 const submitting = ref(false)
 const consulting = ref(false)
+const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1200)
+const isMobile = computed(() => viewportWidth.value <= 768)
+
+function onResize() {
+  viewportWidth.value = window.innerWidth
+}
 
 const form = reactive({ name: '', phone: '', content: '' })
 const consultForm = reactive({ title: '', content: '' })
@@ -110,6 +116,15 @@ async function submitConsult() {
     consulting.value = false
   }
 }
+
+onMounted(() => {
+  onResize()
+  window.addEventListener('resize', onResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', onResize)
+})
 </script>
 
 <style scoped>
@@ -119,8 +134,14 @@ async function submitConsult() {
   gap: 8px;
   color: #444;
   line-height: 2;
+  flex-wrap: wrap;
 }
 .contact-info h3 {
   color: #0B5ED7;
+}
+@media (max-width: 768px) {
+  .el-row {
+    row-gap: 16px;
+  }
 }
 </style>

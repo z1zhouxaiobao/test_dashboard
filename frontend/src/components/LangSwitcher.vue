@@ -58,6 +58,15 @@ function onLangChange(lang) {
   background: #0B5ED7;
   color: #fff;
 }
+@media (max-width: 480px) {
+  .portal {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+  .portal .lang-icon {
+    display: none;
+  }
+}
 .admin {
   height: auto;
   padding: 0;

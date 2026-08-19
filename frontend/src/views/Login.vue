@@ -108,7 +108,7 @@ function quickLogin(username, password) {
 .login-card {
   position: relative;
   z-index: 1;
-  width: 420px;
+  width: min(420px, calc(100vw - 32px));
   padding: 40px 36px;
   background: rgba(255, 255, 255, 0.45);
   backdrop-filter: blur(18px);
@@ -149,5 +149,13 @@ function quickLogin(username, password) {
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .login-card {
+    padding: 28px 18px;
+  }
+  .brand h1 {
+    font-size: 24px;
+  }
 }
 </style>

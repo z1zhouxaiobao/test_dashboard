@@ -64,16 +64,15 @@ public class UserCenterService {
 
     @Transactional
     public Favorite addFavorite(Long userId, FavoriteRequest request) {
-        favoriteRepository.findByUserIdAndTargetTypeAndTargetId(
+        return favoriteRepository.findByUserIdAndTargetTypeAndTargetId(
                 userId, request.getTargetType(), request.getTargetId()
-        ).ifPresent(f -> {
-            throw new BusinessException("已收藏，请勿重复操作");
+        ).orElseGet(() -> {
+            Favorite favorite = new Favorite();
+            favorite.setUserId(userId);
+            favorite.setTargetType(request.getTargetType());
+            favorite.setTargetId(request.getTargetId());
+            return favoriteRepository.save(favorite);
         });
-        Favorite favorite = new Favorite();
-        favorite.setUserId(userId);
-        favorite.setTargetType(request.getTargetType());
-        favorite.setTargetId(request.getTargetId());
-        return favoriteRepository.save(favorite);
     }
 
     @Transactional

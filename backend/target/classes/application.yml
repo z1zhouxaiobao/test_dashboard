@@ -1,18 +1,18 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
     name: liquicool-backend
   datasource:
-    url: jdbc:mysql://localhost:3306/liquicool?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root
-    password: 123456
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/liquicool?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -26,12 +26,12 @@ spring:
       max-request-size: 20MB
 
 jwt:
-  secret: liquicoolSecretKey2026LiCoolTech
+  secret: ${JWT_SECRET:liquicoolSecretKey2026LiCoolTech}
   expiration: 86400000
 
 file:
   upload:
-    path: ../uploads
+    path: ${FILE_UPLOAD_PATH:../uploads}
 
 springdoc:
   api-docs:

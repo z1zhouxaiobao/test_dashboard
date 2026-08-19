@@ -6,7 +6,7 @@
       <h1 class="page-title">{{ detail.title }}</h1>
       <el-tag>{{ detail.industry }}</el-tag>
       <p class="summary">{{ detail.summary }}</p>
-      <div class="content" v-html="detail.content || detail.description"></div>
+      <div class="content rich-content" v-html="detail.content || detail.description"></div>
     </template>
     <el-empty v-else description="案例不存在" />
   </div>
@@ -49,5 +49,15 @@ onMounted(async () => {
 }
 .content {
   line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.content :deep(img) {
+  max-width: 100%;
+  height: auto;
+}
+@media (max-width: 768px) {
+  .hero-img {
+    max-height: 240px;
+  }
 }
 </style>

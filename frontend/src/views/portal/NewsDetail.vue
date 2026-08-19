@@ -8,7 +8,7 @@
         <span>阅读 {{ detail.viewCount || 0 }}</span>
       </div>
       <img v-if="detail.coverUrl" :src="resolveMediaUrl(detail.coverUrl)" class="cover" alt="" />
-      <div class="content" v-html="detail.content"></div>
+      <div class="content rich-content" v-html="detail.content"></div>
     </template>
     <el-empty v-else description="新闻不存在" />
   </div>
@@ -44,6 +44,7 @@ onMounted(async () => {
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 .cover {
   width: 100%;
@@ -55,5 +56,15 @@ onMounted(async () => {
 .content {
   line-height: 1.8;
   color: #333;
+  overflow-wrap: anywhere;
+}
+.content :deep(img) {
+  max-width: 100%;
+  height: auto;
+}
+@media (max-width: 768px) {
+  .cover {
+    max-height: 220px;
+  }
 }
 </style>

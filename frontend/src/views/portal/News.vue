@@ -14,7 +14,7 @@
         v-model:current-page="page"
         v-model:page-size="size"
         :total="total"
-        layout="total, prev, pager, next"
+        layout="prev, pager, next"
         @current-change="loadData"
       />
     </div>
@@ -84,9 +84,12 @@ onMounted(loadData)
 @media (max-width: 768px) {
   .news-item {
     flex-direction: column;
+    padding: 14px;
+    gap: 12px;
   }
   .thumb {
     width: 100%;
+    height: 160px;
   }
 }
 </style>

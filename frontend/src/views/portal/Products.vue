@@ -18,7 +18,7 @@
         v-model:current-page="page"
         v-model:page-size="size"
         :total="total"
-        layout="total, prev, pager, next"
+        layout="prev, pager, next"
         @current-change="loadData"
       />
     </div>

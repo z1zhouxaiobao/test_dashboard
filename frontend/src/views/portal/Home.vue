@@ -1,7 +1,7 @@
 <template>
   <div class="portal-home">
     <section class="hero-carousel">
-      <el-carousel height="520px" :interval="5000" arrow="always" indicator-position="inside">
+      <el-carousel :height="carouselHeight" :interval="5000" :arrow="isMobile ? 'never' : 'always'" indicator-position="inside">
         <el-carousel-item v-for="item in slides" :key="item.id">
           <div class="carousel-slide" @click="goLink(item.linkUrl)">
             <img :src="resolveMediaUrl(item.imageUrl) || fallbackImg(item.id)" :alt="item.title" />
@@ -9,7 +9,7 @@
             <div class="carousel-caption">
               <h1>{{ item.title || t('homeHeroTitle') }}</h1>
               <p>{{ item.subtitle || t('homeHeroDesc') }}</p>
-              <el-button class="join-btn" size="large" @click.stop="$router.push('/portal/contact')">
+              <el-button class="join-btn" :size="isMobile ? 'default' : 'large'" @click.stop="$router.push('/portal/contact')">
                 {{ t('joinUs') }}
               </el-button>
             </div>
@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { carouselApi, productApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
@@ -67,6 +67,17 @@ const router = useRouter()
 const aboutImg = '/images/about-diagram.jpg'
 const carousels = ref([])
 const products = ref([])
+const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1200)
+const isMobile = computed(() => viewportWidth.value <= 768)
+const carouselHeight = computed(() => {
+  if (viewportWidth.value <= 480) return '280px'
+  if (viewportWidth.value <= 768) return '360px'
+  return '520px'
+})
+
+function onResize() {
+  viewportWidth.value = window.innerWidth
+}
 
 const fallbackSlides = [
   {
@@ -106,6 +117,8 @@ function goLink(url) {
 }
 
 onMounted(async () => {
+  onResize()
+  window.addEventListener('resize', onResize)
   try {
     const [cRes, pRes] = await Promise.all([
       carouselApi.portalList(),
@@ -119,6 +132,10 @@ onMounted(async () => {
     products.value = []
   }
 })
+
+onUnmounted(() => {
+  window.removeEventListener('resize', onResize)
+})
 </script>
 
 <style scoped>
@@ -127,7 +144,8 @@ onMounted(async () => {
 }
 .carousel-slide {
   position: relative;
-  height: 520px;
+  height: 100%;
+  min-height: 280px;
   background: #0a1628;
   cursor: pointer;
 }
@@ -252,12 +270,61 @@ onMounted(async () => {
   margin: 0;
   line-height: 1.6;
 }
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .carousel-caption h1 {
-    font-size: 26px;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  .carousel-caption p {
+    font-size: 14px;
+    margin-bottom: 18px;
+    line-height: 1.6;
+  }
+  .join-btn {
+    padding: 10px 24px;
+  }
+  .about-section {
+    padding: 36px 14px 28px;
+  }
+  .section-title {
+    font-size: 24px;
+    margin-bottom: 24px;
   }
   .about-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .about-actions {
+    flex-wrap: wrap;
+  }
+  .about-visual img {
+    height: 220px;
+  }
+  .section-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .section-header .section-title {
+    font-size: 22px;
+  }
+  .card-img {
+    height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-caption h1 {
+    font-size: 20px;
+  }
+  .carousel-caption p {
+    font-size: 13px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .section-title {
+    font-size: 20px;
   }
 }
 </style>
