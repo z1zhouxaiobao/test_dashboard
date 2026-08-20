@@ -6,7 +6,6 @@
           <div class="carousel-slide" @click="goLink(item.linkUrl)">
             <img :src="resolveMediaUrl(item.imageUrl) || fallbackImg(item.id)" :alt="item.title" />
             <div class="carousel-caption">
-              <div class="caption-kicker">LIQUICOOL</div>
               <h1>{{ item.title || t('homeHeroTitle') }}</h1>
               <p>{{ item.subtitle || t('homeHeroDesc') }}</p>
               <button class="join-btn" type="button" @click.stop="$router.push('/portal/contact')">
@@ -174,36 +173,29 @@ onUnmounted(() => {
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: grayscale(18%) contrast(1.05);
+  filter: none;
 }
 .carousel-caption {
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
-  width: min(520px, 88%);
+  width: min(500px, 86%);
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 40px 48px;
-  background: linear-gradient(90deg, rgba(16, 24, 32, 0.92) 0%, rgba(16, 24, 32, 0.72) 70%, rgba(16, 24, 32, 0) 100%);
+  background: linear-gradient(90deg, rgba(16, 24, 32, 0.78) 0%, rgba(16, 24, 32, 0.45) 65%, rgba(16, 24, 32, 0) 100%);
   color: #fff;
   z-index: 2;
   text-align: left;
 }
-.caption-kicker {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  color: #8eb6ff;
-  margin-bottom: 14px;
-}
 .carousel-caption h1 {
   margin: 0 0 14px;
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: 0.02em;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
   max-width: 420px;
 }
 .carousel-caption p {
@@ -211,7 +203,7 @@ onUnmounted(() => {
   max-width: 380px;
   font-size: 15px;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.88);
 }
 .join-btn {
   align-self: flex-start;

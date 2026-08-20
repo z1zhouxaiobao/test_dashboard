@@ -29,12 +29,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { caseApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
 import { useI18n } from '@/composables/useI18n'
 
 const { t } = useI18n()
+const route = useRoute()
 const list = ref([])
 const page = ref(1)
 const size = ref(9)
@@ -42,13 +44,25 @@ const total = ref(0)
 
 async function loadData() {
   try {
-    const res = await caseApi.portalPage({ page: page.value, size: size.value })
+    const res = await caseApi.portalPage({
+      page: page.value,
+      size: size.value,
+      industry: route.query.industry || undefined
+    })
     list.value = res.data?.records || res.records || res.data || []
     total.value = res.data?.total || res.total || 0
   } catch {
     list.value = []
   }
 }
+
+watch(
+  () => route.query.industry,
+  () => {
+    page.value = 1
+    loadData()
+  }
+)
 
 onMounted(loadData)
 </script>

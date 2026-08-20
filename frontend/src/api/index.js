@@ -60,7 +60,13 @@ export const productApi = {
   create: (data) => http.post('/admin/products', data),
   update: (id, data) => http.put(`/admin/products/${id}`, data),
   remove: (id) => http.delete(`/admin/products/${id}`),
-  portalPage: (params) => http.get('/portal/products', { params: pageParams(params) }),
+  portalPage: (params) =>
+    http.get('/portal/products', {
+      params: {
+        ...pageParams(params),
+        category: params.category || undefined
+      }
+    }),
   portalDetail: (id) => http.get(`/portal/products/${id}`)
 }
 
@@ -85,7 +91,13 @@ export const caseApi = {
   create: (data) => http.post('/admin/cases', data),
   update: (id, data) => http.put(`/admin/cases/${id}`, data),
   remove: (id) => http.delete(`/admin/cases/${id}`),
-  portalPage: (params) => http.get('/portal/cases', { params: pageParams(params) }),
+  portalPage: (params) =>
+    http.get('/portal/cases', {
+      params: {
+        ...pageParams(params),
+        industry: params.industry || undefined
+      }
+    }),
   portalDetail: (id) => http.get(`/portal/cases/${id}`)
 }
 
@@ -129,4 +141,15 @@ export const logApi = {
 
 export const dashboardApi = {
   stats: () => http.get('/admin/dashboard/stats')
+}
+
+export const navMenuApi = {
+  portalTree: (moduleCode) =>
+    http.get('/portal/nav-menus', { params: moduleCode ? { moduleCode } : {} }),
+  page: (params) => http.get('/admin/nav-menus', { params: pageParams({ ...params, size: params.size ?? 100 }) }),
+  all: () => http.get('/admin/nav-menus/all'),
+  tree: () => http.get('/admin/nav-menus/tree'),
+  create: (data) => http.post('/admin/nav-menus', data),
+  update: (id, data) => http.put(`/admin/nav-menus/${id}`, data),
+  remove: (id) => http.delete(`/admin/nav-menus/${id}`)
 }

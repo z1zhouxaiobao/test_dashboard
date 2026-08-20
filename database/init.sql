@@ -20,6 +20,7 @@ DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS notice;
 DROP TABLE IF EXISTS news;
 DROP TABLE IF EXISTS carousel;
+DROP TABLE IF EXISTS nav_menu;
 DROP TABLE IF EXISTS sys_user;
 
 CREATE TABLE sys_user (
@@ -72,7 +73,7 @@ CREATE TABLE product (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(200),
   cover_url VARCHAR(500),
-  category VARCHAR(50),
+  category VARCHAR(80),
   summary VARCHAR(500),
   content TEXT,
   specs TEXT,
@@ -80,6 +81,24 @@ CREATE TABLE product (
   status INT DEFAULT 1,
   sort_order INT DEFAULT 0,
   created_at DATETIME
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE nav_menu (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  parent_id BIGINT NULL,
+  module_code VARCHAR(40) NOT NULL,
+  level_no INT NOT NULL DEFAULT 1,
+  name_zh VARCHAR(100) NOT NULL,
+  name_tw VARCHAR(100),
+  name_en VARCHAR(100),
+  code VARCHAR(80),
+  link_path VARCHAR(255),
+  sort_order INT DEFAULT 0,
+  status INT DEFAULT 1,
+  created_at DATETIME,
+  updated_at DATETIME,
+  INDEX idx_nav_parent (parent_id),
+  INDEX idx_nav_module (module_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE technology (
@@ -179,6 +198,48 @@ INSERT INTO sys_user (id, username, password, nickname, avatar, phone, email, ro
 (3, 'user2', 'e10adc3949ba59abbe56e057f20f883e', '李运维', '/uploads/avatar-default.png', '13800000003', 'li@demo.com', 'USER', 1, '2026-02-15 11:00:00', '2026-02-15 11:00:00'),
 (4, 'user3', 'e10adc3949ba59abbe56e057f20f883e', '王采购', '/uploads/avatar-default.png', '13800000004', 'wang@demo.com', 'USER', 1, '2026-03-01 14:00:00', '2026-03-01 14:00:00'),
 (5, 'demo', 'e10adc3949ba59abbe56e057f20f883e', '演示账号', '/uploads/avatar-default.png', '13800000005', 'demo@liquicool.com', 'USER', 1, '2026-03-20 16:00:00', '2026-03-20 16:00:00');
+
+-- ==================== 导航菜单（一级/二级/三级） ====================
+INSERT INTO nav_menu (id, parent_id, module_code, level_no, name_zh, name_tw, name_en, code, link_path, sort_order, status, created_at, updated_at) VALUES
+-- 一级
+(1, NULL, 'PRODUCTS', 1, '产品与服务中心', '產品與服務中心', 'Products & Services', 'products', '/portal/products', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(2, NULL, 'SOLUTIONS', 1, '解决方案', '解決方案', 'Solutions', 'solutions', '/portal/solutions', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(3, NULL, 'NEWS', 1, '新闻', '新聞', 'News', 'news', '/portal/news', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(4, NULL, 'ABOUT', 1, '关于', '關於', 'About', 'about', '/portal/about', 4, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+-- 产品二级
+(10, 1, 'PRODUCTS', 2, '液冷产品', '液冷產品', 'Liquid Cooling Products', 'lc-products', '/portal/products', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(11, 1, 'PRODUCTS', 2, '热管理技术', '熱管理技術', 'Thermal Management', 'thermal', '/portal/technologies', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(12, 1, 'PRODUCTS', 2, '工程与服务', '工程與服務', 'Engineering & Services', 'services', '/portal/contact', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+-- 产品三级
+(101, 10, 'PRODUCTS', 3, '液冷服务器', '液冷伺服器', 'Liquid Cooled Servers', '液冷服务器', '/portal/products?category=%E6%B6%B2%E5%86%B7%E6%9C%8D%E5%8A%A1%E5%99%A8', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(102, 10, 'PRODUCTS', 3, 'CDU冷量分配单元', 'CDU冷量分配單元', 'CDU Units', 'CDU冷量分配单元', '/portal/products?category=CDU%E5%86%B7%E9%87%8F%E5%88%86%E9%85%8D%E5%8D%95%E5%85%83', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(103, 10, 'PRODUCTS', 3, '冷却液', '冷卻液', 'Coolants', '冷却液', '/portal/products?category=%E5%86%B7%E5%8D%B4%E6%B6%B2', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(104, 10, 'PRODUCTS', 3, '机柜系统', '機櫃系統', 'Rack Systems', '机柜系统', '/portal/products?category=%E6%9C%BA%E6%9F%9C%E7%B3%BB%E7%BB%9F', 4, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(105, 10, 'PRODUCTS', 3, '散热模组', '散熱模組', 'Cold Plates', '散热模组', '/portal/products?category=%E6%95%A3%E7%83%AD%E6%A8%A1%E7%BB%84', 5, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(111, 11, 'PRODUCTS', 3, '浸没式液冷', '浸沒式液冷', 'Immersion Cooling', 'immersion', '/portal/technologies', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(112, 11, 'PRODUCTS', 3, '冷板式液冷', '冷板式液冷', 'Cold Plate Cooling', 'cold-plate', '/portal/technologies', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(113, 11, 'PRODUCTS', 3, '智能温控平台', '智慧溫控平台', 'Smart Thermal Control', 'aiot', '/portal/technologies', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(121, 12, 'PRODUCTS', 3, '方案设计', '方案設計', 'Solution Design', 'design', '/portal/contact', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(122, 12, 'PRODUCTS', 3, '交付实施', '交付實施', 'Delivery', 'delivery', '/portal/contact', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(123, 12, 'PRODUCTS', 3, '运维优化', '運維優化', 'O&M Optimization', 'om', '/portal/contact', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+-- 解决方案二级
+(20, 2, 'SOLUTIONS', 2, '按场景', '按場景', 'By Scenario', 'by-scenario', '/portal/solutions', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(21, 2, 'SOLUTIONS', 2, '按行业', '按行業', 'By Industry', 'by-industry', '/portal/solutions', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(22, 2, 'SOLUTIONS', 2, '了解更多', '瞭解更多', 'Learn More', 'learn-more', '/portal/solutions', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+-- 解决方案三级
+(201, 20, 'SOLUTIONS', 3, '高密度算力机房', '高密度算力機房', 'High-Density Computing', '高密度算力', '/portal/cases', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(202, 20, 'SOLUTIONS', 3, '绿色数据中心', '綠色資料中心', 'Green Data Center', '绿色数据中心', '/portal/cases', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(203, 20, 'SOLUTIONS', 3, '边缘计算节点', '邊緣計算節點', 'Edge Computing', '边缘计算', '/portal/cases', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(211, 21, 'SOLUTIONS', 3, '人工智能', '人工智慧', 'AI', '人工智能', '/portal/cases?industry=%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(212, 21, 'SOLUTIONS', 3, '金融', '金融', 'Finance', '金融', '/portal/cases?industry=%E9%87%91%E8%9E%8D', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(213, 21, 'SOLUTIONS', 3, '运营商', '電信運營商', 'Telecom', '运营商', '/portal/cases?industry=%E8%BF%90%E8%90%A5%E5%95%86', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(214, 21, 'SOLUTIONS', 3, '教育科研', '教育科研', 'Education & Research', '教育科研', '/portal/cases?industry=%E6%95%99%E8%82%B2%E7%A7%91%E7%A0%94', 4, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(221, 22, 'SOLUTIONS', 3, '数据中心液冷技术', '資料中心液冷技術', 'DC Liquid Cooling', 'tech-lc', '/portal/technologies', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(222, 22, 'SOLUTIONS', 3, '成功案例总览', '成功案例總覽', 'Case Studies', 'cases-all', '/portal/cases', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+-- 关于二级（也作为三级入口）
+(40, 4, 'ABOUT', 2, '公司简介', '公司簡介', 'Company Profile', 'about-company', '/portal/about', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(41, 4, 'ABOUT', 2, '加入我们', '加入我們', 'Join Us', 'about-join', '/portal/join', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(42, 4, 'ABOUT', 2, '获得奖项', '獲得獎項', 'Awards', 'about-awards', '/portal/honors', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00');
 
 -- ==================== 轮播 ====================
 INSERT INTO carousel (id, title, subtitle, image_url, link_url, sort_order, status, created_at) VALUES

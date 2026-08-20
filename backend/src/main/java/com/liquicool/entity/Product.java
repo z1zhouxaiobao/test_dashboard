@@ -1,6 +1,5 @@
 package com.liquicool.entity;
 
-import com.liquicool.enums.ProductCategory;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -21,9 +20,9 @@ public class Product {
     @Column(length = 500)
     private String coverUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50)
-    private ProductCategory category;
+    /** 对应导航三级分类 code 或名称 */
+    @Column(length = 80)
+    private String category;
 
     @Column(length = 500)
     private String summary;

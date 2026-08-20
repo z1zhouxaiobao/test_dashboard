@@ -3,8 +3,12 @@ package com.liquicool.controller;
 import com.liquicool.common.ApiResponse;
 import com.liquicool.common.PageResult;
 import com.liquicool.dto.DashboardStatsResponse;
+import com.liquicool.dto.NavMenuTreeNode;
 import com.liquicool.entity.*;
 import com.liquicool.service.AdminService;
+import com.liquicool.service.NavMenuService;
+
+import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +22,53 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private NavMenuService navMenuService;
+
     @Operation(summary = "仪表盘统计")
     @GetMapping("/dashboard/stats")
     public ApiResponse<DashboardStatsResponse> dashboardStats() {
         return ApiResponse.ok(adminService.getDashboardStats());
+    }
+
+    @GetMapping("/nav-menus")
+    public ApiResponse<PageResult<NavMenu>> listNavMenus(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        return ApiResponse.ok(navMenuService.listAdmin(keyword, page, size));
+    }
+
+    @GetMapping("/nav-menus/tree")
+    public ApiResponse<List<NavMenuTreeNode>> navMenuTree() {
+        return ApiResponse.ok(navMenuService.getPortalTree());
+    }
+
+    @GetMapping("/nav-menus/all")
+    public ApiResponse<List<NavMenu>> navMenuAll() {
+        return ApiResponse.ok(navMenuService.listAllFlat());
+    }
+
+    @GetMapping("/nav-menus/{id}")
+    public ApiResponse<NavMenu> getNavMenu(@PathVariable Long id) {
+        return ApiResponse.ok(navMenuService.getById(id));
+    }
+
+    @PostMapping("/nav-menus")
+    public ApiResponse<NavMenu> createNavMenu(@RequestBody NavMenu menu) {
+        return ApiResponse.ok(navMenuService.save(menu));
+    }
+
+    @PutMapping("/nav-menus/{id}")
+    public ApiResponse<NavMenu> updateNavMenu(@PathVariable Long id, @RequestBody NavMenu menu) {
+        menu.setId(id);
+        return ApiResponse.ok(navMenuService.save(menu));
+    }
+
+    @DeleteMapping("/nav-menus/{id}")
+    public ApiResponse<Void> deleteNavMenu(@PathVariable Long id) {
+        navMenuService.delete(id);
+        return ApiResponse.ok(null);
     }
 
     @GetMapping("/users")

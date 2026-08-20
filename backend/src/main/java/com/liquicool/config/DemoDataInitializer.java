@@ -1,5 +1,6 @@
 package com.liquicool.config;
 
+import com.liquicool.repository.NavMenuRepository;
 import com.liquicool.repository.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 
 /**
- * 空库（无产品数据）启动时自动导入全部演示数据，解决公网部署后库空无法登录/无内容。
+ * 空库导入演示数据；已有业务数据但缺导航时，补种导航菜单。
  */
 @Component
 public class DemoDataInitializer implements ApplicationRunner {
@@ -25,18 +26,29 @@ public class DemoDataInitializer implements ApplicationRunner {
     private ProductRepository productRepository;
 
     @Autowired
+    private NavMenuRepository navMenuRepository;
+
+    @Autowired
     private DataSource dataSource;
 
     @Override
     public void run(ApplicationArguments args) {
-        if (productRepository.count() > 0) {
+        if (productRepository.count() == 0) {
+            try (Connection connection = dataSource.getConnection()) {
+                ScriptUtils.executeSqlScript(connection, new ClassPathResource("db/seed-demo.sql"));
+                log.info("空库已自动导入全部演示数据，账号: admin/123456 、 user1/123456");
+            } catch (Exception e) {
+                log.error("自动导入演示数据失败", e);
+            }
             return;
         }
-        try (Connection connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("db/seed-demo.sql"));
-            log.info("空库已自动导入全部演示数据，账号: admin/123456 、 user1/123456");
-        } catch (Exception e) {
-            log.error("自动导入演示数据失败", e);
+        if (navMenuRepository.count() == 0) {
+            try (Connection connection = dataSource.getConnection()) {
+                ScriptUtils.executeSqlScript(connection, new ClassPathResource("db/seed-nav-menu.sql"));
+                log.info("已补种门户导航菜单（一/二/三级）");
+            } catch (Exception e) {
+                log.error("补种导航菜单失败", e);
+            }
         }
     }
 }

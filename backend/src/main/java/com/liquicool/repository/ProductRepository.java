@@ -1,7 +1,6 @@
 package com.liquicool.repository;
 
 import com.liquicool.entity.Product;
-import com.liquicool.enums.ProductCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +14,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Page<Product> findByNameContainingIgnoreCase(String keyword, Pageable pageable);
 
-    @Query("SELECT p.category, COUNT(p) FROM Product p GROUP BY p.category")
+    Page<Product> findByStatusAndCategoryAndNameContainingIgnoreCase(
+            Integer status, String category, String keyword, Pageable pageable);
+
+    Page<Product> findByStatusAndCategory(Integer status, String category, Pageable pageable);
+
+    @Query("select p.category, count(p) from Product p group by p.category")
     List<Object[]> countGroupByCategory();
 }

@@ -1,6 +1,10 @@
 <template>
   <el-dropdown trigger="click" @command="onLangChange">
     <button class="lang-btn" :class="variant" type="button">
+      <svg v-if="variant === 'portal'" class="globe" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6" />
+        <path d="M3 12h18M12 3c2.5 2.8 3.8 5.8 3.8 9s-1.3 6.2-3.8 9c-2.5-2.8-3.8-5.8-3.8-9S9.5 5.8 12 3z" fill="none" stroke="currentColor" stroke-width="1.6" />
+      </svg>
       <span>{{ localeStore.langButtonText }}</span>
       <el-icon><ArrowDown /></el-icon>
     </button>
@@ -41,29 +45,26 @@ function onLangChange(lang) {
 .lang-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-family: inherit;
 }
+.globe {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
 .portal {
-  height: 34px;
-  padding: 0 12px;
-  border: 1px solid #101820;
+  height: auto;
+  padding: 0;
+  border: none;
   border-radius: 0;
-  background: #fff;
-  color: #101820;
-  font-weight: 500;
+  background: transparent;
+  color: #333;
+  font-weight: 400;
 }
 .portal:hover {
-  border-color: #0a4fb8;
   color: #0a4fb8;
-}
-@media (max-width: 480px) {
-  .portal {
-    padding: 0 8px;
-    font-size: 12px;
-  }
 }
 .admin {
   height: auto;

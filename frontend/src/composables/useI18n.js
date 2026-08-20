@@ -10,7 +10,15 @@ export function useI18n() {
 
   const dict = computed(() => messages[locale.value] || messages['zh-CN'])
 
-  const t = (key) => dict.value[key] || messages['zh-CN'][key] || key
+  const t = (key, params) => {
+    let text = dict.value[key] || messages['zh-CN'][key] || key
+    if (params && typeof text === 'string') {
+      Object.keys(params).forEach((k) => {
+        text = text.replace(new RegExp(`\\{${k}\\}`, 'g'), String(params[k]))
+      })
+    }
+    return text
+  }
 
   const tv = (value) => {
     const key = valueKeys[value]

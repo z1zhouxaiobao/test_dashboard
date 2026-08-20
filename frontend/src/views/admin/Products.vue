@@ -1,6 +1,7 @@
 <template>
   <div class="page-card">
     <h2 class="page-title">{{ t('adminProducts') }}</h2>
+    <p class="hint">分类请从下拉框选，选项来自「门户导航」里产品与服务的三级菜单。没有想要的分类时，先去门户导航加一个。</p>
     <TableToolbar v-model="keyword" :placeholder="t('phProduct')" @search="handleSearch" @refresh="loadData">
       <el-button type="danger" plain :disabled="!selected.length" :loading="deleting" @click="handleBatchDelete">{{ t('batchDelete') }}</el-button>
       <el-button type="primary" @click="openDialog()">{{ t('addProduct') }}</el-button>
@@ -17,7 +18,7 @@
       <el-table-column prop="name" :label="t('itemName')" align="center" header-align="center" />
       <el-table-column prop="category" :label="t('category')" align="center" header-align="center" />
       <el-table-column :label="t('enabled')" width="80" align="center" header-align="center">
-        <template #default="{ row }">{{ row.enabled ? t('yes') : t('no') }}</template>
+        <template #default="{ row }">{{ row.status === 1 ? t('yes') : t('no') }}</template>
       </el-table-column>
       <el-table-column :label="t('createdAt')" align="center" header-align="center">
         <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
@@ -37,7 +38,22 @@
     <el-dialog v-model="dialogVisible" :title="form.id ? t('editProduct') : t('addProduct')" width="640px">
       <el-form :model="form" label-width="100px">
         <el-form-item :label="t('itemName')"><el-input v-model="form.name" /></el-form-item>
-        <el-form-item :label="t('category')"><el-input v-model="form.category" /></el-form-item>
+        <el-form-item :label="t('category')">
+          <el-select
+            v-model="form.category"
+            filterable
+            clearable
+            allow-create
+            default-first-option
+            style="width: 100%"
+            placeholder="从导航分类中选择"
+          >
+            <el-option-group v-for="g in categoryGroups" :key="g.label" :label="g.label">
+              <el-option v-for="c in g.options" :key="c.value" :label="c.label" :value="c.value" />
+            </el-option-group>
+          </el-select>
+          <div class="field-tip">对应官网左侧「细化」筛选项；没有选项请先在「门户导航」添加。</div>
+        </el-form-item>
         <el-form-item :label="t('summary')"><el-input v-model="form.summary" type="textarea" :rows="2" /></el-form-item>
         <el-form-item :label="t('cover')"><ImageUpload v-model="form.coverUrl" /></el-form-item>
         <el-form-item :label="t('detailContent')"><el-input v-model="form.content" type="textarea" :rows="5" /></el-form-item>
@@ -54,7 +70,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { productApi } from '@/api'
+import { productApi, navMenuApi } from '@/api'
 import { formatDateTime } from '@/utils/datetime'
 import { resolveMediaUrl } from '@/utils/media'
 import TableToolbar from '@/components/TableToolbar.vue'
@@ -73,7 +89,39 @@ const size = ref(10)
 const total = ref(0)
 const keyword = ref('')
 const dialogVisible = ref(false)
+const categoryGroups = ref([])
 const form = reactive({ id: null, name: '', category: '', summary: '', coverUrl: '', content: '', enabled: true })
+
+async function loadCategories() {
+  try {
+    const res = await navMenuApi.all()
+    const all = res.data || res || []
+    const products = all.filter((m) => m.moduleCode === 'PRODUCTS' && m.status !== 0)
+    const l2 = products.filter((m) => m.levelNo === 2)
+    const l3 = products.filter((m) => m.levelNo === 3)
+    const groups = l2.map((parent) => ({
+      label: parent.nameZh,
+      options: l3
+        .filter((c) => c.parentId === parent.id)
+        .map((c) => ({
+          label: c.nameZh,
+          value: c.code || c.nameZh
+        }))
+    })).filter((g) => g.options.length)
+
+    // 若没有二级分组，把所有三级平铺
+    if (!groups.length && l3.length) {
+      categoryGroups.value = [{
+        label: '产品分类',
+        options: l3.map((c) => ({ label: c.nameZh, value: c.code || c.nameZh }))
+      }]
+    } else {
+      categoryGroups.value = groups
+    }
+  } catch {
+    categoryGroups.value = []
+  }
+}
 
 async function loadData() {
   loading.value = true
@@ -88,20 +136,58 @@ const { selected, deleting, onSelectionChange, handleDelete, handleBatchDelete }
   remove: (id) => productApi.remove(id),
   reload: loadData
 })
-function openDialog(row) {
+async function openDialog(row) {
+  await loadCategories()
   Object.assign(form, { id: null, name: '', category: '', summary: '', coverUrl: '', content: '', enabled: true })
-  if (row) Object.assign(form, row)
+  if (row) {
+    Object.assign(form, {
+      id: row.id,
+      name: row.name || '',
+      category: row.category || '',
+      summary: row.summary || '',
+      coverUrl: row.coverUrl || '',
+      content: row.content || '',
+      enabled: row.status === 1 || row.enabled === true
+    })
+  }
   dialogVisible.value = true
 }
 async function handleSave() {
   saving.value = true
   try {
-    if (form.id) await productApi.update(form.id, form)
-    else await productApi.create(form)
-    ElMessage.success(t('saveSuccess'))
+    const payload = {
+      id: form.id,
+      name: form.name,
+      category: form.category,
+      summary: form.summary,
+      coverUrl: form.coverUrl,
+      content: form.content,
+      status: form.enabled ? 1 : 0
+    }
+    if (form.id) await productApi.update(form.id, payload)
+    else await productApi.create(payload)
+    ElMessage.success(t('saveSuccess') || '保存成功')
     dialogVisible.value = false
     loadData()
   } catch { /* handled */ } finally { saving.value = false }
 }
-onMounted(loadData)
+onMounted(() => {
+  loadData()
+  loadCategories()
+})
 </script>
+
+<style scoped>
+.hint {
+  margin: -6px 0 14px;
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.field-tip {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #98a2b3;
+  line-height: 1.5;
+}
+</style>

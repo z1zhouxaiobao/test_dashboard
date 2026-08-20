@@ -21,57 +21,72 @@
             <template #title>{{ t('adminDashboard') }}</template>
           </el-menu-item>
 
-          <el-sub-menu index="content">
+          <el-menu-item index="/admin/nav-menus">
+            <el-icon><Menu /></el-icon>
+            <template #title>{{ t('adminNavMenus') }}</template>
+          </el-menu-item>
+
+          <el-menu-item index="/admin/carousels">
+            <el-icon><Picture /></el-icon>
+            <template #title>{{ t('adminCarousels') }}</template>
+          </el-menu-item>
+
+          <el-sub-menu index="portal-products">
             <template #title>
-              <el-icon><Document /></el-icon>
-              <span>{{ t('adminContent') }}</span>
+              <el-icon><Box /></el-icon>
+              <span>{{ t('adminGroupProducts') }}</span>
             </template>
-            <el-menu-item index="/admin/carousels">
-              <el-icon><Picture /></el-icon>
-              <template #title>{{ t('adminCarousels') }}</template>
+            <el-menu-item index="/admin/products">
+              <template #title>{{ t('adminProducts') }}</template>
             </el-menu-item>
-            <el-menu-item index="/admin/news">
+            <el-menu-item index="/admin/technologies">
+              <template #title>{{ t('adminTech') }}</template>
+            </el-menu-item>
+          </el-sub-menu>
+
+          <el-sub-menu index="portal-solutions">
+            <template #title>
+              <el-icon><Briefcase /></el-icon>
+              <span>{{ t('adminGroupSolutions') }}</span>
+            </template>
+            <el-menu-item index="/admin/cases">
+              <template #title>{{ t('adminCases') }}</template>
+            </el-menu-item>
+          </el-sub-menu>
+
+          <el-sub-menu index="portal-news">
+            <template #title>
               <el-icon><Reading /></el-icon>
+              <span>{{ t('adminGroupNews') }}</span>
+            </template>
+            <el-menu-item index="/admin/news">
               <template #title>{{ t('adminNews') }}</template>
             </el-menu-item>
             <el-menu-item index="/admin/notices">
-              <el-icon><Bell /></el-icon>
               <template #title>{{ t('adminNotices') }}</template>
             </el-menu-item>
-            <el-menu-item index="/admin/technologies">
-              <el-icon><Cpu /></el-icon>
-              <template #title>{{ t('adminTech') }}</template>
-            </el-menu-item>
-            <el-menu-item index="/admin/honors">
+          </el-sub-menu>
+
+          <el-sub-menu index="portal-about">
+            <template #title>
               <el-icon><Trophy /></el-icon>
+              <span>{{ t('adminGroupAbout') }}</span>
+            </template>
+            <el-menu-item index="/admin/honors">
               <template #title>{{ t('adminHonors') }}</template>
             </el-menu-item>
           </el-sub-menu>
 
-          <el-sub-menu index="business">
+          <el-sub-menu index="portal-contact">
             <template #title>
-              <el-icon><Briefcase /></el-icon>
-              <span>{{ t('adminBusiness') }}</span>
-            </template>
-            <el-menu-item index="/admin/products">
-              <el-icon><Box /></el-icon>
-              <template #title>{{ t('adminProducts') }}</template>
-            </el-menu-item>
-            <el-menu-item index="/admin/cases">
-              <el-icon><Collection /></el-icon>
-              <template #title>{{ t('adminCases') }}</template>
-            </el-menu-item>
-            <el-menu-item index="/admin/consultations">
               <el-icon><ChatDotRound /></el-icon>
+              <span>{{ t('adminGroupContact') }}</span>
+            </template>
+            <el-menu-item index="/admin/consultations">
               <template #title>{{ t('adminConsultations') }}</template>
             </el-menu-item>
             <el-menu-item index="/admin/feedbacks">
-              <el-icon><Comment /></el-icon>
               <template #title>{{ t('adminFeedbacks') }}</template>
-            </el-menu-item>
-            <el-menu-item index="/admin/favorites">
-              <el-icon><Star /></el-icon>
-              <template #title>{{ t('adminFavorites') }}</template>
             </el-menu-item>
           </el-sub-menu>
 
@@ -83,6 +98,10 @@
             <el-menu-item index="/admin/users">
               <el-icon><User /></el-icon>
               <template #title>{{ t('adminUsers') }}</template>
+            </el-menu-item>
+            <el-menu-item index="/admin/favorites">
+              <el-icon><Star /></el-icon>
+              <template #title>{{ t('adminFavorites') }}</template>
             </el-menu-item>
             <el-menu-item index="/admin/configs">
               <el-icon><Tools /></el-icon>
@@ -170,9 +189,9 @@
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
-  DataAnalysis, Document, Picture, Reading, Bell, Cpu, Trophy,
-  Briefcase, Box, Collection, ChatDotRound, Comment, Star,
-  Setting, User, Tools, List, Fold, Expand, SwitchButton
+  DataAnalysis, Picture, Reading, Trophy,
+  Briefcase, Box, ChatDotRound,
+  Setting, User, Tools, List, Fold, Expand, SwitchButton, Menu, Star
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTagsStore } from '@/stores/tags'
@@ -194,20 +213,14 @@ const asideWidth = computed(() => (collapsed.value ? '64px' : '220px'))
 const activeMenu = computed(() => route.path)
 const currentTitle = computed(() => {
   const key = adminTitleKeys[route.path]
-  return key ? t(key) : (route.meta.title || '')
+  return key ? t(key) : route.meta?.title || ''
 })
-const pageKey = computed(() => `${route.fullPath}#${refreshTick.value}`)
+const pageKey = computed(() => `${route.fullPath}-${refreshTick.value}`)
 
 function tagLabel(tag) {
   const key = adminTitleKeys[tag.path]
-  return key ? t(key) : tag.title
+  return key ? t(key) : tag.title || tag.path
 }
-
-watch(
-  () => route.path,
-  () => tags.addView(route),
-  { immediate: true }
-)
 
 function closeTag(path) {
   tags.removeView(path)
@@ -217,35 +230,23 @@ function closeTag(path) {
   }
 }
 
-function ensureCurrentVisible(tagPath) {
-  if (!tags.visited.some((v) => v.path === route.path)) {
-    router.push(tagPath || '/admin/dashboard')
-  }
-}
-
 function onTagCommand(cmd, tag) {
   if (cmd === 'refresh') {
-    if (route.path !== tag.path) {
-      router.push(tag.path).then(() => {
-        refreshTick.value += 1
-      })
-    } else {
-      refreshTick.value += 1
-    }
+    if (route.path === tag.path) refreshTick.value += 1
+    else router.push(tag.path).then(() => { refreshTick.value += 1 })
     return
   }
-  if (cmd === 'closeLeft') {
-    tags.removeLeft(tag.path)
-    ensureCurrentVisible(tag.path)
-  }
-  if (cmd === 'closeRight') {
-    tags.removeRight(tag.path)
-    ensureCurrentVisible(tag.path)
-  }
+  if (cmd === 'closeLeft') tags.removeLeft(tag.path)
+  if (cmd === 'closeRight') tags.removeRight(tag.path)
   if (cmd === 'closeAll') {
     tags.closeAll()
     router.push('/admin/dashboard')
   }
+}
+
+function handleCommand(cmd) {
+  if (cmd === 'portal') router.push('/portal/profile')
+  if (cmd === 'logout') handleLogout()
 }
 
 function handleLogout() {
@@ -253,108 +254,105 @@ function handleLogout() {
   router.push('/admin/login')
 }
 
-function handleCommand(cmd) {
-  if (cmd === 'portal') router.push('/portal/profile')
-  if (cmd === 'logout') handleLogout()
-}
+watch(
+  () => route.path,
+  () => {
+    if (route.path.startsWith('/admin')) tags.addView(route)
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>
 .admin-layout {
   min-height: 100vh;
+  background: #f0f2f5;
 }
 .admin-aside {
   position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
+  z-index: 100;
+  background: #0a1628;
   display: flex;
   flex-direction: column;
-  background: #0a1628;
   transition: width 0.2s;
-  z-index: 200;
-  overflow: hidden;
 }
 .aside-logo {
   height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  font-weight: 700;
   cursor: pointer;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
 }
 .logo-text {
-  color: #0B5ED7;
+  color: #fff;
+  font-weight: 800;
   letter-spacing: 1px;
 }
 .logo-mini {
   color: #0B5ED7;
+  font-weight: 800;
   font-size: 20px;
 }
 .aside-scroll {
   flex: 1;
-  min-height: 0;
+  overflow: hidden;
 }
 .aside-logout {
-  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 52px;
-  width: 100%;
+  height: 48px;
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: transparent;
   color: #bfcbd9;
   cursor: pointer;
-  font-size: 14px;
-  font-family: inherit;
+  flex-shrink: 0;
 }
 .aside-logout:hover {
-  color: #f56c6c;
-  background: rgba(245, 108, 108, 0.12);
-}
-.aside-logout .el-icon {
-  font-size: 18px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
 }
 .admin-main-wrap {
-  transition: margin-left 0.2s;
   min-height: 100vh;
+  transition: margin-left 0.2s;
 }
 .admin-header {
   position: fixed;
   top: 0;
   right: 0;
   height: 56px;
+  z-index: 90;
   background: #fff;
+  border-bottom: 1px solid #e8ebef;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-  z-index: 100;
+  padding: 0 16px;
   transition: left 0.2s;
 }
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 .collapse-btn {
-  font-size: 20px;
   cursor: pointer;
-  color: #666;
+  font-size: 18px;
 }
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 .user-info {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
@@ -363,28 +361,21 @@ function handleCommand(cmd) {
   position: fixed;
   top: 56px;
   right: 0;
-  height: 40px;
+  z-index: 80;
   background: #fff;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eef1f4;
+  padding: 8px 12px;
   display: flex;
-  align-items: center;
-  padding: 0 12px;
+  flex-wrap: wrap;
   gap: 8px;
-  overflow-x: auto;
-  z-index: 99;
   transition: left 0.2s;
 }
 .tag-item {
   cursor: pointer;
 }
-.tags-bar :deep(.el-dropdown) {
-  display: inline-flex;
-  align-items: center;
-}
 .admin-content {
-  margin-top: 96px;
+  margin-top: 104px;
   padding: 16px;
-  background: var(--liquicool-bg);
-  min-height: calc(100vh - 96px);
+  min-height: calc(100vh - 104px);
 }
 </style>

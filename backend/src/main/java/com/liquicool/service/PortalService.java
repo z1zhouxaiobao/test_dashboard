@@ -86,10 +86,20 @@ public class PortalService {
         return notice;
     }
 
-    public PageResult<Product> listProducts(String keyword, int page, int size) {
+    public PageResult<Product> listProducts(String keyword, String category, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "sortOrder"));
         String kw = keyword == null ? "" : keyword;
-        Page<Product> result = productRepository.findByStatusAndNameContainingIgnoreCase(1, kw, pageRequest);
+        Page<Product> result;
+        if (category != null && !category.trim().isEmpty()) {
+            String cat = category.trim();
+            if (kw.isEmpty()) {
+                result = productRepository.findByStatusAndCategory(1, cat, pageRequest);
+            } else {
+                result = productRepository.findByStatusAndCategoryAndNameContainingIgnoreCase(1, cat, kw, pageRequest);
+            }
+        } else {
+            result = productRepository.findByStatusAndNameContainingIgnoreCase(1, kw, pageRequest);
+        }
         return new PageResult<>(result.getTotalElements(), page, size, result.getContent());
     }
 
@@ -130,10 +140,20 @@ public class PortalService {
                 .orElseThrow(() -> new BusinessException("荣誉不存在"));
     }
 
-    public PageResult<CaseStudy> listCases(String keyword, int page, int size) {
+    public PageResult<CaseStudy> listCases(String keyword, String industry, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         String kw = keyword == null ? "" : keyword;
-        Page<CaseStudy> result = caseStudyRepository.findByStatusAndTitleContainingIgnoreCase(1, kw, pageRequest);
+        Page<CaseStudy> result;
+        if (industry != null && !industry.trim().isEmpty()) {
+            String ind = industry.trim();
+            if (kw.isEmpty()) {
+                result = caseStudyRepository.findByStatusAndIndustry(1, ind, pageRequest);
+            } else {
+                result = caseStudyRepository.findByStatusAndIndustryAndTitleContainingIgnoreCase(1, ind, kw, pageRequest);
+            }
+        } else {
+            result = caseStudyRepository.findByStatusAndTitleContainingIgnoreCase(1, kw, pageRequest);
+        }
         return new PageResult<>(result.getTotalElements(), page, size, result.getContent());
     }
 

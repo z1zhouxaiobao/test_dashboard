@@ -12,11 +12,11 @@ export const useLocaleStore = defineStore('locale', {
     },
     langButtonText(state) {
       const map = {
-        'zh-CN': '简体中文',
-        'zh-TW': '繁體中文',
-        en: 'English'
+        'zh-CN': 'CN/ZH',
+        'zh-TW': 'TW/ZH',
+        en: 'EN'
       }
-      return map[state.locale] || '简体中文'
+      return map[state.locale] || 'CN/ZH'
     }
   },
   actions: {

@@ -2,9 +2,13 @@ package com.liquicool.controller;
 
 import com.liquicool.common.ApiResponse;
 import com.liquicool.common.PageResult;
+import com.liquicool.dto.NavMenuTreeNode;
 import com.liquicool.dto.PortalOverviewResponse;
 import com.liquicool.entity.*;
+import com.liquicool.service.NavMenuService;
 import com.liquicool.service.PortalService;
+
+import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,19 @@ public class PortalController {
 
     @Autowired
     private PortalService portalService;
+
+    @Autowired
+    private NavMenuService navMenuService;
+
+    @Operation(summary = "门户导航树（含二级三级）")
+    @GetMapping("/nav-menus")
+    public ApiResponse<List<NavMenuTreeNode>> navMenus(
+            @RequestParam(required = false) String moduleCode) {
+        if (moduleCode != null && !moduleCode.trim().isEmpty()) {
+            return ApiResponse.ok(navMenuService.getPortalTreeByModule(moduleCode.trim()));
+        }
+        return ApiResponse.ok(navMenuService.getPortalTree());
+    }
 
     @Operation(summary = "统计概览")
     @GetMapping("/overview")
@@ -66,9 +83,10 @@ public class PortalController {
     @GetMapping("/products")
     public ApiResponse<PageResult<Product>> products(
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.ok(portalService.listProducts(keyword, page, size));
+        return ApiResponse.ok(portalService.listProducts(keyword, category, page, size));
     }
 
     @Operation(summary = "产品详情")
@@ -111,9 +129,10 @@ public class PortalController {
     @GetMapping("/cases")
     public ApiResponse<PageResult<CaseStudy>> cases(
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String industry,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.ok(portalService.listCases(keyword, page, size));
+        return ApiResponse.ok(portalService.listCases(keyword, industry, page, size));
     }
 
     @Operation(summary = "案例详情")
