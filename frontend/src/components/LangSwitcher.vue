@@ -1,7 +1,6 @@
 <template>
   <el-dropdown trigger="click" @command="onLangChange">
     <button class="lang-btn" :class="variant" type="button">
-      <span class="lang-icon">🌐</span>
       <span>{{ localeStore.langButtonText }}</span>
       <el-icon><ArrowDown /></el-icon>
     </button>
@@ -45,26 +44,25 @@ function onLangChange(lang) {
   gap: 6px;
   cursor: pointer;
   font-size: 13px;
-}
-.lang-icon {
-  font-size: 14px;
-  line-height: 1;
+  font-family: inherit;
 }
 .portal {
   height: 34px;
-  padding: 0 14px;
-  border: none;
-  border-radius: 999px;
-  background: #0B5ED7;
-  color: #fff;
+  padding: 0 12px;
+  border: 1px solid #101820;
+  border-radius: 0;
+  background: #fff;
+  color: #101820;
+  font-weight: 500;
+}
+.portal:hover {
+  border-color: #0a4fb8;
+  color: #0a4fb8;
 }
 @media (max-width: 480px) {
   .portal {
-    padding: 0 10px;
+    padding: 0 8px;
     font-size: 12px;
-  }
-  .portal .lang-icon {
-    display: none;
   }
 }
 .admin {
@@ -81,27 +79,16 @@ function onLangChange(lang) {
 .admin:hover,
 .admin:focus,
 .admin:focus-visible {
-  color: #0B5ED7;
+  color: #0a4fb8;
   outline: none;
   box-shadow: none;
 }
-.admin .lang-icon {
-  font-size: 14px;
-  filter: grayscale(1);
-  opacity: 0.85;
-}
-.admin:hover .lang-icon,
-.admin:focus .lang-icon {
-  filter: none;
-  opacity: 1;
-}
 .login {
   height: 34px;
-  padding: 0 14px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 0;
+  background: transparent;
   color: #fff;
-  backdrop-filter: blur(8px);
 }
 </style>

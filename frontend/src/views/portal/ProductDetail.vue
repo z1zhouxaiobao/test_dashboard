@@ -39,17 +39,18 @@ onMounted(async () => {
   width: 100%;
   max-height: 400px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 0;
+  border: 1px solid #d5dae0;
   margin-bottom: 20px;
 }
 .summary {
-  color: #666;
+  color: #5c6570;
   line-height: 1.8;
   margin: 16px 0;
 }
 .content {
   line-height: 1.8;
-  color: #333;
+  color: #1a1f26;
   overflow-wrap: anywhere;
 }
 .content :deep(img) {

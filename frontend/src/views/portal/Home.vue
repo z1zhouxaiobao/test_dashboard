@@ -1,34 +1,33 @@
 <template>
   <div class="portal-home">
     <section class="hero-carousel">
-      <el-carousel :height="carouselHeight" :interval="5000" :arrow="isMobile ? 'never' : 'always'" indicator-position="inside">
+      <el-carousel :height="carouselHeight" :interval="5500" :arrow="isMobile ? 'never' : 'always'" indicator-position="outside">
         <el-carousel-item v-for="item in slides" :key="item.id">
           <div class="carousel-slide" @click="goLink(item.linkUrl)">
             <img :src="resolveMediaUrl(item.imageUrl) || fallbackImg(item.id)" :alt="item.title" />
-            <div class="carousel-mask"></div>
             <div class="carousel-caption">
+              <div class="caption-kicker">LIQUICOOL</div>
               <h1>{{ item.title || t('homeHeroTitle') }}</h1>
               <p>{{ item.subtitle || t('homeHeroDesc') }}</p>
-              <el-button class="join-btn" :size="isMobile ? 'default' : 'large'" @click.stop="$router.push('/portal/contact')">
+              <button class="join-btn" type="button" @click.stop="$router.push('/portal/contact')">
                 {{ t('joinUs') }}
-              </el-button>
+              </button>
             </div>
           </div>
         </el-carousel-item>
       </el-carousel>
     </section>
 
-
     <section class="about-section">
-      <h2 class="section-title">{{ t('aboutTitle') }}</h2>
+      <div class="section-label">{{ t('aboutTitle') }}</div>
       <div class="about-grid">
         <div class="about-text">
-          <h3>{{ t('aboutSub') }}</h3>
+          <h2>{{ t('aboutSub') }}</h2>
           <p>{{ t('aboutP1') }}</p>
           <p>{{ t('aboutP2') }}</p>
           <div class="about-actions">
-            <el-button type="primary" @click="$router.push('/portal/about')">{{ t('learnMore') }}</el-button>
-            <el-button @click="$router.push('/portal/technologies')">{{ t('coreTech') }}</el-button>
+            <button class="btn-primary" type="button" @click="$router.push('/portal/about')">{{ t('learnMore') }}</button>
+            <button class="btn-ghost" type="button" @click="$router.push('/portal/technologies')">{{ t('coreTech') }}</button>
           </div>
         </div>
         <div class="about-visual">
@@ -37,20 +36,27 @@
       </div>
     </section>
 
-    <section class="portal-section products-preview">
-      <div class="section-header">
-        <h2 class="section-title">{{ t('coreSolutions') }}</h2>
-        <router-link to="/portal/products">{{ t('viewMore') }}</router-link>
+    <section class="products-preview">
+      <div class="products-inner">
+        <div class="section-header">
+          <h2>{{ t('coreSolutions') }}</h2>
+          <router-link to="/portal/products" class="more-link">{{ t('viewMore') }}</router-link>
+        </div>
+        <div class="product-list">
+          <article
+            v-for="p in products"
+            :key="p.id"
+            class="product-row"
+            @click="$router.push(`/portal/products/${p.id}`)"
+          >
+            <img :src="resolveMediaUrl(p.coverUrl) || defaultCover('product')" class="row-img" alt="" />
+            <div class="row-body">
+              <h3>{{ p.name }}</h3>
+              <p>{{ p.summary }}</p>
+            </div>
+          </article>
+        </div>
       </div>
-      <el-row :gutter="20">
-        <el-col v-for="p in products" :key="p.id" :xs="24" :sm="12" :md="8">
-          <el-card shadow="hover" class="product-card" @click="$router.push(`/portal/products/${p.id}`)">
-            <img :src="resolveMediaUrl(p.coverUrl) || defaultCover('product')" class="card-img" alt="" />
-            <h3>{{ p.name }}</h3>
-            <p>{{ p.summary }}</p>
-          </el-card>
-        </el-col>
-      </el-row>
     </section>
   </div>
 </template>
@@ -70,9 +76,9 @@ const products = ref([])
 const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1200)
 const isMobile = computed(() => viewportWidth.value <= 768)
 const carouselHeight = computed(() => {
-  if (viewportWidth.value <= 480) return '280px'
-  if (viewportWidth.value <= 768) return '360px'
-  return '520px'
+  if (viewportWidth.value <= 480) return '320px'
+  if (viewportWidth.value <= 768) return '400px'
+  return '560px'
 })
 
 function onResize() {
@@ -140,13 +146,27 @@ onUnmounted(() => {
 
 <style scoped>
 .hero-carousel {
-  background: #0a1628;
+  background: #101820;
+}
+.hero-carousel :deep(.el-carousel__indicators--outside) {
+  margin-top: 0;
+  background: #101820;
+  padding: 10px 0 12px;
+}
+.hero-carousel :deep(.el-carousel__button) {
+  width: 28px;
+  height: 3px;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.35);
+}
+.hero-carousel :deep(.el-carousel__indicator.is-active .el-carousel__button) {
+  background: #0a4fb8;
 }
 .carousel-slide {
   position: relative;
   height: 100%;
   min-height: 280px;
-  background: #0a1628;
+  background: #101820;
   cursor: pointer;
 }
 .carousel-slide img {
@@ -154,160 +174,245 @@ onUnmounted(() => {
   height: 100%;
   object-fit: cover;
   display: block;
-}
-.carousel-mask {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(10, 22, 40, 0.35) 0%, rgba(10, 22, 40, 0.62) 100%);
+  filter: grayscale(18%) contrast(1.05);
 }
 .carousel-caption {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: min(900px, 90%);
-  text-align: center;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: min(520px, 88%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 48px;
+  background: linear-gradient(90deg, rgba(16, 24, 32, 0.92) 0%, rgba(16, 24, 32, 0.72) 70%, rgba(16, 24, 32, 0) 100%);
   color: #fff;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
   z-index: 2;
+  text-align: left;
+}
+.caption-kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: #8eb6ff;
+  margin-bottom: 14px;
 }
 .carousel-caption h1 {
-  margin: 0 0 16px;
-  font-size: 40px;
-  font-weight: 800;
+  margin: 0 0 14px;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  max-width: 420px;
 }
 .carousel-caption p {
-  margin: 0 auto 28px;
-  max-width: 720px;
-  font-size: 16px;
-  line-height: 1.8;
+  margin: 0 0 24px;
+  max-width: 380px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.82);
 }
 .join-btn {
-  background: #fff !important;
-  border-color: #fff !important;
-  color: #0B5ED7 !important;
-  padding: 12px 36px;
+  align-self: flex-start;
+  background: #0a4fb8;
+  border: 1px solid #0a4fb8;
+  color: #fff;
+  padding: 11px 28px;
+  font-size: 14px;
   font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  font-family: inherit;
+}
+.join-btn:hover {
+  background: #083d90;
+  border-color: #083d90;
 }
 .about-section {
-  max-width: 1200px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 64px 24px 40px;
+  padding: 64px 24px 56px;
+  border-bottom: 1px solid #d5dae0;
 }
-.section-title {
-  text-align: center;
-  font-size: 32px;
-  color: #1a1a1a;
-  margin: 0 0 36px;
-  font-weight: 700;
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #0a4fb8;
+  margin-bottom: 12px;
 }
 .about-grid {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 40px;
-  align-items: center;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 48px;
+  align-items: stretch;
 }
-.about-text h3 {
-  margin: 0 0 16px;
-  color: #0B5ED7;
-  font-size: 22px;
+.about-text h2 {
+  margin: 0 0 18px;
+  color: #101820;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 .about-text p {
   margin: 0 0 14px;
-  color: #444;
-  line-height: 1.9;
+  color: #5c6570;
+  line-height: 1.85;
   font-size: 15px;
 }
 .about-actions {
-  margin-top: 20px;
+  margin-top: 28px;
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+}
+.btn-primary,
+.btn-ghost {
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 0;
+}
+.btn-primary {
+  background: #0a4fb8;
+  border: 1px solid #0a4fb8;
+  color: #fff;
+}
+.btn-ghost {
+  background: #fff;
+  border: 1px solid #101820;
+  color: #101820;
+}
+.btn-primary:hover {
+  background: #083d90;
+}
+.btn-ghost:hover {
+  background: #f2f3f5;
 }
 .about-visual {
-  border-radius: 8px;
+  border: 1px solid #d5dae0;
+  background: #f2f3f5;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(11, 94, 215, 0.12);
-  background: #f5f8ff;
 }
 .about-visual img {
   display: block;
   width: 100%;
-  height: 340px;
+  height: 100%;
+  min-height: 320px;
   object-fit: cover;
+  filter: grayscale(10%);
 }
 .products-preview {
-  background: #f7f9fc;
+  background: #f2f3f5;
+}
+.products-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 56px 24px 64px;
 }
 .section-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  align-items: baseline;
+  margin-bottom: 0;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #101820;
 }
-.section-header .section-title {
+.section-header h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: 24px;
+  color: #101820;
+  font-weight: 700;
 }
-.product-card {
+.more-link {
+  color: #0a4fb8;
+  font-size: 14px;
+  font-weight: 500;
+}
+.product-list {
+  display: flex;
+  flex-direction: column;
+}
+.product-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: center;
+  padding: 22px 0;
+  border-bottom: 1px solid #d5dae0;
   cursor: pointer;
-  margin-bottom: 20px;
-  min-height: 100%;
+  background: transparent;
 }
-.card-img {
+.product-row:hover .row-body h3 {
+  color: #0a4fb8;
+}
+.row-img {
   width: 100%;
-  height: 180px;
+  height: 120px;
   object-fit: cover;
-  border-radius: 4px;
+  display: block;
+  border: 1px solid #d5dae0;
+  background: #fff;
 }
-.product-card h3 {
-  margin: 12px 0 8px;
-  color: #0a1628;
-  font-size: 16px;
+.row-body h3 {
+  margin: 0 0 8px;
+  color: #101820;
+  font-size: 17px;
+  font-weight: 600;
+  transition: color 0.15s;
 }
-.product-card p {
-  color: #666;
+.row-body p {
+  color: #5c6570;
   font-size: 14px;
   margin: 0;
-  line-height: 1.6;
+  line-height: 1.65;
 }
+
 @media (max-width: 768px) {
+  .carousel-caption {
+    width: 100%;
+    padding: 28px 20px;
+    background: linear-gradient(0deg, rgba(16, 24, 32, 0.9) 0%, rgba(16, 24, 32, 0.55) 55%, rgba(16, 24, 32, 0.2) 100%);
+    justify-content: flex-end;
+  }
   .carousel-caption h1 {
     font-size: 24px;
-    margin-bottom: 10px;
+    max-width: none;
   }
   .carousel-caption p {
     font-size: 14px;
+    max-width: none;
     margin-bottom: 18px;
-    line-height: 1.6;
-  }
-  .join-btn {
-    padding: 10px 24px;
   }
   .about-section {
-    padding: 36px 14px 28px;
+    padding: 40px 14px 36px;
   }
-  .section-title {
-    font-size: 24px;
-    margin-bottom: 24px;
+  .about-text h2 {
+    font-size: 22px;
   }
   .about-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  .about-actions {
-    flex-wrap: wrap;
-  }
   .about-visual img {
+    min-height: 200px;
     height: 220px;
   }
-  .section-header {
-    flex-wrap: wrap;
-    gap: 8px;
+  .products-inner {
+    padding: 36px 14px 44px;
   }
-  .section-header .section-title {
-    font-size: 22px;
+  .section-header h2 {
+    font-size: 20px;
   }
-  .card-img {
+  .product-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .row-img {
     height: 160px;
   }
 }
@@ -317,14 +422,10 @@ onUnmounted(() => {
     font-size: 20px;
   }
   .carousel-caption p {
-    font-size: 13px;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-  }
-  .section-title {
-    font-size: 20px;
   }
 }
 </style>

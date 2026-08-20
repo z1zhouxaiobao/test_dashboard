@@ -51,40 +51,50 @@ onMounted(loadData)
 .news-item {
   display: flex;
   gap: 20px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  padding: 20px 0;
+  background: transparent;
+  border-radius: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #d5dae0;
   cursor: pointer;
-  transition: box-shadow 0.2s;
+}
+.news-item:first-child {
+  border-top: 2px solid #101820;
 }
 .news-item:hover {
-  box-shadow: 0 4px 16px rgba(11, 94, 215, 0.12);
+  box-shadow: none;
+}
+.news-item:hover h3 {
+  color: #0a4fb8;
 }
 .thumb {
   width: 200px;
   height: 120px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 0;
   flex-shrink: 0;
+  border: 1px solid #d5dae0;
+  background: #fff;
 }
 .news-body h3 {
   margin: 0 0 8px;
-  color: #0a1628;
+  color: #101820;
+  transition: color 0.15s;
 }
 .news-body p {
-  color: #666;
+  color: #5c6570;
   font-size: 14px;
   margin: 0 0 8px;
 }
 .date {
-  color: #999;
+  color: #8a929b;
   font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 @media (max-width: 768px) {
   .news-item {
     flex-direction: column;
-    padding: 14px;
+    padding: 16px 0;
     gap: 12px;
   }
   .thumb {

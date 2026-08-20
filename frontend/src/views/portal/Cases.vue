@@ -1,16 +1,21 @@
 <template>
   <div class="portal-section">
     <h1 class="page-title">{{ t('casesTitle') }}</h1>
-    <el-row :gutter="20">
-      <el-col v-for="item in list" :key="item.id" :xs="24" :sm="12" :md="8">
-        <el-card shadow="hover" class="case-card" @click="$router.push(`/portal/cases/${item.id}`)">
-          <img :src="resolveMediaUrl(item.coverUrl) || defaultCover('case')" class="cover" alt="" />
+    <div class="case-list">
+      <article
+        v-for="item in list"
+        :key="item.id"
+        class="case-row"
+        @click="$router.push(`/portal/cases/${item.id}`)"
+      >
+        <img :src="resolveMediaUrl(item.coverUrl) || defaultCover('case')" class="cover" alt="" />
+        <div class="body">
+          <span v-if="item.industry" class="tag">{{ item.industry }}</span>
           <h3>{{ item.title }}</h3>
           <p>{{ item.summary }}</p>
-          <el-tag size="small">{{ item.industry }}</el-tag>
-        </el-card>
-      </el-col>
-    </el-row>
+        </div>
+      </article>
+    </div>
     <div class="pagination-wrap">
       <el-pagination
         v-model:current-page="page"
@@ -49,21 +54,56 @@ onMounted(loadData)
 </script>
 
 <style scoped>
-.case-card {
+.case-list {
+  border-top: 2px solid #101820;
+}
+.case-row {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  padding: 22px 0;
+  border-bottom: 1px solid #d5dae0;
   cursor: pointer;
-  margin-bottom: 20px;
+}
+.case-row:hover h3 {
+  color: #0a4fb8;
 }
 .cover {
   width: 100%;
-  height: 180px;
+  height: 150px;
   object-fit: cover;
-  border-radius: 4px;
+  display: block;
+  border: 1px solid #d5dae0;
+  background: #fff;
 }
-.case-card h3 {
-  margin: 12px 0 8px;
+.body .tag {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: #0a4fb8;
+  border: 1px solid #0a4fb8;
+  padding: 2px 8px;
+  margin-bottom: 8px;
 }
-.case-card p {
-  color: #666;
+.body h3 {
+  margin: 0 0 8px;
+  color: #101820;
+  font-size: 18px;
+  transition: color 0.15s;
+}
+.body p {
+  color: #5c6570;
   font-size: 14px;
+  margin: 0;
+  line-height: 1.65;
+}
+@media (max-width: 768px) {
+  .case-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .cover {
+    height: 160px;
+  }
 }
 </style>

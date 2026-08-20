@@ -1,8 +1,11 @@
 <template>
   <div class="about-page">
     <section class="hero-mini">
-      <h1>{{ t('aboutPageTitle') }}</h1>
-      <p>{{ t('aboutPageSub') }}</p>
+      <div class="hero-inner">
+        <div class="kicker">ABOUT</div>
+        <h1>{{ t('aboutPageTitle') }}</h1>
+        <p>{{ t('aboutPageSub') }}</p>
+      </div>
     </section>
 
     <section class="content">
@@ -36,7 +39,6 @@
 import { useI18n } from '@/composables/useI18n'
 
 const { t } = useI18n()
-const aboutImg = '/images/about-diagram.jpg'
 
 const stats = [
   { value: '10+', labelKey: 'statExp' },
@@ -48,21 +50,36 @@ const stats = [
 
 <style scoped>
 .hero-mini {
-  background: #0B5ED7;
+  background: #101820;
   color: #fff;
-  text-align: center;
-  padding: 56px 24px;
+  border-bottom: 3px solid #0a4fb8;
+}
+.hero-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  text-align: left;
+}
+.kicker {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  color: #8eb6ff;
+  margin-bottom: 10px;
 }
 .hero-mini h1 {
   margin: 0 0 10px;
-  font-size: 32px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 .hero-mini p {
   margin: 0;
-  opacity: 0.92;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 15px;
 }
 .content {
-  max-width: 1200px;
+  max-width: 1180px;
   margin: 0 auto;
   padding: 48px 24px 64px;
 }
@@ -70,48 +87,63 @@ const stats = [
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   gap: 40px;
-  align-items: center;
+  align-items: start;
 }
 .text h2 {
   margin: 0 0 16px;
-  color: #0B5ED7;
+  color: #101820;
+  font-size: 24px;
 }
 .text p,
 .text li {
-  line-height: 1.9;
-  color: #444;
+  line-height: 1.85;
+  color: #5c6570;
+  font-size: 15px;
+}
+.text ul {
+  margin: 20px 0 0;
+  padding-left: 18px;
+}
+.visual {
+  border: 1px solid #d5dae0;
+  background: #f2f3f5;
 }
 .visual img {
   width: 100%;
   height: 360px;
   object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 10px 28px rgba(11, 94, 215, 0.12);
+  display: block;
+  filter: grayscale(8%);
 }
 .stats {
   margin-top: 40px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  border: 1px solid #d5dae0;
 }
 .stat-item {
-  text-align: center;
-  padding: 24px 12px;
-  border-radius: 8px;
-  color: #fff;
-  background: linear-gradient(135deg, #0B5ED7, #0a1628);
+  text-align: left;
+  padding: 22px 20px;
+  background: #fff;
+  border-right: 1px solid #d5dae0;
+}
+.stat-item:last-child {
+  border-right: none;
 }
 .stat-value {
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 700;
+  color: #0a4fb8;
+  font-family: 'IBM Plex Sans', sans-serif;
+  letter-spacing: 0.02em;
 }
 .stat-label {
   margin-top: 6px;
   font-size: 13px;
-  opacity: 0.9;
+  color: #5c6570;
 }
 @media (max-width: 768px) {
-  .hero-mini {
+  .hero-inner {
     padding: 36px 16px;
   }
   .hero-mini h1 {
@@ -130,6 +162,16 @@ const stats = [
   .stats {
     grid-template-columns: repeat(2, 1fr);
   }
+  .stat-item {
+    border-right: 1px solid #d5dae0;
+    border-bottom: 1px solid #d5dae0;
+  }
+  .stat-item:nth-child(2n) {
+    border-right: none;
+  }
+  .stat-item:nth-child(n + 3) {
+    border-bottom: none;
+  }
 }
 
 @media (max-width: 480px) {
@@ -139,8 +181,15 @@ const stats = [
   .stats {
     grid-template-columns: 1fr;
   }
+  .stat-item {
+    border-right: none;
+    border-bottom: 1px solid #d5dae0;
+  }
+  .stat-item:last-child {
+    border-bottom: none;
+  }
   .stat-value {
-    font-size: 26px;
+    font-size: 24px;
   }
 }
 </style>

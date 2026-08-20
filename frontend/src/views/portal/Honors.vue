@@ -1,16 +1,14 @@
 <template>
   <div class="portal-section">
     <h1 class="page-title">{{ t('honorTitle') }}</h1>
-    <el-row :gutter="20">
-      <el-col v-for="item in list" :key="item.id" :xs="24" :sm="12" :md="8" :lg="6">
-        <el-card shadow="hover" class="honor-card">
-          <img :src="resolveMediaUrl(item.coverUrl || item.imageUrl) || defaultCover('honor')" class="honor-img" alt="" />
-          <h3>{{ item.title || item.name }}</h3>
-          <p>{{ item.summary || item.description }}</p>
-          <span class="year">{{ item.awardYear || item.year }}</span>
-        </el-card>
-      </el-col>
-    </el-row>
+    <div class="honor-grid">
+      <article v-for="item in list" :key="item.id" class="honor-item">
+        <img :src="resolveMediaUrl(item.coverUrl || item.imageUrl) || defaultCover('honor')" class="honor-img" alt="" />
+        <h3>{{ item.title || item.name }}</h3>
+        <p>{{ item.summary || item.description }}</p>
+        <span class="year">{{ item.awardYear || item.year }}</span>
+      </article>
+    </div>
     <el-empty v-if="!loading && !list.length" description="暂无数据" />
   </div>
 </template>
@@ -39,26 +37,54 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.honor-card {
-  margin-bottom: 20px;
-  text-align: center;
+.honor-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid #d5dae0;
+  border-left: 1px solid #d5dae0;
+}
+.honor-item {
+  text-align: left;
+  background: #fff;
+  border-right: 1px solid #d5dae0;
+  border-bottom: 1px solid #d5dae0;
+  padding: 18px 16px 20px;
 }
 .honor-img {
   width: 100%;
-  height: 140px;
+  height: 120px;
   object-fit: contain;
+  display: block;
+  margin-bottom: 12px;
+  background: #f7f8fa;
+  border: 1px solid #e8ebef;
 }
-.honor-card h3 {
-  color: #0B5ED7;
-  margin: 12px 0 8px;
+.honor-item h3 {
+  color: #101820;
+  margin: 0 0 8px;
   font-size: 15px;
 }
-.honor-card p {
-  color: #666;
+.honor-item p {
+  color: #5c6570;
   font-size: 13px;
+  margin: 0 0 10px;
+  line-height: 1.5;
 }
 .year {
-  color: #DC3545;
+  color: #0a4fb8;
   font-weight: 600;
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+@media (max-width: 900px) {
+  .honor-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .honor-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

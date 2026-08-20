@@ -1,15 +1,15 @@
 <template>
   <div class="portal-section">
-    <h1 class="page-title">核心技术</h1>
-    <el-row :gutter="24">
-      <el-col v-for="item in list" :key="item.id" :xs="24" :md="12" :lg="8">
-        <el-card class="tech-card" shadow="hover">
-          <img :src="resolveMediaUrl(item.coverUrl || item.imageUrl) || defaultCover('product')" class="tech-img" alt="" />
+    <h1 class="page-title">{{ t('techTitle') }}</h1>
+    <div class="tech-list">
+      <article v-for="item in list" :key="item.id" class="tech-row">
+        <img :src="resolveMediaUrl(item.coverUrl || item.imageUrl) || defaultCover('product')" class="tech-img" alt="" />
+        <div class="tech-body">
           <h3>{{ item.title || item.name }}</h3>
           <p>{{ item.summary || item.description }}</p>
-        </el-card>
-      </el-col>
-    </el-row>
+        </div>
+      </article>
+    </div>
     <el-empty v-if="!loading && !list.length" description="暂无数据" />
   </div>
 </template>
@@ -38,22 +38,43 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.tech-card {
-  margin-bottom: 24px;
+.tech-list {
+  border-top: 2px solid #101820;
+}
+.tech-row {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  align-items: center;
+  padding: 22px 0;
+  border-bottom: 1px solid #d5dae0;
 }
 .tech-img {
   width: 100%;
-  height: 160px;
+  height: 140px;
   object-fit: cover;
-  border-radius: 4px;
+  display: block;
+  border: 1px solid #d5dae0;
+  background: #fff;
 }
-.tech-card h3 {
-  color: #0B5ED7;
-  margin: 12px 0 8px;
+.tech-body h3 {
+  color: #101820;
+  margin: 0 0 8px;
+  font-size: 18px;
 }
-.tech-card p {
-  color: #666;
+.tech-body p {
+  color: #5c6570;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.7;
+  margin: 0;
+}
+@media (max-width: 768px) {
+  .tech-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .tech-img {
+    height: 160px;
+  }
 }
 </style>
