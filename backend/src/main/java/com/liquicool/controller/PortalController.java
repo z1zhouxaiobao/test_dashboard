@@ -2,9 +2,13 @@ package com.liquicool.controller;
 
 import com.liquicool.common.ApiResponse;
 import com.liquicool.common.PageResult;
+import com.liquicool.dto.ConsultationRequest;
+import com.liquicool.dto.ContactSettingsDto;
+import com.liquicool.dto.FeedbackRequest;
 import com.liquicool.dto.NavMenuTreeNode;
 import com.liquicool.dto.PortalOverviewResponse;
 import com.liquicool.entity.*;
+import com.liquicool.service.ContactSettingsService;
 import com.liquicool.service.NavMenuService;
 import com.liquicool.service.PortalService;
 
@@ -12,6 +16,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "门户公开接口")
@@ -24,6 +29,9 @@ public class PortalController {
 
     @Autowired
     private NavMenuService navMenuService;
+
+    @Autowired
+    private ContactSettingsService contactSettingsService;
 
     @Operation(summary = "门户导航树（含二级三级）")
     @GetMapping("/nav-menus")
@@ -139,5 +147,23 @@ public class PortalController {
     @GetMapping("/cases/{id}")
     public ApiResponse<CaseStudy> caseDetail(@PathVariable Long id) {
         return ApiResponse.ok(portalService.getCaseDetail(id));
+    }
+
+    @Operation(summary = "公开提交留言（无需登录）")
+    @PostMapping("/feedbacks")
+    public ApiResponse<Feedback> submitFeedback(@Validated @RequestBody FeedbackRequest request) {
+        return ApiResponse.ok(portalService.submitFeedback(request));
+    }
+
+    @Operation(summary = "公开提交咨询（无需登录）")
+    @PostMapping("/consultations")
+    public ApiResponse<Consultation> submitConsultation(@Validated @RequestBody ConsultationRequest request) {
+        return ApiResponse.ok(portalService.submitConsultation(request));
+    }
+
+    @Operation(summary = "联系我们页配置（公开）")
+    @GetMapping("/contact-settings")
+    public ApiResponse<ContactSettingsDto> contactSettings() {
+        return ApiResponse.ok(contactSettingsService.getSettings());
     }
 }

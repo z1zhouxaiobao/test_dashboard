@@ -2,10 +2,12 @@ package com.liquicool.controller;
 
 import com.liquicool.common.ApiResponse;
 import com.liquicool.common.PageResult;
+import com.liquicool.dto.ContactSettingsDto;
 import com.liquicool.dto.DashboardStatsResponse;
 import com.liquicool.dto.NavMenuTreeNode;
 import com.liquicool.entity.*;
 import com.liquicool.service.AdminService;
+import com.liquicool.service.ContactSettingsService;
 import com.liquicool.service.NavMenuService;
 
 import java.util.List;
@@ -24,6 +26,9 @@ public class AdminController {
 
     @Autowired
     private NavMenuService navMenuService;
+
+    @Autowired
+    private ContactSettingsService contactSettingsService;
 
     @Operation(summary = "仪表盘统计")
     @GetMapping("/dashboard/stats")
@@ -336,20 +341,6 @@ public class AdminController {
         return ApiResponse.ok(null);
     }
 
-    @GetMapping("/favorites")
-    public ApiResponse<PageResult<Favorite>> listFavorites(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.ok(adminService.listFavorites(keyword, page, size));
-    }
-
-    @DeleteMapping("/favorites/{id}")
-    public ApiResponse<Void> deleteFavorite(@PathVariable Long id) {
-        adminService.deleteFavorite(id);
-        return ApiResponse.ok(null);
-    }
-
     @GetMapping("/feedbacks")
     public ApiResponse<PageResult<Feedback>> listFeedbacks(
             @RequestParam(required = false) String keyword,
@@ -373,6 +364,16 @@ public class AdminController {
     public ApiResponse<Void> deleteFeedback(@PathVariable Long id) {
         adminService.deleteFeedback(id);
         return ApiResponse.ok(null);
+    }
+
+    @GetMapping("/contact-settings")
+    public ApiResponse<ContactSettingsDto> getContactSettings() {
+        return ApiResponse.ok(contactSettingsService.getSettings());
+    }
+
+    @PutMapping("/contact-settings")
+    public ApiResponse<ContactSettingsDto> saveContactSettings(@RequestBody ContactSettingsDto dto) {
+        return ApiResponse.ok(contactSettingsService.saveSettings(dto));
     }
 
     @GetMapping("/configs")

@@ -82,6 +82,9 @@
               <el-icon><ChatDotRound /></el-icon>
               <span>{{ t('adminGroupContact') }}</span>
             </template>
+            <el-menu-item index="/admin/contact-settings">
+              <template #title>{{ t('adminContactSettings') }}</template>
+            </el-menu-item>
             <el-menu-item index="/admin/consultations">
               <template #title>{{ t('adminConsultations') }}</template>
             </el-menu-item>
@@ -98,10 +101,6 @@
             <el-menu-item index="/admin/users">
               <el-icon><User /></el-icon>
               <template #title>{{ t('adminUsers') }}</template>
-            </el-menu-item>
-            <el-menu-item index="/admin/favorites">
-              <el-icon><Star /></el-icon>
-              <template #title>{{ t('adminFavorites') }}</template>
             </el-menu-item>
             <el-menu-item index="/admin/configs">
               <el-icon><Tools /></el-icon>
@@ -191,7 +190,7 @@ import { useRoute, useRouter } from 'vue-router'
 import {
   DataAnalysis, Picture, Reading, Trophy,
   Briefcase, Box, ChatDotRound,
-  Setting, User, Tools, List, Fold, Expand, SwitchButton, Menu, Star
+  Setting, User, Tools, List, Fold, Expand, SwitchButton, Menu
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTagsStore } from '@/stores/tags'

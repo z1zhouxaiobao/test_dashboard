@@ -1,7 +1,6 @@
 <template>
   <div class="page-card">
     <h2 class="page-title">{{ t('adminProducts') }}</h2>
-    <p class="hint">分类请从下拉框选，选项来自「门户导航」里产品与服务的三级菜单。没有想要的分类时，先去门户导航加一个。</p>
     <TableToolbar v-model="keyword" :placeholder="t('phProduct')" @search="handleSearch" @refresh="loadData">
       <el-button type="danger" plain :disabled="!selected.length" :loading="deleting" @click="handleBatchDelete">{{ t('batchDelete') }}</el-button>
       <el-button type="primary" @click="openDialog()">{{ t('addProduct') }}</el-button>
@@ -39,20 +38,19 @@
       <el-form :model="form" label-width="100px">
         <el-form-item :label="t('itemName')"><el-input v-model="form.name" /></el-form-item>
         <el-form-item :label="t('category')">
-          <el-select
+          <el-tree-select
             v-model="form.category"
+            :data="categoryTree"
             filterable
             clearable
-            allow-create
-            default-first-option
+            check-strictly
+            :default-expand-all="false"
+            :render-after-expand="false"
             style="width: 100%"
-            placeholder="从导航分类中选择"
-          >
-            <el-option-group v-for="g in categoryGroups" :key="g.label" :label="g.label">
-              <el-option v-for="c in g.options" :key="c.value" :label="c.label" :value="c.value" />
-            </el-option-group>
-          </el-select>
-          <div class="field-tip">对应官网左侧「细化」筛选项；没有选项请先在「门户导航」添加。</div>
+            placeholder="从分类树中选择（建议选最末级）"
+            :props="{ label: 'label', value: 'value', children: 'children', disabled: 'disabled' }"
+          />
+          <div class="field-tip">树形对应「前台菜单」产品服务栏目；没有分类请先去「前台菜单」添加。</div>
         </el-form-item>
         <el-form-item :label="t('summary')"><el-input v-model="form.summary" type="textarea" :rows="2" /></el-form-item>
         <el-form-item :label="t('cover')"><ImageUpload v-model="form.coverUrl" /></el-form-item>
@@ -89,7 +87,7 @@ const size = ref(10)
 const total = ref(0)
 const keyword = ref('')
 const dialogVisible = ref(false)
-const categoryGroups = ref([])
+const categoryTree = ref([])
 const form = reactive({ id: null, name: '', category: '', summary: '', coverUrl: '', content: '', enabled: true })
 
 async function loadCategories() {
@@ -97,29 +95,35 @@ async function loadCategories() {
     const res = await navMenuApi.all()
     const all = res.data || res || []
     const products = all.filter((m) => m.moduleCode === 'PRODUCTS' && m.status !== 0)
-    const l2 = products.filter((m) => m.levelNo === 2)
-    const l3 = products.filter((m) => m.levelNo === 3)
-    const groups = l2.map((parent) => ({
-      label: parent.nameZh,
-      options: l3
+    const l2 = products.filter((m) => m.levelNo === 2).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+    const l3 = products.filter((m) => m.levelNo === 3).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+
+    const tree = l2.map((parent) => {
+      const children = l3
         .filter((c) => c.parentId === parent.id)
         .map((c) => ({
           label: c.nameZh,
           value: c.code || c.nameZh
         }))
-    })).filter((g) => g.options.length)
+      return {
+        label: parent.nameZh,
+        value: `__group_${parent.id}`,
+        disabled: children.length > 0,
+        children: children.length ? children : undefined
+      }
+    })
 
-    // 若没有二级分组，把所有三级平铺
-    if (!groups.length && l3.length) {
-      categoryGroups.value = [{
-        label: '产品分类',
-        options: l3.map((c) => ({ label: c.nameZh, value: c.code || c.nameZh }))
-      }]
+    // 没有二级时，三级直接作为树节点
+    if (!tree.length && l3.length) {
+      categoryTree.value = l3.map((c) => ({
+        label: c.nameZh,
+        value: c.code || c.nameZh
+      }))
     } else {
-      categoryGroups.value = groups
+      categoryTree.value = tree
     }
   } catch {
-    categoryGroups.value = []
+    categoryTree.value = []
   }
 }
 

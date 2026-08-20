@@ -2,6 +2,7 @@ package com.liquicool.config;
 
 import com.liquicool.repository.NavMenuRepository;
 import com.liquicool.repository.ProductRepository;
+import com.liquicool.service.ContactSettingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,16 @@ public class DemoDataInitializer implements ApplicationRunner {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private ContactSettingsService contactSettingsService;
+
     @Override
     public void run(ApplicationArguments args) {
+        try {
+            contactSettingsService.ensureDefaults();
+        } catch (Exception e) {
+            log.warn("联系页配置初始化跳过: {}", e.getMessage());
+        }
         if (productRepository.count() == 0) {
             try (Connection connection = dataSource.getConnection()) {
                 ScriptUtils.executeSqlScript(connection, new ClassPathResource("db/seed-demo.sql"));

@@ -4,14 +4,11 @@ import com.liquicool.common.ApiResponse;
 import com.liquicool.common.PageResult;
 import com.liquicool.context.UserContext;
 import com.liquicool.dto.ConsultationRequest;
-import com.liquicool.dto.FavoriteRequest;
 import com.liquicool.dto.FeedbackRequest;
 import com.liquicool.dto.ProfileUpdateRequest;
 import com.liquicool.entity.Consultation;
-import com.liquicool.entity.Favorite;
 import com.liquicool.entity.Feedback;
 import com.liquicool.entity.SysUser;
-import com.liquicool.enums.FavoriteTargetType;
 import com.liquicool.service.UserCenterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Tag(name = "用户中心")
@@ -41,32 +37,6 @@ public class UserCenterController {
     public ApiResponse<SysUser> updateAvatar(@RequestBody Map<String, String> body) {
         String avatar = body.get("avatar");
         return ApiResponse.ok(userCenterService.updateAvatar(UserContext.getUserId(), avatar));
-    }
-
-    @Operation(summary = "添加收藏")
-    @PostMapping("/favorites")
-    public ApiResponse<Favorite> addFavorite(@Validated @RequestBody FavoriteRequest request) {
-        return ApiResponse.ok(userCenterService.addFavorite(UserContext.getUserId(), request));
-    }
-
-    @Operation(summary = "取消收藏")
-    @DeleteMapping("/favorites")
-    public ApiResponse<Map<String, Object>> removeFavorite(
-            @RequestParam FavoriteTargetType targetType,
-            @RequestParam Long targetId) {
-        userCenterService.removeFavorite(UserContext.getUserId(), targetType, targetId);
-        Map<String, Object> data = new HashMap<>();
-        data.put("success", true);
-        return ApiResponse.ok(data);
-    }
-
-    @Operation(summary = "我的收藏列表")
-    @GetMapping("/favorites")
-    public ApiResponse<PageResult<Favorite>> listFavorites(
-            @RequestParam(required = false) FavoriteTargetType targetType,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.ok(userCenterService.listFavorites(UserContext.getUserId(), targetType, page, size));
     }
 
     @Operation(summary = "提交咨询")

@@ -103,7 +103,7 @@ export const caseApi = {
 
 export const consultationApi = {
   page: (params) => http.get('/admin/consultations', { params: pageParams(params) }),
-  create: (data) => http.post('/user/consultations', data),
+  create: (data) => http.post('/portal/consultations', data),
   update: (id, data) => http.put(`/admin/consultations/${id}`, data),
   remove: (id) => http.delete(`/admin/consultations/${id}`),
   myPage: (params) => http.get('/user/consultations', { params: pageParams(params) })
@@ -111,20 +111,9 @@ export const consultationApi = {
 
 export const feedbackApi = {
   page: (params) => http.get('/admin/feedbacks', { params: pageParams(params) }),
-  create: (data) => http.post('/user/feedbacks', data),
+  create: (data) => http.post('/portal/feedbacks', data),
   update: (id, data) => http.put(`/admin/feedbacks/${id}`, data),
   remove: (id) => http.delete(`/admin/feedbacks/${id}`)
-}
-
-export const favoriteApi = {
-  page: (params) => http.get('/admin/favorites', { params: pageParams(params) }),
-  myPage: (params) => http.get('/user/favorites', { params: pageParams(params) }),
-  add: (data) => http.post('/user/favorites', data, { skipErrorToast: true }),
-  adminRemove: (id) => http.delete(`/admin/favorites/${id}`),
-  remove: (row) =>
-    http.delete('/user/favorites', {
-      params: { targetType: row.targetType, targetId: row.targetId }
-    })
 }
 
 export const configApi = {
@@ -132,6 +121,12 @@ export const configApi = {
   create: (data) => http.post('/admin/configs', data),
   update: (id, data) => http.put(`/admin/configs/${id}`, data),
   remove: (id) => http.delete(`/admin/configs/${id}`)
+}
+
+export const contactSettingsApi = {
+  get: () => http.get('/admin/contact-settings'),
+  save: (data) => http.put('/admin/contact-settings', data),
+  portal: () => http.get('/portal/contact-settings')
 }
 
 export const logApi = {

@@ -38,7 +38,7 @@ npm run dev
 | 门户网站 | http://localhost:5173/portal/home |
 | 管理员登录 | http://localhost:5173/admin/login |
 | 管理后台 | http://localhost:5173/admin/dashboard |
-| 用户登录（收藏/咨询） | http://localhost:5173/login |
+| 用户登录（咨询） | http://localhost:5173/login |
 | **接口文档** | http://localhost:8080/swagger-ui.html |
 
 ### 默认账号

@@ -5,7 +5,6 @@ SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE operate_log;
 TRUNCATE TABLE sys_config;
 TRUNCATE TABLE feedback;
-TRUNCATE TABLE favorite;
 TRUNCATE TABLE consultation;
 TRUNCATE TABLE case_study;
 TRUNCATE TABLE honor;
@@ -145,17 +144,6 @@ INSERT INTO consultation (id, user_id, product_id, contact_name, phone, company,
 (6, 3, 1, '李运维', '13800000003', '城商行信息中心', 'li@demo.com', '售后咨询', '现有试点机柜漏液检测告警，请协助排查。', '已关闭', '现场已排查为传感器误报，固件已升级。', '2026-03-28 08:00:00', '2026-03-29 17:00:00'),
 (7, 4, 2, '王采购', '13800000004', '省运营商', 'wang@demo.com', '方案咨询', '省级枢纽节点节能改造咨询。', '已完成', '已完成现场勘察与节能测算。', '2026-04-05 13:00:00', '2026-04-08 11:00:00');
 
--- ==================== 收藏 ====================
-INSERT INTO favorite (id, user_id, target_type, target_id, created_at) VALUES
-(1, 2, 'PRODUCT', 1, '2026-04-02 10:00:00'),
-(2, 2, 'PRODUCT', 2, '2026-04-02 10:05:00'),
-(3, 2, 'NEWS', 1, '2026-04-03 09:00:00'),
-(4, 3, 'CASE', 2, '2026-04-12 11:00:00'),
-(5, 3, 'PRODUCT', 4, '2026-04-12 11:10:00'),
-(6, 4, 'PRODUCT', 3, '2026-04-15 15:00:00'),
-(7, 5, 'NEWS', 2, '2026-04-16 16:00:00'),
-(8, 5, 'CASE', 1, '2026-04-16 16:10:00');
-
 -- ==================== 反馈 ====================
 INSERT INTO feedback (id, user_id, contact_name, content, contact, status, reply, created_at) VALUES
 (1, 2, '张工程师', '希望门户增加方案对比功能。', '13800000002', '已回复', '感谢建议，已纳入产品迭代计划。', '2026-04-08 10:00:00'),
@@ -168,7 +156,20 @@ INSERT INTO sys_config (id, config_key, config_value, remark) VALUES
 (2, 'site.phone', '400-800-6600', '客服电话'),
 (3, 'site.email', 'contact@liquicool.com', '联系邮箱'),
 (4, 'site.address', '深圳市南山区科技园立冷大厦', '公司地址'),
-(5, 'site.slogan', '数据中心液冷解决方案专家', '宣传语');
+(5, 'site.slogan', '数据中心液冷解决方案专家', '宣传语'),
+(6, 'contact.talk_now', '即刻对话', '联系页-即刻对话标题'),
+(7, 'contact.presales.title', '售前人工客服', '联系页-售前标题'),
+(8, 'contact.presales.desc', '售前咨询、方案选型与商务对接，工作日人工客服在线响应。', '联系页-售前说明'),
+(9, 'contact.presales.phone', '400-888-0000', '联系页-售前电话'),
+(10, 'contact.presales.btn', '售前人工客服', '联系页-售前按钮'),
+(11, 'contact.aftersales.title', '售后技术支持', '联系页-售后标题'),
+(12, 'contact.aftersales.desc', '已购产品的技术支持、故障排查与运维协助，智能与人工协同服务。', '联系页-售后说明'),
+(13, 'contact.aftersales.phone', '400-888-0001', '联系页-售后电话'),
+(14, 'contact.aftersales.btn', '售后技术支持', '联系页-售后按钮'),
+(15, 'contact.support_heading', '获取产品和服务支持', '联系页-支持区标题'),
+(16, 'contact.email', 'contact@liquicool.com', '联系页-邮箱'),
+(17, 'contact.address', '北京市海淀区科技园区', '联系页-地址'),
+(18, 'contact.company_phone', '400-888-0000', '联系页-公司电话');
 
 -- ==================== 日志 ====================
 INSERT INTO operate_log (id, user_id, username, action, module, detail, ip, created_at) VALUES
@@ -176,7 +177,7 @@ INSERT INTO operate_log (id, user_id, username, action, module, detail, ip, crea
 (2, 1, 'admin', '更新产品', '产品', '编辑产品 LC-8000', '127.0.0.1', '2026-04-22 09:20:00'),
 (3, 1, 'admin', '处理咨询', '咨询', '将工单#2 设为处理中', '127.0.0.1', '2026-04-22 10:00:00'),
 (4, 2, 'user1', '提交咨询', '咨询', '提交 CDU 询价', '127.0.0.1', '2026-04-10 11:20:00'),
-(5, 2, 'user1', '收藏产品', '收藏', '收藏液冷服务器', '127.0.0.1', '2026-04-02 10:00:00'),
+(5, 2, 'user1', '提交反馈', '反馈', '提交门户功能建议', '127.0.0.1', '2026-04-08 10:00:00'),
 (6, 1, 'admin', '上传文件', '文件', '上传轮播图 carousel-3.jpg', '127.0.0.1', '2026-04-21 16:00:00');
 
 

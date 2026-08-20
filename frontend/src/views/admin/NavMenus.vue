@@ -1,20 +1,20 @@
 <template>
   <div class="page-card">
     <h2 class="page-title">前台菜单</h2>
-    <p class="hint">对应官网顶部：产品与服务中心 / 解决方案 / 新闻 / 关于。在这里增删改一级、二级、三级栏目。</p>
-
     <div class="toolbar">
       <el-input v-model="keyword" clearable placeholder="搜索菜单名称" style="width: 220px" @keyup.enter="loadData" />
+      <el-button @click="toggleExpandAll">{{ expandedAll ? '一键折叠' : '一键展开' }}</el-button>
       <el-button @click="loadData">刷新</el-button>
       <el-button type="primary" @click="openDialog()">新增菜单</el-button>
     </div>
 
     <el-table
+      ref="tableRef"
       v-loading="loading"
       :data="treeData"
       row-key="id"
       border
-      default-expand-all
+      :default-expand-all="false"
       :tree-props="{ children: 'children' }"
     >
       <el-table-column label="菜单名称" min-width="240">
@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { navMenuApi } from '@/api'
 
@@ -121,6 +121,30 @@ const keyword = ref('')
 const treeData = ref([])
 const flatList = ref([])
 const dialogVisible = ref(false)
+const tableRef = ref(null)
+const expandedAll = ref(true)
+
+function walkRows(rows, fn) {
+  ;(rows || []).forEach((row) => {
+    fn(row)
+    if (row.children?.length) walkRows(row.children, fn)
+  })
+}
+
+function setExpandAll(expand) {
+  expandedAll.value = expand
+  nextTick(() => {
+    walkRows(treeData.value, (row) => {
+      if (row.children?.length) {
+        tableRef.value?.toggleRowExpansion(row, expand)
+      }
+    })
+  })
+}
+
+function toggleExpandAll() {
+  setExpandAll(!expandedAll.value)
+}
 
 const linkPresets = [
   { label: '产品列表', value: '/portal/products' },
@@ -221,6 +245,7 @@ async function loadData() {
     const all = res.data || res || []
     flatList.value = Array.isArray(all) ? all : []
     treeData.value = buildTree(flatList.value)
+    setExpandAll(true)
   } catch {
     flatList.value = []
     treeData.value = []

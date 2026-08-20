@@ -16,16 +16,12 @@ http.interceptors.request.use((config) => {
   return config
 })
 
-function shouldSkipErrorToast(message) {
-  return message === '已收藏，请勿重复操作'
-}
-
 http.interceptors.response.use(
   (response) => {
     const res = response.data
     if (res && typeof res.code !== 'undefined' && res.code !== 200) {
       const message = res.message || '请求失败'
-      if (!shouldSkipErrorToast(message) && !response.config?.skipErrorToast) {
+      if (!response.config?.skipErrorToast) {
         ElMessage.error(message)
       }
       if (res.code === 401) {

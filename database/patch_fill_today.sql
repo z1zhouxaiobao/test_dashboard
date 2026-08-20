@@ -55,16 +55,6 @@ UPDATE feedback SET contact_name = '王采购', created_at = '2026-08-19 09:10:0
 UPDATE feedback SET contact_name = '李运维', created_at = '2026-08-19 14:20:00' WHERE id = 2;
 UPDATE feedback SET contact_name = '张工程师', created_at = '2026-08-19 10:00:00' WHERE id = 1;
 
--- 收藏
-UPDATE favorite SET created_at = '2026-08-19 16:10:00' WHERE id = 8;
-UPDATE favorite SET created_at = '2026-08-19 16:00:00' WHERE id = 7;
-UPDATE favorite SET created_at = '2026-08-19 15:00:00' WHERE id = 6;
-UPDATE favorite SET created_at = '2026-08-19 11:10:00' WHERE id = 5;
-UPDATE favorite SET created_at = '2026-08-19 11:00:00' WHERE id = 4;
-UPDATE favorite SET created_at = '2026-08-19 09:00:00' WHERE id = 3;
-UPDATE favorite SET created_at = '2026-08-19 10:05:00' WHERE id = 2;
-UPDATE favorite SET created_at = '2026-08-19 10:00:00' WHERE id = 1;
-
 -- 配置
 UPDATE sys_config SET remark = '网站名称', updated_at = '2026-08-19 09:00:00' WHERE id = 1;
 UPDATE sys_config SET remark = '客服电话', updated_at = '2026-08-19 09:05:00' WHERE id = 2;
@@ -78,7 +68,7 @@ UPDATE operate_log SET module = '解决方案', created_at = '2026-08-19 09:20:0
 UPDATE operate_log SET module = '系统管理', created_at = '2026-08-19 09:00:00' WHERE id = 1;
 UPDATE operate_log SET module = '文件上传', created_at = '2026-08-19 16:00:00' WHERE id = 6;
 UPDATE operate_log SET module = '咨询工单', created_at = '2026-08-19 11:20:00' WHERE id = 4;
-UPDATE operate_log SET module = '收藏记录', created_at = '2026-08-19 10:00:00' WHERE id = 5;
+UPDATE operate_log SET module = '用户留言', created_at = '2026-08-19 10:00:00' WHERE id = 5;
 
 -- 其他业务时间
 UPDATE product SET created_at = '2026-08-19 10:00:00' WHERE id = 1;

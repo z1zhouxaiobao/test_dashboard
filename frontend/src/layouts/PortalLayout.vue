@@ -4,24 +4,6 @@
       <div class="utility-inner">
         <LangSwitcher variant="portal" />
         <router-link to="/portal/contact" class="util-link" @click="closeAll">{{ t('navContact') }}</router-link>
-        <el-dropdown v-if="auth.isLoggedIn" trigger="click" @command="onUserCommand">
-          <button class="util-user" type="button">
-            <el-icon><User /></el-icon>
-            <span>{{ auth.displayName }}</span>
-            <el-icon><ArrowDown /></el-icon>
-          </button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="profile">{{ t('profile') }}</el-dropdown-item>
-              <el-dropdown-item v-if="auth.isAdmin" command="admin">{{ t('enterAdmin') }}</el-dropdown-item>
-              <el-dropdown-item divided command="logout">{{ t('logout') }}</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-        <router-link v-else to="/login" class="util-link util-login">
-          <el-icon><User /></el-icon>
-          <span>{{ t('login') }}</span>
-        </router-link>
       </div>
     </div>
 
@@ -163,16 +145,13 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowDown, User } from '@element-plus/icons-vue'
 import { useI18n } from '@/composables/useI18n'
-import { useAuthStore } from '@/stores/auth'
 import { navMenuApi } from '@/api'
 import LangSwitcher from '@/components/LangSwitcher.vue'
 
 const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const auth = useAuthStore()
 
 const topMenus = ref([])
 const openModule = ref('')
@@ -242,15 +221,6 @@ function toggleMobile(item) {
     return
   }
   mobileExpand.value = mobileExpand.value === item.moduleCode ? '' : item.moduleCode
-}
-
-function onUserCommand(cmd) {
-  if (cmd === 'profile') router.push('/portal/profile')
-  else if (cmd === 'admin') router.push('/admin/dashboard')
-  else if (cmd === 'logout') {
-    auth.logout()
-    router.push('/portal/home')
-  }
 }
 
 async function loadNav() {
@@ -365,8 +335,7 @@ watch(() => route.fullPath, closeAll)
   justify-content: flex-end;
   gap: 20px;
 }
-.util-link,
-.util-user {
+.util-link {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -379,8 +348,7 @@ watch(() => route.fullPath, closeAll)
   padding: 0;
   text-decoration: none;
 }
-.util-link:hover,
-.util-user:hover {
+.util-link:hover {
   color: #0a4fb8;
 }
 .portal-header {

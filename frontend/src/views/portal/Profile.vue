@@ -32,31 +32,6 @@
         </el-card>
       </el-tab-pane>
 
-      <el-tab-pane label="我的收藏" name="favorites">
-        <div class="table-scroll">
-          <el-table :data="favorites" border align="center" header-align="center" style="min-width: 520px">
-            <el-table-column prop="targetType" label="类型" align="center" header-align="center" />
-            <el-table-column prop="targetName" label="名称" align="center" header-align="center" />
-            <el-table-column label="收藏时间" align="center" header-align="center" min-width="140">
-              <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
-            </el-table-column>
-            <el-table-column label="操作" align="center" header-align="center" width="110">
-              <template #default="{ row }">
-                <el-button type="primary" link @click="removeFavorite(row)">取消收藏</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-        <div class="pagination-wrap">
-          <el-pagination
-            v-model:current-page="favPage"
-            :total="favTotal"
-            :layout="pagerLayout"
-            @current-change="loadFavorites"
-          />
-        </div>
-      </el-tab-pane>
-
       <el-tab-pane label="咨询订单" name="consultations">
         <div class="table-scroll">
           <el-table :data="consultations" border align="center" header-align="center" style="min-width: 520px">
@@ -83,9 +58,9 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
-import { favoriteApi, consultationApi } from '@/api'
+import { consultationApi } from '@/api'
 import { formatDateTime } from '@/utils/datetime'
 import ImageUpload from '@/components/ImageUpload.vue'
 import { useI18n } from '@/composables/useI18n'
@@ -106,9 +81,6 @@ const profileForm = reactive({
   avatar: ''
 })
 
-const favorites = ref([])
-const favPage = ref(1)
-const favTotal = ref(0)
 const consultations = ref([])
 const consultPage = ref(1)
 const consultTotal = ref(0)
@@ -137,16 +109,6 @@ async function saveProfile() {
   }
 }
 
-async function loadFavorites() {
-  try {
-    const res = await favoriteApi.myPage({ page: favPage.value, size: 10 })
-    favorites.value = res.data?.records || res.records || []
-    favTotal.value = res.data?.total || res.total || 0
-  } catch {
-    favorites.value = []
-  }
-}
-
 async function loadConsultations() {
   try {
     const res = await consultationApi.myPage({ page: consultPage.value, size: 10 })
@@ -157,15 +119,7 @@ async function loadConsultations() {
   }
 }
 
-async function removeFavorite(row) {
-  await ElMessageBox.confirm('确定取消收藏？', '提示', { type: 'warning' })
-  await favoriteApi.remove(row)
-  ElMessage.success('已取消收藏')
-  loadFavorites()
-}
-
 watch(activeTab, (tab) => {
-  if (tab === 'favorites') loadFavorites()
   if (tab === 'consultations') loadConsultations()
 })
 

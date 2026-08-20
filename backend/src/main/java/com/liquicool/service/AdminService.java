@@ -42,8 +42,6 @@ public class AdminService {
     @Autowired
     private ConsultationRepository consultationRepository;
     @Autowired
-    private FavoriteRepository favoriteRepository;
-    @Autowired
     private FeedbackRepository feedbackRepository;
     @Autowired
     private SysConfigRepository sysConfigRepository;
@@ -188,6 +186,21 @@ public class AdminService {
 
     @Transactional
     public News saveNews(News news) {
+        if (news.getId() != null) {
+            News existing = newsRepository.findById(news.getId())
+                    .orElseThrow(() -> new BusinessException("新闻不存在"));
+            // 阅读量只由门户详情累加，后台保存时不覆盖
+            news.setViewCount(existing.getViewCount());
+            if (news.getCreatedAt() == null) {
+                news.setCreatedAt(existing.getCreatedAt());
+            }
+            if (news.getPublishTime() == null) {
+                news.setPublishTime(existing.getPublishTime());
+            }
+            if (news.getStatus() == null) {
+                news.setStatus(existing.getStatus());
+            }
+        }
         return newsRepository.save(news);
     }
 
@@ -328,41 +341,6 @@ public class AdminService {
     @Transactional
     public void deleteConsultation(Long id) {
         consultationRepository.deleteById(id);
-    }
-
-    public PageResult<Favorite> listFavorites(String keyword, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Favorite> result = favoriteRepository.findAll(pageRequest);
-        result.getContent().forEach(this::fillFavorite);
-        return new PageResult<>(result.getTotalElements(), page, size, result.getContent());
-    }
-
-    private void fillFavorite(Favorite fav) {
-        if (fav.getUserId() != null) {
-            sysUserRepository.findById(fav.getUserId()).ifPresent(user ->
-                    fav.setUsername(user.getNickname() != null ? user.getNickname() : user.getUsername()));
-        }
-        if (fav.getTargetType() == null || fav.getTargetId() == null) {
-            return;
-        }
-        switch (fav.getTargetType()) {
-            case PRODUCT:
-                productRepository.findById(fav.getTargetId()).ifPresent(p -> fav.setTargetName(p.getName()));
-                break;
-            case NEWS:
-                newsRepository.findById(fav.getTargetId()).ifPresent(n -> fav.setTargetName(n.getTitle()));
-                break;
-            case CASE:
-                caseStudyRepository.findById(fav.getTargetId()).ifPresent(c -> fav.setTargetName(c.getTitle()));
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Transactional
-    public void deleteFavorite(Long id) {
-        favoriteRepository.deleteById(id);
     }
 
     public PageResult<Feedback> listFeedbacks(String keyword, int page, int size) {

@@ -4,7 +4,7 @@
     <div class="login-card">
       <div class="brand">
         <h1>LIQUICOOL</h1>
-        <p>用户登录 · 收藏与咨询请先登录</p>
+        <p>用户登录</p>
       </div>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="0" @submit.prevent="handleLogin">
         <el-form-item prop="username">

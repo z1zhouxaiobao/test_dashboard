@@ -34,6 +34,15 @@ public class News {
 
     private LocalDateTime createdAt;
 
+    @Transient
+    public Boolean getPublished() {
+        return this.status != null && this.status == 1;
+    }
+
+    public void setPublished(Boolean published) {
+        this.status = Boolean.TRUE.equals(published) ? 1 : 0;
+    }
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();

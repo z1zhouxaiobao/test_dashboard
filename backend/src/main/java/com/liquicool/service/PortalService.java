@@ -1,8 +1,11 @@
 package com.liquicool.service;
 
 import com.liquicool.common.PageResult;
+import com.liquicool.dto.ConsultationRequest;
+import com.liquicool.dto.FeedbackRequest;
 import com.liquicool.dto.PortalOverviewResponse;
 import com.liquicool.entity.*;
+import com.liquicool.enums.ConsultationStatus;
 import com.liquicool.exception.BusinessException;
 import com.liquicool.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,12 @@ public class PortalService {
 
     @Autowired
     private CaseStudyRepository caseStudyRepository;
+
+    @Autowired
+    private FeedbackRepository feedbackRepository;
+
+    @Autowired
+    private ConsultationRepository consultationRepository;
 
     public PortalOverviewResponse getOverview() {
         PortalOverviewResponse response = new PortalOverviewResponse();
@@ -164,5 +173,31 @@ public class PortalService {
             throw new BusinessException("案例不存在或已下架");
         }
         return caseStudy;
+    }
+
+    @Transactional
+    public Feedback submitFeedback(FeedbackRequest request) {
+        Feedback feedback = new Feedback();
+        feedback.setUserId(null);
+        feedback.setContactName(request.getContactName());
+        feedback.setContent(request.getContent());
+        feedback.setContact(request.getContact());
+        feedback.setStatus("待处理");
+        return feedbackRepository.save(feedback);
+    }
+
+    @Transactional
+    public Consultation submitConsultation(ConsultationRequest request) {
+        Consultation consultation = new Consultation();
+        consultation.setUserId(null);
+        consultation.setProductId(request.getProductId());
+        consultation.setContactName(request.getContactName());
+        consultation.setPhone(request.getPhone());
+        consultation.setCompany(request.getCompany());
+        consultation.setEmail(request.getEmail());
+        consultation.setNeedType(request.getNeedType());
+        consultation.setContent(request.getContent());
+        consultation.setStatus(ConsultationStatus.待处理);
+        return consultationRepository.save(consultation);
     }
 }

@@ -17,7 +17,7 @@
       <el-table-column prop="title" :label="t('title')" align="center" header-align="center" show-overflow-tooltip />
       <el-table-column prop="viewCount" :label="t('views')" width="90" align="center" header-align="center" />
       <el-table-column :label="t('published')" width="80" align="center" header-align="center">
-        <template #default="{ row }">{{ row.published ? t('yes') : t('no') }}</template>
+        <template #default="{ row }">{{ (row.published === true || row.status === 1) ? t('yes') : t('no') }}</template>
       </el-table-column>
       <el-table-column :label="t('publishedAt')" align="center" header-align="center">
         <template #default="{ row }">{{ formatDateTime(row.publishTime || row.createdAt) }}</template>
@@ -89,15 +89,33 @@ const { selected, deleting, onSelectionChange, handleDelete, handleBatchDelete }
 })
 function openDialog(row) {
   Object.assign(form, { id: null, title: '', summary: '', coverUrl: '', content: '', published: true })
-  if (row) Object.assign(form, row)
+  if (row) {
+    Object.assign(form, {
+      id: row.id,
+      title: row.title || '',
+      summary: row.summary || '',
+      coverUrl: row.coverUrl || '',
+      content: row.content || '',
+      published: row.published === true || row.status === 1
+    })
+  }
   dialogVisible.value = true
 }
 async function handleSave() {
   saving.value = true
   try {
-    if (form.id) await newsApi.update(form.id, form)
-    else await newsApi.create(form)
-    ElMessage.success(t('saveSuccess'))
+    const payload = {
+      id: form.id,
+      title: form.title,
+      summary: form.summary,
+      coverUrl: form.coverUrl,
+      content: form.content,
+      published: form.published,
+      status: form.published ? 1 : 0
+    }
+    if (form.id) await newsApi.update(form.id, payload)
+    else await newsApi.create(payload)
+    ElMessage.success(t('saveSuccess') || '保存成功')
     dialogVisible.value = false
     loadData()
   } catch { /* handled */ } finally { saving.value = false }
