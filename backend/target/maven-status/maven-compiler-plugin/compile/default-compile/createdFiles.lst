@@ -8,6 +8,7 @@ com\liquicool\entity\Favorite.class
 com\liquicool\service\AdminService.class
 com\liquicool\repository\FavoriteRepository.class
 com\liquicool\config\OpenApiConfig.class
+com\liquicool\entity\NavMenu.class
 com\liquicool\repository\SysUserRepository.class
 com\liquicool\controller\FileUploadController.class
 com\liquicool\controller\PortalController.class
@@ -44,16 +45,18 @@ com\liquicool\entity\SysUser.class
 com\liquicool\service\UserCenterService.class
 com\liquicool\service\PortalService.class
 com\liquicool\entity\SysConfig.class
-com\liquicool\enums\ProductCategory.class
+com\liquicool\service\NavMenuService.class
 com\liquicool\interceptor\AuthInterceptor.class
 com\liquicool\LiquicoolApplication.class
 com\liquicool\dto\FeedbackRequest.class
+com\liquicool\repository\NavMenuRepository.class
 com\liquicool\dto\PortalOverviewResponse.class
 com\liquicool\context\UserContext.class
 com\liquicool\entity\Consultation.class
 com\liquicool\dto\ProfileUpdateRequest.class
 com\liquicool\enums\FavoriteTargetType.class
 com\liquicool\entity\Feedback.class
+com\liquicool\dto\NavMenuTreeNode.class
 com\liquicool\enums\UserRole.class
 com\liquicool\repository\FeedbackRepository.class
 com\liquicool\entity\Technology.class
