@@ -12,22 +12,8 @@
     <div class="shell">
       <section class="hero">
         <div class="logo-row">
-          <div class="mark" aria-hidden="true">
-            <svg viewBox="0 0 48 48" width="44" height="44">
-              <defs>
-                <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#5BA8FF" />
-                  <stop offset="100%" stop-color="#DC3545" />
-                </linearGradient>
-              </defs>
-              <circle cx="24" cy="24" r="22" fill="none" stroke="url(#lg)" stroke-width="3" />
-              <path d="M14 28c4-12 16-16 22-8 2 3 2 7-1 10-4 4-12 5-18 2" fill="none" stroke="#7EC4FF" stroke-width="3" stroke-linecap="round" />
-            </svg>
-          </div>
-          <div>
-            <div class="logo-en">LIQUICOOL</div>
-            <div class="logo-cn">{{ t('adminHub') }}</div>
-          </div>
+          <img src="/logo.svg" alt="LIQUICOOL" class="login-logo" />
+          <div class="logo-cn">{{ t('adminHub') }}</div>
         </div>
         <h2>{{ t('adminHeroTitle1') }}<br />{{ t('adminHeroTitle2') }}</h2>
         <p>{{ t('adminHeroDesc') }}</p>
@@ -212,18 +198,20 @@ function quickLogin(username, password) {
 }
 .logo-row {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
-.logo-en {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 2px;
+.login-logo {
+  display: block;
+  height: 40px;
+  width: auto;
+  max-width: 240px;
+  filter: brightness(0) invert(1);
 }
 .logo-cn {
   font-size: 12px;
   opacity: 0.78;
-  margin-top: 2px;
 }
 .hero h2 {
   margin: 36px 0 16px;

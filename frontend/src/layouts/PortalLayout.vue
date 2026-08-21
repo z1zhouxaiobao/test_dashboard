@@ -10,17 +10,7 @@
     <header class="portal-header" @mouseleave="onHeaderLeave">
       <div class="header-inner">
         <router-link to="/portal/home" class="brand" @click="closeAll">
-          <div class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 40 40" width="36" height="36">
-              <rect x="2" y="2" width="36" height="36" fill="#101820" />
-              <path d="M10 26V14h6.2c3.4 0 5.4 1.7 5.4 4.4 0 2.8-2 4.5-5.4 4.5H14.6V26H10zm4.6-6.4h1.4c1.4 0 2.2-.7 2.2-1.7s-.8-1.6-2.2-1.6h-1.4v3.3z" fill="#fff" />
-              <rect x="24" y="14" width="6" height="12" fill="#0a4fb8" />
-            </svg>
-          </div>
-          <div class="brand-text">
-            <div class="brand-en">LIQUICOOL</div>
-            <div class="brand-cn">{{ t('brandCn') }}</div>
-          </div>
+          <img src="/logo.svg" alt="LIQUICOOL" class="brand-logo" />
         </router-link>
 
         <nav class="nav-menu desktop-nav">
@@ -127,7 +117,7 @@
     <footer class="portal-footer">
       <div class="footer-inner">
         <div class="footer-brand">
-          <div class="brand-en">LIQUICOOL</div>
+          <img src="/logo.svg" alt="LIQUICOOL" class="footer-logo" />
           <p>{{ t('footerSlogan') }}</p>
         </div>
         <div class="footer-links">
@@ -381,19 +371,13 @@ watch(() => route.fullPath, closeAll)
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
   flex-shrink: 0;
 }
-.brand-en {
-  color: #101820;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-.brand-cn {
-  color: #5c6570;
-  font-size: 11px;
-  margin-top: 3px;
+.brand-logo {
+  display: block;
+  height: 36px;
+  width: auto;
+  max-width: 200px;
 }
 .desktop-nav {
   flex: 1;
@@ -493,9 +477,13 @@ watch(() => route.fullPath, closeAll)
   grid-template-columns: 1.2fr 1fr;
   gap: 20px 40px;
 }
-.footer-brand .brand-en {
-  color: #fff;
-  margin-bottom: 8px;
+.footer-brand .footer-logo {
+  display: block;
+  height: 32px;
+  width: auto;
+  max-width: 180px;
+  margin-bottom: 10px;
+  filter: brightness(0) invert(1);
 }
 .footer-brand p {
   margin: 0;
@@ -591,8 +579,9 @@ watch(() => route.fullPath, closeAll)
   }
 }
 @media (max-width: 480px) {
-  .brand-cn {
-    display: none;
+  .brand-logo {
+    height: 28px;
+    max-width: 150px;
   }
   .utility-inner {
     gap: 12px;

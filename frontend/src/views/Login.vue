@@ -3,7 +3,7 @@
     <div class="login-overlay"></div>
     <div class="login-card">
       <div class="brand">
-        <h1>LIQUICOOL</h1>
+        <img src="/logo.svg" alt="LIQUICOOL" class="login-logo" />
         <p>用户登录</p>
       </div>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="0" @submit.prevent="handleLogin">
@@ -120,14 +120,15 @@ function quickLogin(username, password) {
   text-align: center;
   margin-bottom: 32px;
 }
-.brand h1 {
-  margin: 0;
-  font-size: 28px;
-  color: #0B5ED7;
-  letter-spacing: 2px;
+.login-logo {
+  display: block;
+  height: 40px;
+  width: auto;
+  max-width: 220px;
+  margin: 0 auto;
 }
 .brand p {
-  margin: 8px 0 0;
+  margin: 12px 0 0;
   color: #666;
   font-size: 14px;
 }
@@ -154,8 +155,8 @@ function quickLogin(username, password) {
   .login-card {
     padding: 28px 18px;
   }
-  .brand h1 {
-    font-size: 24px;
+  .login-logo {
+    height: 32px;
   }
 }
 </style>

@@ -3,6 +3,7 @@
     <div class="register-overlay"></div>
     <div class="register-card">
       <div class="brand">
+        <img src="/logo.svg" alt="LIQUICOOL" class="login-logo" />
         <h1>注册账号</h1>
         <p>加入立冷科技 LIQUICOOL</p>
       </div>
@@ -107,6 +108,13 @@ async function handleRegister() {
 .brand {
   text-align: center;
   margin-bottom: 24px;
+}
+.login-logo {
+  display: block;
+  height: 36px;
+  width: auto;
+  max-width: 200px;
+  margin: 0 auto 12px;
 }
 .brand h1 {
   margin: 0;

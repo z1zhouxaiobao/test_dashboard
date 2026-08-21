@@ -2,8 +2,12 @@
   <el-container class="admin-layout">
     <el-aside :width="collapsed ? '64px' : '220px'" class="admin-aside">
       <div class="aside-logo" @click="$router.push('/admin/dashboard')">
-        <span v-if="!collapsed" class="logo-text">LIQUICOOL</span>
-        <span v-else class="logo-mini">L</span>
+        <img
+          src="/logo.svg"
+          alt="LIQUICOOL"
+          class="aside-logo-img"
+          :class="{ 'is-mini': collapsed }"
+        />
       </div>
       <el-scrollbar class="aside-scroll">
         <el-menu
@@ -302,16 +306,22 @@ watch(
   cursor: pointer;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
+  padding: 0 12px;
+  overflow: hidden;
 }
-.logo-text {
-  color: #fff;
-  font-weight: 800;
-  letter-spacing: 1px;
+.aside-logo-img {
+  display: block;
+  height: 28px;
+  width: auto;
+  max-width: 168px;
+  filter: brightness(0) invert(1);
 }
-.logo-mini {
-  color: #0B5ED7;
-  font-weight: 800;
-  font-size: 20px;
+.aside-logo-img.is-mini {
+  height: 22px;
+  width: 36px;
+  max-width: none;
+  object-fit: cover;
+  object-position: left center;
 }
 .aside-scroll {
   flex: 1;
