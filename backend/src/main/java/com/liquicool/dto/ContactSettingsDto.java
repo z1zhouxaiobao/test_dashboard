@@ -49,6 +49,17 @@ public class ContactSettingsDto {
     /** 品宣账号二维码（公众号、抖音等） */
     private List<ContactSocialAccountItem> socialAccounts = new ArrayList<>();
 
+    /** 页脚版权文案，空则用前台默认文案 */
+    private String copyrightText;
+    /** ICP 备案号，如 粤ICP备xxxxxxxx号 */
+    private String icpNumber;
+    /** ICP 备案跳转链接，默认工信部查询页 */
+    private String icpUrl;
+    /** 公安备案号，如 粤公网安备xxxxxxxx号 */
+    private String policeBeian;
+    /** 公安备案跳转链接 */
+    private String policeBeianUrl;
+
     /**
      * 兼容旧字段：取第一条地址简体
      */

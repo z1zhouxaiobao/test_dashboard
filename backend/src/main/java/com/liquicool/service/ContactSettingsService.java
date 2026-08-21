@@ -73,6 +73,14 @@ public class ContactSettingsService {
                         + "]",
                 "品宣账号二维码列表JSON"
         });
+        DEFAULTS.put("site.copyright", new String[]{"版权所有 © 2026 立冷科技有限公司 LIQUICOOL", "页脚版权文案"});
+        DEFAULTS.put("site.icp_number", new String[]{"粤ICP备2025499996号", "ICP备案号"});
+        DEFAULTS.put("site.icp_url", new String[]{"https://beian.miit.gov.cn/", "ICP备案查询链接"});
+        DEFAULTS.put("site.police_beian", new String[]{"粤公网安备44030002009032号", "公安备案号"});
+        DEFAULTS.put("site.police_beian_url", new String[]{
+                "https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44030002009032",
+                "公安备案查询链接"
+        });
     }
 
     @Autowired
@@ -116,6 +124,11 @@ public class ContactSettingsService {
         dto.setCompanyPhone(get("contact.company_phone"));
         dto.setAddresses(loadAddresses());
         dto.setSocialAccounts(loadSocialAccounts());
+        dto.setCopyrightText(get("site.copyright"));
+        dto.setIcpNumber(get("site.icp_number"));
+        dto.setIcpUrl(get("site.icp_url"));
+        dto.setPoliceBeian(get("site.police_beian"));
+        dto.setPoliceBeianUrl(get("site.police_beian_url"));
         return dto;
     }
 
@@ -152,6 +165,11 @@ public class ContactSettingsService {
         put("contact.support_heading.en", dto.getSupportHeadingEn());
         put("contact.email", dto.getEmail());
         put("contact.company_phone", dto.getCompanyPhone());
+        put("site.copyright", dto.getCopyrightText());
+        put("site.icp_number", dto.getIcpNumber());
+        put("site.icp_url", dto.getIcpUrl());
+        put("site.police_beian", dto.getPoliceBeian());
+        put("site.police_beian_url", dto.getPoliceBeianUrl());
 
         List<ContactAddressItem> list = normalizeAddresses(dto.getAddresses());
         saveAddresses(list);

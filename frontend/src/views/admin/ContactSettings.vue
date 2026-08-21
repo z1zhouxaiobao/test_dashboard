@@ -200,6 +200,35 @@
         </el-button>
       </section>
 
+      <section class="cs-panel">
+        <div class="cs-panel-head">
+          <span class="cs-panel-index">07</span>
+          <div>
+            <h3 class="cs-panel-title">{{ t('cfgBeian') }}</h3>
+            <p class="cs-panel-sub">{{ t('cfgBeianHint') }}</p>
+          </div>
+        </div>
+        <el-form-item :label="t('cfgCopyright')">
+          <el-input v-model="form.copyrightText" :placeholder="t('cfgCopyrightPh')" />
+        </el-form-item>
+        <div class="cs-grid">
+          <el-form-item :label="t('cfgIcpNumber')">
+            <el-input v-model="form.icpNumber" :placeholder="t('cfgIcpNumberPh')" />
+          </el-form-item>
+          <el-form-item :label="t('cfgIcpUrl')">
+            <el-input v-model="form.icpUrl" :placeholder="t('cfgIcpUrlPh')" />
+          </el-form-item>
+        </div>
+        <div class="cs-grid">
+          <el-form-item :label="t('cfgPoliceBeian')">
+            <el-input v-model="form.policeBeian" :placeholder="t('cfgPoliceBeianPh')" />
+          </el-form-item>
+          <el-form-item :label="t('cfgPoliceBeianUrl')">
+            <el-input v-model="form.policeBeianUrl" :placeholder="t('cfgPoliceBeianUrlPh')" />
+          </el-form-item>
+        </div>
+      </section>
+
       <section class="cs-panel cs-panel-i18n">
         <I18nCollapse
           :model="form"
@@ -258,7 +287,12 @@ const form = reactive({
   email: '',
   companyPhone: '',
   addresses: [emptyAddress()],
-  socialAccounts: []
+  socialAccounts: [],
+  copyrightText: '',
+  icpNumber: '',
+  icpUrl: '',
+  policeBeian: '',
+  policeBeianUrl: ''
 })
 
 function addAddress() {

@@ -181,8 +181,22 @@
         <div class="footer-brand">
           <img :src="siteLogo" alt="LIQUICOOL" class="footer-logo" />
           <p>{{ t('footerSlogan') }}</p>
+        </div>
+
+        <div class="footer-col">
+          <h3 class="footer-col-title">{{ t('footerNav') }}</h3>
+          <div class="footer-links">
+            <router-link to="/portal/home">{{ t('navHome') }}</router-link>
+            <router-link to="/portal/products">{{ t('navProducts') }}</router-link>
+            <router-link to="/portal/solutions">{{ t('navSolutions') }}</router-link>
+            <router-link to="/portal/news">{{ t('navNews') }}</router-link>
+            <router-link to="/portal/about">{{ t('navAbout') }}</router-link>
+            <router-link to="/portal/contact">{{ t('navContact') }}</router-link>
+          </div>
+        </div>
+
+        <div class="footer-aside">
           <div v-if="socialAccounts.length" class="footer-social">
-            <h3 class="footer-social-title">{{ t('followUs') }}</h3>
             <div class="footer-social-grid">
               <div v-for="(item, idx) in socialAccounts" :key="idx" class="footer-social-item">
                 <el-image
@@ -198,39 +212,58 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="footer-col">
-          <h3 class="footer-col-title">{{ t('footerNav') }}</h3>
-          <div class="footer-links">
-            <router-link to="/portal/products">{{ t('navProducts') }}</router-link>
-            <router-link to="/portal/solutions">{{ t('navSolutions') }}</router-link>
-            <router-link to="/portal/news">{{ t('navNews') }}</router-link>
-            <router-link to="/portal/about">{{ t('navAbout') }}</router-link>
-            <router-link to="/portal/contact">{{ t('navContact') }}</router-link>
-          </div>
-        </div>
-
-        <div class="footer-col">
-          <h3 class="footer-col-title">{{ t('contactMethods') }}</h3>
           <div class="footer-contact">
-            <p v-if="headerPhone">
-              <span>{{ t('headerHotline') }}</span>
+            <img :src="siteLogo" alt="LIQUICOOL" class="footer-aside-logo" />
+            <p v-if="headerPhone" class="footer-contact-line">
+              <span class="footer-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8z"/></svg>
+              </span>
               <a :href="`tel:${headerPhoneTel}`">{{ headerPhone }}</a>
             </p>
-            <p v-if="headerEmail">
-              <span>{{ t('floatEmail') }}</span>
+            <p v-if="headerEmail" class="footer-contact-line">
+              <span class="footer-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5Z"/></svg>
+              </span>
               <a :href="`mailto:${headerEmail}`">{{ headerEmail }}</a>
             </p>
-            <p v-for="(addr, idx) in footerAddresses" :key="idx">
-              <span>{{ t('footerAddress') }}</span>
+            <p v-for="(addr, idx) in footerAddresses" :key="idx" class="footer-contact-line addr">
+              <span class="footer-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.3 7 13 7 13s7-7.7 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/></svg>
+              </span>
               <em>{{ addr }}</em>
             </p>
             <router-link class="footer-contact-btn" to="/portal/contact">{{ t('navContact') }}</router-link>
           </div>
         </div>
+      </div>
 
-        <p class="copyright">{{ t('copyright') }}</p>
+      <div class="footer-bottom">
+        <div class="footer-bottom-inner">
+          <span>{{ footerCopyright }}</span>
+          <a
+            v-if="footerIcp"
+            class="footer-beian-link"
+            :href="footerIcpUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >{{ footerIcp }}</a>
+          <a
+            v-if="footerPolice"
+            class="footer-beian-link footer-police"
+            :href="footerPoliceUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="footer-police-icon" aria-hidden="true">
+              <svg viewBox="0 0 36 40" width="14" height="16">
+                <path fill="#fff" d="M18 0L2 6v10c0 10.5 7.2 20.2 16 24 8.8-3.8 16-13.5 16-24V6L18 0z"/>
+                <path fill="#1a5fb4" d="M18 3.2L5 8v8.2c0 8.8 5.9 16.8 13 20.2 7.1-3.4 13-11.4 13-20.2V8L18 3.2z"/>
+                <path fill="#fff" d="M18 11.2l1.6 4.8H25l-4.1 3 1.6 4.8L18 20.8l-4.5 3 1.6-4.8-4.1-3h5.4z"/>
+              </svg>
+            </span>
+            <span>{{ footerPolice }}</span>
+          </a>
+        </div>
       </div>
     </footer>
   </div>
@@ -303,6 +336,24 @@ const footerAddresses = computed(() => {
   if (mapped.length) return mapped
   const legacy = localizedText(contactSettings.value || {}, 'address', locale.value)
   return legacy ? [legacy] : []
+})
+const footerCopyright = computed(() => {
+  const text = String(contactSettings.value?.copyrightText || '').trim()
+  return text || t('copyright')
+})
+const footerIcp = computed(() => String(contactSettings.value?.icpNumber || '').trim())
+const footerIcpUrl = computed(() => {
+  const url = String(contactSettings.value?.icpUrl || '').trim()
+  return url || 'https://beian.miit.gov.cn/'
+})
+const footerPolice = computed(() => String(contactSettings.value?.policeBeian || '').trim())
+const footerPoliceUrl = computed(() => {
+  const url = String(contactSettings.value?.policeBeianUrl || '').trim()
+  if (url) return url
+  const digits = footerPolice.value.replace(/\D/g, '')
+  return digits
+    ? `https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${digits}`
+    : 'https://www.beian.gov.cn/'
 })
 
 function onHeaderTelClick() {
@@ -717,15 +768,16 @@ watch(() => route.fullPath, closeAll)
   background: #fff;
 }
 .portal-footer {
-  background: linear-gradient(180deg, #0d1520 0%, #101820 100%);
+  background: #1a1f26;
   color: rgba(255, 255, 255, 0.72);
-  padding: 48px 24px 28px;
+  padding: 0;
 }
 .footer-inner {
   max-width: 1280px;
   margin: 0 auto;
+  padding: 48px 24px 36px;
   display: grid;
-  grid-template-columns: 1.4fr 0.9fr 1.1fr;
+  grid-template-columns: 1.1fr 0.9fr 1.6fr;
   gap: 28px 40px;
   align-items: start;
 }
@@ -742,8 +794,7 @@ watch(() => route.fullPath, closeAll)
   font-size: 14px;
   line-height: 1.6;
 }
-.footer-col-title,
-.footer-social-title {
+.footer-col-title {
   margin: 0 0 14px;
   font-size: 14px;
   font-weight: 650;
@@ -765,34 +816,53 @@ watch(() => route.fullPath, closeAll)
 .footer-links a:hover {
   color: #fff;
 }
+.footer-aside {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px 36px;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
 .footer-contact {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 200px;
 }
-.footer-contact p {
+.footer-aside-logo {
+  display: block;
+  height: 28px;
+  width: auto;
+  max-width: 160px;
+  margin-bottom: 4px;
+  filter: brightness(0) invert(1);
+}
+.footer-contact-line {
   margin: 0;
-  display: grid;
-  grid-template-columns: 2.5em 1fr;
+  display: flex;
+  align-items: flex-start;
   gap: 8px;
-  align-items: start;
   font-size: 14px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.88);
 }
-.footer-contact span {
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 12px;
-  padding-top: 2px;
+.footer-contact-line.addr {
+  align-items: flex-start;
 }
-.footer-contact a,
-.footer-contact em {
+.footer-ico {
+  display: inline-flex;
+  color: #3d8bff;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.footer-contact-line a,
+.footer-contact-line em {
   color: rgba(255, 255, 255, 0.88);
   font-style: normal;
   text-decoration: none;
   word-break: break-all;
 }
-.footer-contact a:hover {
+.footer-contact-line a:hover {
   color: #fff;
 }
 .footer-contact-btn {
@@ -815,7 +885,7 @@ watch(() => route.fullPath, closeAll)
   border-color: rgba(255, 255, 255, 0.5);
 }
 .footer-social {
-  margin-top: 20px;
+  margin: 0;
 }
 .footer-social-grid {
   display: flex;
@@ -830,11 +900,11 @@ watch(() => route.fullPath, closeAll)
   min-width: 88px;
 }
 .footer-qr {
-  width: 88px;
-  height: 88px;
+  width: 96px;
+  height: 96px;
   object-fit: contain;
   background: #fff;
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 4px;
   cursor: zoom-in;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -857,13 +927,45 @@ watch(() => route.fullPath, closeAll)
   color: rgba(255, 255, 255, 0.72);
   text-align: center;
 }
-.copyright {
-  grid-column: 1 / -1;
-  margin: 4px 0 0;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+.footer-bottom {
+  background: #0d1117;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.footer-bottom-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 18px;
   font-size: 12px;
-  opacity: 0.65;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  text-align: center;
+}
+.footer-beian-link {
+  color: #6ea8fe;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.footer-beian-link:hover {
+  color: #9ec5fe;
+  text-decoration: underline;
+}
+.footer-police {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.7);
+}
+.footer-police:hover {
+  color: #fff;
+}
+.footer-police-icon {
+  display: inline-flex;
+  line-height: 0;
 }
 .nav-backdrop {
   display: none;
@@ -974,10 +1076,17 @@ watch(() => route.fullPath, closeAll)
   .footer-inner {
     grid-template-columns: 1fr;
   }
+  .footer-aside {
+    justify-content: flex-start;
+  }
   .footer-links {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 10px 18px;
+  }
+  .footer-bottom-inner {
+    flex-direction: column;
+    gap: 6px;
   }
 }
 </style>
