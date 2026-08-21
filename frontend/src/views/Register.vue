@@ -26,7 +26,6 @@
         </el-form-item>
       </el-form>
     </div>
-    <CodeLocator page="Register" />
   </div>
 </template>
 
@@ -36,7 +35,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { useSiteLogo } from '@/composables/useSiteLogo'
-import CodeLocator from '@/components/CodeLocator.vue'
 
 const router = useRouter()
 const route = useRoute()

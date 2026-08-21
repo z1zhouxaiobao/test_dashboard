@@ -7,6 +7,16 @@
         </router-link>
 
         <nav class="nav-menu desktop-nav">
+          <div class="nav-item-wrap" @mouseenter="openModule = ''">
+            <router-link
+              to="/portal/home"
+              class="nav-item"
+              :class="{ active: isHomeActive }"
+              @click="closeAll"
+            >
+              {{ t('navHome') }}
+            </router-link>
+          </div>
           <div
             v-for="item in topMenus"
             :key="item.id"
@@ -111,6 +121,11 @@
 
     <div v-if="mobileOpen" class="nav-backdrop" @click="closeAll"></div>
     <nav v-if="mobileOpen" class="mobile-nav">
+      <div class="mobile-block">
+        <router-link class="mobile-l1 mobile-home" to="/portal/home" @click="closeAll">
+          {{ t('navHome') }}
+        </router-link>
+      </div>
       <div v-for="item in topMenus" :key="'m-' + item.id" class="mobile-block">
         <button class="mobile-l1" type="button" @click="toggleMobile(item)">
           <span>{{ displayName(item) }}</span>
@@ -345,6 +360,11 @@ function normalizePath(path) {
   if (path.startsWith('http')) return path
   return path
 }
+
+const isHomeActive = computed(() => {
+  const path = route.path
+  return path === '/portal/home' || path === '/portal' || path === '/'
+})
 
 function isActive(item) {
   const path = item.linkPath || ''
@@ -932,6 +952,11 @@ watch(() => route.fullPath, closeAll)
     font-weight: 600;
     cursor: pointer;
     font-family: inherit;
+  }
+  a.mobile-home {
+    color: inherit;
+    text-decoration: none;
+    box-sizing: border-box;
   }
   .mobile-l2 {
     padding: 8px 16px 4px;

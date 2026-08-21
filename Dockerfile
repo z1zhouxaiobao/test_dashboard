@@ -22,6 +22,7 @@ RUN mkdir -p /app/uploads
 COPY --from=backend /app/app.jar /app/app.jar
 COPY uploads/ /app/uploads/
 ENV FILE_UPLOAD_PATH=/app/uploads
-ENV JAVA_OPTS="-Xms256m -Xmx512m"
+ENV TZ=Asia/Shanghai
+ENV JAVA_OPTS="-Xms256m -Xmx512m -Duser.timezone=Asia/Shanghai"
 EXPOSE 8080
 CMD ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

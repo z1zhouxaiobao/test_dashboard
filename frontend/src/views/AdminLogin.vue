@@ -67,7 +67,6 @@
         </div>
       </section>
     </div>
-    <CodeLocator page="AdminLogin" />
   </div>
 </template>
 
@@ -78,7 +77,6 @@ import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from '@/composables/useI18n'
 import { useSiteLogo } from '@/composables/useSiteLogo'
-import CodeLocator from '@/components/CodeLocator.vue'
 import LangSwitcher from '@/components/LangSwitcher.vue'
 
 const { t } = useI18n()

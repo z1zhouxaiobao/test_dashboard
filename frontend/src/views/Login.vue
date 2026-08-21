@@ -36,7 +36,6 @@
         <el-button type="primary" link @click="quickLogin('user1', '123456')">用户 user1 / 123456</el-button>
       </div>
     </div>
-    <CodeLocator page="Login" />
   </div>
 </template>
 
@@ -46,7 +45,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { useSiteLogo } from '@/composables/useSiteLogo'
-import CodeLocator from '@/components/CodeLocator.vue'
 
 const router = useRouter()
 const route = useRoute()
