@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 public class PortalService {
 
@@ -208,14 +211,37 @@ public class PortalService {
 
     @Transactional
     public PortalVisitLog recordVisit(VisitLogRequest request, String ip, String userAgent) {
+        String normalizedIp = normalizeIp(ip);
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        // 同一 IP 每天只统计一次
+        if (StringUtils.hasText(normalizedIp)
+                && portalVisitLogRepository.existsByIpAndCreatedAtGreaterThanEqual(normalizedIp, startOfDay)) {
+            return null;
+        }
         PortalVisitLog log = new PortalVisitLog();
         log.setPath(trimTo(request.getPath(), 500));
         log.setPageTitle(trimTo(request.getPageTitle(), 200));
         log.setReferer(trimTo(request.getReferer(), 500));
         log.setLocale(trimTo(request.getLocale(), 20));
-        log.setIp(trimTo(ip, 64));
+        log.setIp(trimTo(normalizedIp, 64));
         log.setUserAgent(trimTo(userAgent, 500));
         return portalVisitLogRepository.save(log);
+    }
+
+    private String normalizeIp(String ip) {
+        if (!StringUtils.hasText(ip)) {
+            return "unknown";
+        }
+        String value = ip.trim();
+        if ("::1".equals(value)
+                || "0:0:0:0:0:0:0:1".equals(value)
+                || "0000:0000:0000:0000:0000:0000:0000:0001".equalsIgnoreCase(value)) {
+            return "127.0.0.1";
+        }
+        if (value.startsWith("::ffff:")) {
+            return value.substring(7);
+        }
+        return value;
     }
 
     private String trimTo(String value, int max) {

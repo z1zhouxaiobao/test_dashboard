@@ -98,6 +98,10 @@
               <el-icon><Setting /></el-icon>
               <span>{{ t('adminSystem') }}</span>
             </template>
+            <el-menu-item index="/admin/profile">
+              <el-icon><UserFilled /></el-icon>
+              <template #title>{{ t('adminProfile') }}</template>
+            </el-menu-item>
             <el-menu-item index="/admin/users">
               <el-icon><User /></el-icon>
               <template #title>{{ t('adminUsers') }}</template>
@@ -146,7 +150,7 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="portal">{{ t('profile') }}</el-dropdown-item>
+                <el-dropdown-item command="profile">{{ t('adminProfile') }}</el-dropdown-item>
                 <el-dropdown-item divided command="logout">{{ t('logout') }}</el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -161,15 +165,22 @@
           trigger="contextmenu"
           @command="(cmd) => onTagCommand(cmd, tag)"
         >
-          <el-tag
-            :closable="tag.path !== '/admin/dashboard'"
-            :effect="route.path === tag.path ? 'dark' : 'plain'"
-            class="tag-item"
+          <button
+            type="button"
+            class="nav-tag"
+            :class="{ 'is-active': route.path === tag.path }"
             @click="$router.push(tag.path)"
-            @close.stop="closeTag(tag.path)"
           >
-            {{ tagLabel(tag) }}
-          </el-tag>
+            <span class="nav-tag-dot" aria-hidden="true" />
+            <span class="nav-tag-label">{{ tagLabel(tag) }}</span>
+            <span
+              v-if="tag.path !== '/admin/dashboard'"
+              class="nav-tag-close"
+              role="button"
+              :title="t('tagClose')"
+              @click.stop="closeTag(tag.path)"
+            >×</span>
+          </button>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="refresh">{{ t('tagRefresh') }}</el-dropdown-item>
@@ -184,6 +195,7 @@
       <el-main class="admin-content">
         <router-view :key="pageKey" />
       </el-main>
+      <el-backtop :right="40" :bottom="48" :visibility-height="240" :title="t('backToTop')" />
     </el-container>
   </el-container>
 </template>
@@ -194,7 +206,7 @@ import { useRoute, useRouter } from 'vue-router'
 import {
   DataAnalysis, Picture, Reading, Trophy,
   Briefcase, Box, ChatDotRound,
-  Setting, User, Tools, List, Fold, Expand, SwitchButton, Menu, View
+  Setting, User, UserFilled, Tools, List, Fold, Expand, SwitchButton, Menu, View
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTagsStore } from '@/stores/tags'
@@ -248,7 +260,7 @@ function onTagCommand(cmd, tag) {
 }
 
 function handleCommand(cmd) {
-  if (cmd === 'portal') router.push('/portal/profile')
+  if (cmd === 'profile') router.push('/admin/profile')
   if (cmd === 'logout') handleLogout()
 }
 
@@ -365,16 +377,98 @@ watch(
   top: 56px;
   right: 0;
   z-index: 80;
-  background: #fff;
-  border-bottom: 1px solid #eef1f4;
-  padding: 8px 12px;
+  height: 44px;
+  background: linear-gradient(180deg, #f7f9fc 0%, #eef2f7 100%);
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 14px;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
   transition: left 0.2s;
+  scrollbar-width: thin;
+  scrollbar-color: #c5ccd4 transparent;
 }
-.tag-item {
+.tags-bar::-webkit-scrollbar {
+  height: 4px;
+}
+.tags-bar::-webkit-scrollbar-thumb {
+  background: #c5ccd4;
+  border-radius: 4px;
+}
+.tags-bar :deep(.el-dropdown) {
+  flex-shrink: 0;
+}
+.nav-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 180px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 24, 32, 0.04);
+  color: #4a5560;
+  font-size: 13px;
+  line-height: 1;
   cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.nav-tag:hover {
+  color: var(--liquicool-primary);
+  border-color: #c9daf0;
+  box-shadow: 0 2px 6px rgba(10, 79, 184, 0.08);
+}
+.nav-tag.is-active {
+  background: linear-gradient(135deg, #0a4fb8 0%, #1565d8 100%);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(10, 79, 184, 0.28);
+}
+.nav-tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c5ccd4;
+  flex-shrink: 0;
+}
+.nav-tag.is-active .nav-tag-dot {
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.28);
+}
+.nav-tag-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-tag-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;
+  margin-right: -2px;
+  border-radius: 4px;
+  color: inherit;
+  opacity: 0.55;
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+.nav-tag-close:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.08);
+}
+.nav-tag.is-active .nav-tag-close:hover {
+  background: rgba(255, 255, 255, 0.22);
 }
 .admin-content {
   margin-top: 104px;

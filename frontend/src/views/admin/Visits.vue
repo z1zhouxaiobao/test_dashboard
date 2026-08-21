@@ -1,7 +1,6 @@
 <template>
   <div class="page-card">
     <h2 class="page-title">{{ t('adminVisits') }}</h2>
-    <p class="page-hint">{{ t('adminVisitsHint') }}</p>
     <TableToolbar v-model="keyword" :placeholder="t('phVisit')" @search="handleSearch" @refresh="loadData">
       <el-button type="danger" plain :disabled="!selected.length" :loading="deleting" @click="handleBatchDelete">{{ t('batchDelete') }}</el-button>
     </TableToolbar>

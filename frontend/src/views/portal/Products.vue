@@ -38,22 +38,50 @@
 
       <section class="list-panel">
         <div class="list-toolbar">
-          <span>{{ t('showingResults', { n: total }) }}</span>
+          <span v-if="loading">{{ t('loadingList') }}</span>
+          <span v-else>{{ t('showingResults', { n: total }) }}</span>
         </div>
-        <article v-for="item in list" :key="item.id" class="product-row">
-          <img :src="resolveMediaUrl(item.coverUrl) || defaultCover('product')" class="cover" alt="" />
-          <div class="info">
-            <h3 @click="$router.push(`/portal/products/${item.id}`)">{{ localizedText(item, 'name', locale) }}</h3>
-            <p>{{ localizedText(item, 'summary', locale) }}</p>
+
+        <div v-if="loading" class="skeleton-list" aria-busy="true" aria-live="polite">
+          <div v-for="n in 5" :key="n" class="product-row skeleton-row">
+            <el-skeleton animated>
+              <template #template>
+                <div class="skeleton-grid">
+                  <el-skeleton-item variant="image" class="skeleton-cover" />
+                  <div class="skeleton-info">
+                    <el-skeleton-item variant="h3" style="width: 42%; margin-bottom: 12px" />
+                    <el-skeleton-item variant="text" style="width: 92%" />
+                    <el-skeleton-item variant="text" style="width: 78%" />
+                    <el-skeleton-item variant="text" style="width: 64%" />
+                  </div>
+                  <div class="skeleton-actions">
+                    <el-skeleton-item variant="text" style="width: 70%" />
+                    <el-skeleton-item variant="text" style="width: 70%" />
+                    <el-skeleton-item variant="text" style="width: 70%" />
+                  </div>
+                </div>
+              </template>
+            </el-skeleton>
           </div>
-          <div class="actions">
-            <a href="javascript:;" @click.prevent="$router.push(`/portal/products/${item.id}`)">{{ t('viewSeries') }}</a>
-            <a href="javascript:;" @click.prevent="$router.push('/portal/contact')">{{ t('contactSales') }}</a>
-            <a href="javascript:;" @click.prevent="$router.push('/portal/contact')">{{ t('getSupport') }}</a>
-          </div>
-        </article>
-        <el-empty v-if="!loading && !list.length" :description="t('noData')" />
-        <div class="pagination-wrap">
+        </div>
+
+        <template v-else>
+          <article v-for="item in list" :key="item.id" class="product-row">
+            <img :src="resolveMediaUrl(item.coverUrl) || defaultCover('product')" class="cover" alt="" />
+            <div class="info">
+              <h3 @click="$router.push(`/portal/products/${item.id}`)">{{ localizedText(item, 'name', locale) }}</h3>
+              <p>{{ localizedText(item, 'summary', locale) }}</p>
+            </div>
+            <div class="actions">
+              <a href="javascript:;" @click.prevent="$router.push(`/portal/products/${item.id}`)">{{ t('viewSeries') }}</a>
+              <a href="javascript:;" @click.prevent="$router.push('/portal/contact')">{{ t('contactSales') }}</a>
+              <a href="javascript:;" @click.prevent="$router.push('/portal/contact')">{{ t('getSupport') }}</a>
+            </div>
+          </article>
+          <el-empty v-if="!list.length" :description="t('noData')" />
+        </template>
+
+        <div v-show="!loading" class="pagination-wrap">
           <el-pagination
             v-model:current-page="page"
             v-model:page-size="size"
@@ -83,7 +111,7 @@ const list = ref([])
 const page = ref(1)
 const size = ref(10)
 const total = ref(0)
-const loading = ref(false)
+const loading = ref(true)
 const filterGroups = ref([])
 const expanded = reactive({})
 const selectedCategory = ref(route.query.category || '')
@@ -286,11 +314,40 @@ onMounted(async () => {
 .actions a:hover {
   text-decoration: underline;
 }
+.skeleton-list {
+  border-top: 1px solid #d5dae0;
+}
+.skeleton-row {
+  border-top: none;
+  border-bottom: 1px solid #d5dae0;
+}
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: 160px 1fr 160px;
+  gap: 20px;
+  width: 100%;
+}
+.skeleton-cover {
+  width: 100%;
+  height: 110px;
+}
+.skeleton-info {
+  padding-top: 4px;
+}
+.skeleton-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+}
 @media (max-width: 900px) {
   .page-body {
     grid-template-columns: 1fr;
   }
   .product-row {
+    grid-template-columns: 1fr;
+  }
+  .skeleton-grid {
     grid-template-columns: 1fr;
   }
 }

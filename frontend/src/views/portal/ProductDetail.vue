@@ -13,22 +13,32 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { productApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
 import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
+import { setDocumentPageTitle } from '@/router'
 
 const { locale } = useI18n()
 const route = useRoute()
 const detail = ref(null)
 const loading = ref(true)
 
+function syncTitle() {
+  if (!detail.value) return
+  const name = localizedText(detail.value, 'name', locale.value)
+  if (name) setDocumentPageTitle(name)
+}
+
+watch(locale, syncTitle)
+
 onMounted(async () => {
   try {
     const res = await productApi.portalDetail(route.params.id)
     detail.value = res.data || res
+    syncTitle()
   } catch {
     detail.value = null
   } finally {

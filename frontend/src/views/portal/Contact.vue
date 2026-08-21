@@ -1,7 +1,7 @@
 <template>
   <div class="contact-page">
     <section class="portal-section contact-top">
-      <h1 class="page-title">{{ t('contactTitle') }}</h1>
+      <!-- <h1 class="page-title">{{ t('contactTitle') }}</h1> -->
       <h2 class="talk-title">{{ localizedText(settings, 'talkNow', locale) }}</h2>
 
       <div class="service-list">
@@ -73,7 +73,9 @@
       <div class="company-info">
         <p><el-icon><Phone /></el-icon> {{ settings.companyPhone || settings.presalesPhone }}</p>
         <p><el-icon><Message /></el-icon> {{ settings.email }}</p>
-        <p><el-icon><Location /></el-icon> {{ localizedText(settings, 'address', locale) }}</p>
+        <p v-for="(addr, idx) in displayAddresses" :key="idx">
+          <el-icon><Location /></el-icon> {{ addr }}
+        </p>
       </div>
     </section>
 
@@ -151,6 +153,8 @@ const isMobile = computed(() => viewportWidth.value <= 768)
 
 const settings = reactive({
   talkNow: '即刻对话',
+  talkNowTw: '',
+  talkNowEn: '',
   presalesTitle: '售前人工客服',
   presalesDesc: '售前咨询、方案选型与商务对接，工作日人工客服在线响应。',
   presalesPhone: '400-888-0000',
@@ -162,7 +166,20 @@ const settings = reactive({
   supportHeading: '获取产品和服务支持',
   email: 'contact@liquicool.com',
   address: '北京市海淀区科技园区',
+  addresses: [
+    { text: '北京市海淀区科技园区', textTw: '北京市海淀區科技園區', textEn: 'Haidian Science Park, Beijing' }
+  ],
   companyPhone: '400-888-0000'
+})
+
+const displayAddresses = computed(() => {
+  const list = Array.isArray(settings.addresses) ? settings.addresses : []
+  const mapped = list
+    .map((item) => localizedText(item, 'text', locale.value))
+    .filter((s) => !!s)
+  if (mapped.length) return mapped
+  const legacy = localizedText(settings, 'address', locale.value)
+  return legacy ? [legacy] : []
 })
 
 const form = reactive({ name: '', phone: '', content: '' })
@@ -343,11 +360,15 @@ onUnmounted(() => {
 }
 .company-info p {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   margin: 0;
   line-height: 2.2;
   color: #5c6570;
+}
+.company-info p .el-icon {
+  margin-top: 0.55em;
+  flex-shrink: 0;
 }
 .forms-wrap {
   padding-top: 8px;

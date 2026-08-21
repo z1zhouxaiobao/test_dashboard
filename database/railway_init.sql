@@ -295,7 +295,8 @@ INSERT INTO sys_config (id, config_key, config_value, remark) VALUES
 (15, 'contact.support_heading', '获取产品和服务支持', '联系页-支持区标题'),
 (16, 'contact.email', 'contact@liquicool.com', '联系页-邮箱'),
 (17, 'contact.address', '北京市海淀区科技园区', '联系页-地址'),
-(18, 'contact.company_phone', '400-888-0000', '联系页-公司电话');
+(18, 'contact.company_phone', '400-888-0000', '联系页-公司电话'),
+(19, 'contact.addresses', '[{"text":"北京市海淀区科技园区","textTw":"北京市海淀區科技園區","textEn":"Haidian Science Park, Beijing"}]', '联系页-地址列表JSON');
 
 -- ==================== 日志 ====================
 INSERT INTO operate_log (id, user_id, username, action, module, detail, ip, created_at) VALUES

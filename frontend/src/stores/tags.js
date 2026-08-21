@@ -1,14 +1,28 @@
 import { defineStore } from 'pinia'
 
 const DASHBOARD = '/admin/dashboard'
+const MAX_TAGS = 10
 
 function canKeep(tag) {
   return tag?.path && tag.path.startsWith('/admin') && tag.path !== '/admin/login'
 }
 
+/** 超出上限时优先关掉最早的非看板标签；keepPath 当前页尽量保留 */
+function trimVisited(list, keepPath) {
+  const tags = (list || []).filter(canKeep)
+  while (tags.length > MAX_TAGS) {
+    const idx = tags.findIndex(
+      (v) => v.path !== DASHBOARD && v.path !== keepPath
+    )
+    if (idx < 0) break
+    tags.splice(idx, 1)
+  }
+  return tags
+}
+
 export const useTagsStore = defineStore('tags', {
   state: () => ({
-    visited: (JSON.parse(sessionStorage.getItem('liquicool_tags') || '[]') || []).filter(canKeep)
+    visited: trimVisited(JSON.parse(sessionStorage.getItem('liquicool_tags') || '[]') || [])
   }),
   actions: {
     persist() {
@@ -23,8 +37,9 @@ export const useTagsStore = defineStore('tags', {
           title: route.meta.title,
           name: route.name
         })
-        this.persist()
       }
+      this.visited = trimVisited(this.visited, route.path)
+      this.persist()
     },
     removeView(path) {
       this.visited = this.visited.filter((v) => v.path !== path)

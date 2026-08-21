@@ -5,12 +5,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import zhTw from 'element-plus/dist/locale/zh-tw.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
 import { useLocaleStore } from '@/stores/locale'
+import { applyDocumentTitle, refreshDocumentTitle } from '@/router'
 
 const localeStore = useLocaleStore()
 const { locale } = storeToRefs(localeStore)
@@ -21,8 +22,13 @@ const epLocale = computed(() => {
   return zhCn
 })
 
+watch(locale, () => {
+  refreshDocumentTitle()
+})
+
 onMounted(() => {
   localeStore.setLocale(localeStore.locale)
+  applyDocumentTitle()
 })
 </script>
 <style>

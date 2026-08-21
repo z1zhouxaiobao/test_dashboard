@@ -1,5 +1,8 @@
 package com.liquicool.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.liquicool.dto.ContactAddressItem;
 import com.liquicool.dto.ContactSettingsDto;
 import com.liquicool.entity.SysConfig;
 import com.liquicool.repository.SysConfigRepository;
@@ -8,11 +11,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ContactSettingsService {
+
+    public static final String ADDRESSES_KEY = "contact.addresses";
 
     public static final Map<String, String[]> DEFAULTS = new LinkedHashMap<>();
 
@@ -48,10 +57,17 @@ public class ContactSettingsService {
         DEFAULTS.put("contact.address.tw", new String[]{"北京市海淀區科技園區", "联系页-地址-繁"});
         DEFAULTS.put("contact.address.en", new String[]{"Haidian Science Park, Beijing", "联系页-地址-英"});
         DEFAULTS.put("contact.company_phone", new String[]{"400-888-0000", "联系页-公司电话"});
+        DEFAULTS.put(ADDRESSES_KEY, new String[]{
+                "[{\"text\":\"北京市海淀区科技园区\",\"textTw\":\"北京市海淀區科技園區\",\"textEn\":\"Haidian Science Park, Beijing\"}]",
+                "联系页-地址列表JSON"
+        });
     }
 
     @Autowired
     private SysConfigRepository sysConfigRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public ContactSettingsDto getSettings() {
         ContactSettingsDto dto = new ContactSettingsDto();
@@ -82,10 +98,8 @@ public class ContactSettingsService {
         dto.setSupportHeadingTw(get("contact.support_heading.tw"));
         dto.setSupportHeadingEn(get("contact.support_heading.en"));
         dto.setEmail(get("contact.email"));
-        dto.setAddress(get("contact.address"));
-        dto.setAddressTw(get("contact.address.tw"));
-        dto.setAddressEn(get("contact.address.en"));
         dto.setCompanyPhone(get("contact.company_phone"));
+        dto.setAddresses(loadAddresses());
         return dto;
     }
 
@@ -118,16 +132,31 @@ public class ContactSettingsService {
         put("contact.support_heading.tw", dto.getSupportHeadingTw());
         put("contact.support_heading.en", dto.getSupportHeadingEn());
         put("contact.email", dto.getEmail());
-        put("contact.address", dto.getAddress());
-        put("contact.address.tw", dto.getAddressTw());
-        put("contact.address.en", dto.getAddressEn());
         put("contact.company_phone", dto.getCompanyPhone());
+
+        List<ContactAddressItem> list = normalizeAddresses(dto.getAddresses());
+        saveAddresses(list);
+        // 兼容旧单地址字段
+        if (!list.isEmpty()) {
+            ContactAddressItem first = list.get(0);
+            put("contact.address", first.getText());
+            put("contact.address.tw", first.getTextTw());
+            put("contact.address.en", first.getTextEn());
+        } else {
+            put("contact.address", "");
+            put("contact.address.tw", "");
+            put("contact.address.en", "");
+        }
         return getSettings();
     }
 
     @Transactional
     public void ensureDefaults() {
         for (Map.Entry<String, String[]> e : DEFAULTS.entrySet()) {
+            // 地址列表单独迁移，避免覆盖已有自定义单地址
+            if (ADDRESSES_KEY.equals(e.getKey())) {
+                continue;
+            }
             if (!sysConfigRepository.findByConfigKey(e.getKey()).isPresent()) {
                 SysConfig c = new SysConfig();
                 c.setConfigKey(e.getKey());
@@ -136,9 +165,93 @@ public class ContactSettingsService {
                 sysConfigRepository.save(c);
             }
         }
+        // 尚无列表时：优先用已有单地址字段拼成一条
+        if (!sysConfigRepository.findByConfigKey(ADDRESSES_KEY).isPresent()) {
+            ContactAddressItem item = new ContactAddressItem();
+            item.setText(getRawOrDefault("contact.address"));
+            item.setTextTw(getRawOrDefault("contact.address.tw"));
+            item.setTextEn(getRawOrDefault("contact.address.en"));
+            if (!StringUtils.hasText(item.getText())) {
+                item.setText("北京市海淀区科技园区");
+                item.setTextTw("北京市海淀區科技園區");
+                item.setTextEn("Haidian Science Park, Beijing");
+            }
+            saveAddresses(Collections.singletonList(item));
+        }
+    }
+
+    private List<ContactAddressItem> loadAddresses() {
+        String json = sysConfigRepository.findByConfigKey(ADDRESSES_KEY)
+                .map(SysConfig::getConfigValue)
+                .orElse("");
+        if (StringUtils.hasText(json)) {
+            try {
+                List<ContactAddressItem> list = objectMapper.readValue(
+                        json, new TypeReference<List<ContactAddressItem>>() {});
+                list = normalizeAddresses(list);
+                if (!list.isEmpty()) {
+                    return list;
+                }
+            } catch (Exception ignored) {
+                // fall through to legacy
+            }
+        }
+        // 兼容旧配置
+        String zh = get("contact.address");
+        if (!StringUtils.hasText(zh)) {
+            return new ArrayList<>();
+        }
+        ContactAddressItem item = new ContactAddressItem();
+        item.setText(zh);
+        item.setTextTw(get("contact.address.tw"));
+        item.setTextEn(get("contact.address.en"));
+        return new ArrayList<>(Collections.singletonList(item));
+    }
+
+    private void saveAddresses(List<ContactAddressItem> list) {
+        try {
+            String json = objectMapper.writeValueAsString(list == null ? Collections.emptyList() : list);
+            put(ADDRESSES_KEY, json);
+        } catch (Exception e) {
+            put(ADDRESSES_KEY, "[]");
+        }
+    }
+
+    private List<ContactAddressItem> normalizeAddresses(List<ContactAddressItem> source) {
+        if (source == null) {
+            return new ArrayList<>();
+        }
+        return source.stream()
+                .filter(item -> item != null && StringUtils.hasText(item.getText()))
+                .map(item -> {
+                    ContactAddressItem copy = new ContactAddressItem();
+                    copy.setText(trimTo(item.getText(), 500));
+                    copy.setTextTw(trimTo(item.getTextTw(), 500));
+                    copy.setTextEn(trimTo(item.getTextEn(), 500));
+                    return copy;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private String trimTo(String value, int max) {
+        if (!StringUtils.hasText(value)) {
+            return "";
+        }
+        String trimmed = value.trim();
+        return trimmed.length() <= max ? trimmed : trimmed.substring(0, max);
     }
 
     private String get(String key) {
+        return sysConfigRepository.findByConfigKey(key)
+                .map(SysConfig::getConfigValue)
+                .filter(StringUtils::hasText)
+                .orElseGet(() -> {
+                    String[] def = DEFAULTS.get(key);
+                    return def != null ? def[0] : "";
+                });
+    }
+
+    private String getRawOrDefault(String key) {
         return sysConfigRepository.findByConfigKey(key)
                 .map(SysConfig::getConfigValue)
                 .filter(StringUtils::hasText)

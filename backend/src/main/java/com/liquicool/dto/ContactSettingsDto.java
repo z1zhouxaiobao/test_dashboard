@@ -2,6 +2,9 @@ package com.liquicool.dto;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class ContactSettingsDto {
     private String talkNow;
@@ -31,8 +34,32 @@ public class ContactSettingsDto {
     private String supportHeadingTw;
     private String supportHeadingEn;
     private String email;
-    private String address;
-    private String addressTw;
-    private String addressEn;
     private String companyPhone;
+
+    /** 多地址（含三语） */
+    private List<ContactAddressItem> addresses = new ArrayList<>();
+
+    /**
+     * 兼容旧字段：取第一条地址简体
+     */
+    public String getAddress() {
+        if (addresses != null && !addresses.isEmpty() && addresses.get(0) != null) {
+            return addresses.get(0).getText();
+        }
+        return null;
+    }
+
+    public String getAddressTw() {
+        if (addresses != null && !addresses.isEmpty() && addresses.get(0) != null) {
+            return addresses.get(0).getTextTw();
+        }
+        return null;
+    }
+
+    public String getAddressEn() {
+        if (addresses != null && !addresses.isEmpty() && addresses.get(0) != null) {
+            return addresses.get(0).getTextEn();
+        }
+        return null;
+    }
 }
