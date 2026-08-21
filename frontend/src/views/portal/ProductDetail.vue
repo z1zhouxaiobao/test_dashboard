@@ -3,10 +3,10 @@
     <el-skeleton v-if="loading" :rows="8" animated />
     <template v-else-if="detail">
       <img :src="resolveMediaUrl(detail.coverUrl) || defaultCover('product')" class="hero-img" alt="" />
-      <h1 class="page-title">{{ detail.name }}</h1>
+      <h1 class="page-title">{{ localizedText(detail, 'name', locale) }}</h1>
       <el-tag>{{ detail.category }}</el-tag>
-      <p class="summary">{{ detail.summary }}</p>
-      <div class="content rich-content" v-html="detail.content || detail.description"></div>
+      <p class="summary">{{ localizedText(detail, 'summary', locale) }}</p>
+      <div class="content rich-content" v-html="localizedText(detail, 'content', locale) || detail.description"></div>
     </template>
     <el-empty v-else description="方案不存在" />
   </div>
@@ -17,7 +17,10 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { productApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
+import { localizedText } from '@/utils/localized'
+import { useI18n } from '@/composables/useI18n'
 
+const { locale } = useI18n()
 const route = useRoute()
 const detail = ref(null)
 const loading = ref(true)

@@ -8,12 +8,13 @@
     <el-table v-loading="loading" :data="list" border align="center" header-align="center" row-key="id" @selection-change="onSelectionChange">
       <el-table-column type="selection" width="48" align="center" header-align="center" />
       <el-table-column prop="id" label="ID" width="80" align="center" header-align="center" />
-      <el-table-column prop="title" :label="t('title')" align="center" header-align="center" show-overflow-tooltip />
-      <el-table-column prop="username" :label="t('userCol')" align="center" header-align="center" />
+      <el-table-column prop="title" :label="t('title')" min-width="120" align="center" header-align="center" show-overflow-tooltip />
+      <el-table-column prop="contactName" :label="t('userCol')" width="120" align="center" header-align="center" show-overflow-tooltip />
+      <el-table-column prop="phone" :label="t('phone')" width="140" align="center" header-align="center" />
       <el-table-column :label="t('status')" width="100" align="center" header-align="center">
         <template #default="{ row }">{{ tv(row.status) }}</template>
       </el-table-column>
-      <el-table-column :label="t('submittedAt')" align="center" header-align="center">
+      <el-table-column :label="t('submittedAt')" width="170" align="center" header-align="center">
         <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
       </el-table-column>
       <el-table-column :label="t('actions')" width="160" align="center" header-align="center">
@@ -31,6 +32,8 @@
     <el-dialog v-model="dialogVisible" :title="t('processConsult')" width="560px">
       <el-form :model="form" label-width="100px">
         <el-form-item :label="t('title')"><el-input v-model="form.title" disabled /></el-form-item>
+        <el-form-item :label="t('userCol')"><el-input v-model="form.contactName" disabled /></el-form-item>
+        <el-form-item :label="t('phone')"><el-input v-model="form.phone" disabled /></el-form-item>
         <el-form-item :label="t('content')"><el-input v-model="form.content" type="textarea" :rows="4" disabled /></el-form-item>
         <el-form-item :label="t('status')">
           <el-select v-model="form.status" style="width:100%">
@@ -69,7 +72,7 @@ const size = ref(10)
 const total = ref(0)
 const keyword = ref('')
 const dialogVisible = ref(false)
-const form = reactive({ id: null, title: '', content: '', status: '待处理', reply: '' })
+const form = reactive({ id: null, title: '', contactName: '', phone: '', content: '', status: '待处理', reply: '' })
 
 async function loadData() {
   loading.value = true

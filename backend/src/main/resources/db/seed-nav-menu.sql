@@ -6,6 +6,7 @@ INSERT INTO nav_menu (id, parent_id, module_code, level_no, name_zh, name_tw, na
 (2, NULL, 'SOLUTIONS', 1, '解决方案', '解決方案', 'Solutions', 'solutions', '/portal/solutions', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
 (3, NULL, 'NEWS', 1, '新闻', '新聞', 'News', 'news', '/portal/news', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
 (4, NULL, 'ABOUT', 1, '关于', '關於', 'About', 'about', '/portal/about', 4, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(5, NULL, 'CONTACT', 1, '联系我们', '聯絡我們', 'Contact', 'contact', '/portal/contact', 5, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
 (10, 1, 'PRODUCTS', 2, '液冷产品', '液冷產品', 'Liquid Cooling Products', 'lc-products', '/portal/products', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
 (11, 1, 'PRODUCTS', 2, '热管理技术', '熱管理技術', 'Thermal Management', 'thermal', '/portal/technologies', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
 (12, 1, 'PRODUCTS', 2, '工程与服务', '工程與服務', 'Engineering & Services', 'services', '/portal/contact', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),

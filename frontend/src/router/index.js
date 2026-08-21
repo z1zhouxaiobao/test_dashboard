@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTagsStore } from '@/stores/tags'
 import { useLocaleStore } from '@/stores/locale'
+import { visitApi } from '@/api'
 import { ElMessage } from 'element-plus'
 
 const Login = () => import('@/views/Login.vue')
@@ -54,7 +55,8 @@ const routes = [
       { path: 'contact-settings', name: 'AdminContactSettings', component: () => import('@/views/admin/ContactSettings.vue'), meta: { requiresAdmin: true, title: '联系配置' } },
       { path: 'users', name: 'AdminUsers', component: () => import('@/views/admin/Users.vue'), meta: { requiresAdmin: true, title: '用户管理' } },
       { path: 'configs', name: 'AdminConfigs', component: () => import('@/views/admin/Configs.vue'), meta: { requiresAdmin: true, title: '系统配置' } },
-      { path: 'logs', name: 'AdminLogs', component: () => import('@/views/admin/Logs.vue'), meta: { requiresAdmin: true, title: '操作日志' } }
+      { path: 'logs', name: 'AdminLogs', component: () => import('@/views/admin/Logs.vue'), meta: { requiresAdmin: true, title: '操作日志' } },
+      { path: 'visits', name: 'AdminVisits', component: () => import('@/views/admin/Visits.vue'), meta: { requiresAdmin: true, title: '访问记录' } }
     ]
   },
   { path: '/:pathMatch(.*)*', redirect: '/portal/home' }
@@ -102,6 +104,17 @@ router.afterEach((to) => {
   const tags = useTagsStore()
   if (to.path.startsWith('/admin')) {
     tags.addView(to)
+  }
+  if (to.path.startsWith('/portal')) {
+    const locale = useLocaleStore()
+    visitApi
+      .report({
+        path: to.fullPath,
+        pageTitle: to.meta?.title || '',
+        referer: typeof document !== 'undefined' ? document.referrer || '' : '',
+        locale: locale.locale || ''
+      })
+      .catch(() => {})
   }
 })
 

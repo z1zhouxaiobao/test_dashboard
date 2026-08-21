@@ -4,8 +4,8 @@
     <div v-for="item in list" :key="item.id" class="news-item" @click="$router.push(`/portal/news/${item.id}`)">
       <img :src="resolveMediaUrl(item.coverUrl) || defaultCover('news')" class="thumb" alt="" />
       <div class="news-body">
-        <h3>{{ item.title }}</h3>
-        <p>{{ item.summary }}</p>
+        <h3>{{ localizedText(item, 'title', locale) }}</h3>
+        <p>{{ localizedText(item, 'summary', locale) }}</p>
         <span class="date">{{ formatDateTime(item.publishTime || item.createdAt) }}</span>
       </div>
     </div>
@@ -26,9 +26,10 @@ import { ref, onMounted } from 'vue'
 import { newsApi } from '@/api'
 import { formatDateTime } from '@/utils/datetime'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
+import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const list = ref([])
 const page = ref(1)
 const size = ref(10)

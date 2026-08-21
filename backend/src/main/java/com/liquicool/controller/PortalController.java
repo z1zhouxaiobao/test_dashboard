@@ -7,6 +7,7 @@ import com.liquicool.dto.ContactSettingsDto;
 import com.liquicool.dto.FeedbackRequest;
 import com.liquicool.dto.NavMenuTreeNode;
 import com.liquicool.dto.PortalOverviewResponse;
+import com.liquicool.dto.VisitLogRequest;
 import com.liquicool.entity.*;
 import com.liquicool.service.ContactSettingsService;
 import com.liquicool.service.NavMenuService;
@@ -16,8 +17,11 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Tag(name = "门户公开接口")
 @RestController
@@ -165,5 +169,32 @@ public class PortalController {
     @GetMapping("/contact-settings")
     public ApiResponse<ContactSettingsDto> contactSettings() {
         return ApiResponse.ok(contactSettingsService.getSettings());
+    }
+
+    @Operation(summary = "记录门户访问（公开）")
+    @PostMapping("/visits")
+    public ApiResponse<Void> recordVisit(@Validated @RequestBody VisitLogRequest request,
+                                         HttpServletRequest httpRequest) {
+        String ip = resolveClientIp(httpRequest);
+        String userAgent = httpRequest.getHeader("User-Agent");
+        portalService.recordVisit(request, ip, userAgent);
+        return ApiResponse.ok(null);
+    }
+
+    private String resolveClientIp(HttpServletRequest request) {
+        String[] headers = {
+                "X-Forwarded-For",
+                "X-Real-IP",
+                "Proxy-Client-IP",
+                "WL-Proxy-Client-IP"
+        };
+        for (String header : headers) {
+            String value = request.getHeader(header);
+            if (StringUtils.hasText(value) && !"unknown".equalsIgnoreCase(value)) {
+                int comma = value.indexOf(',');
+                return comma > 0 ? value.substring(0, comma).trim() : value.trim();
+            }
+        }
+        return request.getRemoteAddr();
     }
 }

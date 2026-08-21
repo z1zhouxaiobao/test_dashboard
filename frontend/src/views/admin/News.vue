@@ -34,13 +34,14 @@
       <el-pagination v-model:current-page="page" v-model:page-size="size" :total="total" layout="total, sizes, prev, pager, next" @current-change="loadData" @size-change="loadData" />
     </div>
 
-    <el-dialog v-model="dialogVisible" :title="form.id ? t('editNews') : t('addNews')" width="640px">
+    <el-dialog v-model="dialogVisible" :title="form.id ? t('editNews') : t('addNews')" width="860px" top="5vh">
       <el-form :model="form" label-width="100px">
         <el-form-item :label="t('title')"><el-input v-model="form.title" /></el-form-item>
         <el-form-item :label="t('summary')"><el-input v-model="form.summary" type="textarea" :rows="2" /></el-form-item>
         <el-form-item :label="t('cover')"><ImageUpload v-model="form.coverUrl" /></el-form-item>
         <el-form-item :label="t('content')"><el-input v-model="form.content" type="textarea" :rows="6" /></el-form-item>
         <el-form-item :label="t('published')"><el-switch v-model="form.published" /></el-form-item>
+        <I18nCollapse :model="form" :fields="i18nFields" />
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ t('cancel') }}</el-button>
@@ -59,10 +60,17 @@ import { resolveMediaUrl } from '@/utils/media'
 import TableToolbar from '@/components/TableToolbar.vue'
 import ImageUpload from '@/components/ImageUpload.vue'
 import PreviewImage from '@/components/PreviewImage.vue'
+import I18nCollapse from '@/components/I18nCollapse.vue'
 import { useI18n } from '@/composables/useI18n'
 import { useBatchDelete } from '@/composables/useBatchDelete'
 
 const { t } = useI18n()
+
+const i18nFields = [
+  { base: 'title' },
+  { base: 'summary', type: 'textarea', rows: 2 },
+  { base: 'content', type: 'textarea', rows: 4 }
+]
 
 const loading = ref(false)
 const saving = ref(false)
@@ -72,7 +80,11 @@ const size = ref(10)
 const total = ref(0)
 const keyword = ref('')
 const dialogVisible = ref(false)
-const form = reactive({ id: null, title: '', summary: '', coverUrl: '', content: '', published: true })
+const emptyForm = () => ({
+  id: null, title: '', titleTw: '', titleEn: '', summary: '', summaryTw: '', summaryEn: '',
+  coverUrl: '', content: '', contentTw: '', contentEn: '', published: true
+})
+const form = reactive(emptyForm())
 
 async function loadData() {
   loading.value = true
@@ -88,14 +100,21 @@ const { selected, deleting, onSelectionChange, handleDelete, handleBatchDelete }
   reload: loadData
 })
 function openDialog(row) {
-  Object.assign(form, { id: null, title: '', summary: '', coverUrl: '', content: '', published: true })
+  Object.assign(form, emptyForm())
   if (row) {
     Object.assign(form, {
+      ...emptyForm(),
       id: row.id,
       title: row.title || '',
+      titleTw: row.titleTw || '',
+      titleEn: row.titleEn || '',
       summary: row.summary || '',
+      summaryTw: row.summaryTw || '',
+      summaryEn: row.summaryEn || '',
       coverUrl: row.coverUrl || '',
       content: row.content || '',
+      contentTw: row.contentTw || '',
+      contentEn: row.contentEn || '',
       published: row.published === true || row.status === 1
     })
   }
@@ -107,9 +126,15 @@ async function handleSave() {
     const payload = {
       id: form.id,
       title: form.title,
+      titleTw: form.titleTw,
+      titleEn: form.titleEn,
       summary: form.summary,
+      summaryTw: form.summaryTw,
+      summaryEn: form.summaryEn,
       coverUrl: form.coverUrl,
       content: form.content,
+      contentTw: form.contentTw,
+      contentEn: form.contentEn,
       published: form.published,
       status: form.published ? 1 : 0
     }

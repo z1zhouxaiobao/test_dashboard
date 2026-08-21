@@ -31,13 +31,14 @@
       <el-pagination v-model:current-page="page" v-model:page-size="size" :total="total" layout="total, sizes, prev, pager, next" @current-change="loadData" @size-change="loadData" />
     </div>
 
-    <el-dialog v-model="dialogVisible" :title="form.id ? t('editTech') : t('addTech')" width="560px">
+    <el-dialog v-model="dialogVisible" :title="form.id ? t('editTech') : t('addTech')" width="860px" top="5vh">
       <el-form :model="form" label-width="100px">
         <el-form-item :label="t('itemName')"><el-input v-model="form.title" /></el-form-item>
         <el-form-item :label="t('summary')"><el-input v-model="form.summary" type="textarea" :rows="3" /></el-form-item>
         <el-form-item :label="t('detailContent')"><el-input v-model="form.content" type="textarea" :rows="4" /></el-form-item>
         <el-form-item :label="t('image')"><ImageUpload v-model="form.coverUrl" /></el-form-item>
         <el-form-item :label="t('sortOrder')"><el-input-number v-model="form.sortOrder" :min="0" /></el-form-item>
+        <I18nCollapse :model="form" :fields="[{ base: 'title' }, { base: 'summary', type: 'textarea', rows: 2 }, { base: 'content', type: 'textarea', rows: 3 }]" />
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ t('cancel') }}</el-button>
@@ -56,6 +57,7 @@ import { resolveMediaUrl } from '@/utils/media'
 import TableToolbar from '@/components/TableToolbar.vue'
 import ImageUpload from '@/components/ImageUpload.vue'
 import PreviewImage from '@/components/PreviewImage.vue'
+import I18nCollapse from '@/components/I18nCollapse.vue'
 import { useI18n } from '@/composables/useI18n'
 import { useBatchDelete } from '@/composables/useBatchDelete'
 
@@ -69,7 +71,10 @@ const size = ref(10)
 const total = ref(0)
 const keyword = ref('')
 const dialogVisible = ref(false)
-const form = reactive({ id: null, title: '', summary: '', content: '', coverUrl: '', sortOrder: 0 })
+const form = reactive({
+  id: null, title: '', titleTw: '', titleEn: '', summary: '', summaryTw: '', summaryEn: '',
+  content: '', contentTw: '', contentEn: '', coverUrl: '', sortOrder: 0
+})
 
 async function loadData() {
   loading.value = true
@@ -85,7 +90,10 @@ const { selected, deleting, onSelectionChange, handleDelete, handleBatchDelete }
   reload: loadData
 })
 function openDialog(row) {
-  Object.assign(form, { id: null, title: '', summary: '', content: '', coverUrl: '', sortOrder: 0 })
+  Object.assign(form, {
+    id: null, title: '', titleTw: '', titleEn: '', summary: '', summaryTw: '', summaryEn: '',
+    content: '', contentTw: '', contentEn: '', coverUrl: '', sortOrder: 0
+  })
   if (row) Object.assign(form, row)
   dialogVisible.value = true
 }

@@ -34,7 +34,7 @@
       <el-pagination v-model:current-page="page" v-model:page-size="size" :total="total" layout="total, sizes, prev, pager, next" @current-change="loadData" @size-change="loadData" />
     </div>
 
-    <el-dialog v-model="dialogVisible" :title="form.id ? t('editProduct') : t('addProduct')" width="640px">
+    <el-dialog v-model="dialogVisible" :title="form.id ? t('editProduct') : t('addProduct')" width="860px" top="5vh">
       <el-form :model="form" label-width="100px">
         <el-form-item :label="t('itemName')"><el-input v-model="form.name" /></el-form-item>
         <el-form-item :label="t('category')">
@@ -56,6 +56,14 @@
         <el-form-item :label="t('cover')"><ImageUpload v-model="form.coverUrl" /></el-form-item>
         <el-form-item :label="t('detailContent')"><el-input v-model="form.content" type="textarea" :rows="5" /></el-form-item>
         <el-form-item :label="t('enabled')"><el-switch v-model="form.enabled" /></el-form-item>
+        <I18nCollapse
+          :model="form"
+          :fields="[
+            { base: 'name', labelKey: 'itemName' },
+            { base: 'summary', type: 'textarea', rows: 2 },
+            { base: 'content', type: 'textarea', rows: 3, labelKey: 'detailContent' }
+          ]"
+        />
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ t('cancel') }}</el-button>
@@ -74,6 +82,7 @@ import { resolveMediaUrl } from '@/utils/media'
 import TableToolbar from '@/components/TableToolbar.vue'
 import ImageUpload from '@/components/ImageUpload.vue'
 import PreviewImage from '@/components/PreviewImage.vue'
+import I18nCollapse from '@/components/I18nCollapse.vue'
 import { useI18n } from '@/composables/useI18n'
 import { useBatchDelete } from '@/composables/useBatchDelete'
 
@@ -88,7 +97,11 @@ const total = ref(0)
 const keyword = ref('')
 const dialogVisible = ref(false)
 const categoryTree = ref([])
-const form = reactive({ id: null, name: '', category: '', summary: '', coverUrl: '', content: '', enabled: true })
+const emptyForm = () => ({
+  id: null, name: '', nameTw: '', nameEn: '', category: '', summary: '', summaryTw: '', summaryEn: '',
+  coverUrl: '', content: '', contentTw: '', contentEn: '', enabled: true
+})
+const form = reactive(emptyForm())
 
 async function loadCategories() {
   try {
@@ -142,15 +155,22 @@ const { selected, deleting, onSelectionChange, handleDelete, handleBatchDelete }
 })
 async function openDialog(row) {
   await loadCategories()
-  Object.assign(form, { id: null, name: '', category: '', summary: '', coverUrl: '', content: '', enabled: true })
+  Object.assign(form, emptyForm())
   if (row) {
     Object.assign(form, {
+      ...emptyForm(),
       id: row.id,
       name: row.name || '',
+      nameTw: row.nameTw || '',
+      nameEn: row.nameEn || '',
       category: row.category || '',
       summary: row.summary || '',
+      summaryTw: row.summaryTw || '',
+      summaryEn: row.summaryEn || '',
       coverUrl: row.coverUrl || '',
       content: row.content || '',
+      contentTw: row.contentTw || '',
+      contentEn: row.contentEn || '',
       enabled: row.status === 1 || row.enabled === true
     })
   }
@@ -162,10 +182,16 @@ async function handleSave() {
     const payload = {
       id: form.id,
       name: form.name,
+      nameTw: form.nameTw,
+      nameEn: form.nameEn,
       category: form.category,
       summary: form.summary,
+      summaryTw: form.summaryTw,
+      summaryEn: form.summaryEn,
       coverUrl: form.coverUrl,
       content: form.content,
+      contentTw: form.contentTw,
+      contentEn: form.contentEn,
       status: form.enabled ? 1 : 0
     }
     if (form.id) await productApi.update(form.id, payload)

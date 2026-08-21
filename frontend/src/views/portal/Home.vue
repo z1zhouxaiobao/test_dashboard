@@ -4,10 +4,10 @@
       <el-carousel :height="carouselHeight" :interval="5500" :arrow="isMobile ? 'never' : 'always'" indicator-position="outside">
         <el-carousel-item v-for="item in slides" :key="item.id">
           <div class="carousel-slide" @click="goLink(item.linkUrl)">
-            <img :src="resolveMediaUrl(item.imageUrl) || fallbackImg(item.id)" :alt="item.title" />
+            <img :src="resolveMediaUrl(item.imageUrl) || fallbackImg(item.id)" :alt="localizedText(item, 'title', locale)" />
             <div class="carousel-caption">
-              <h1>{{ item.title || t('homeHeroTitle') }}</h1>
-              <p>{{ item.subtitle || t('homeHeroDesc') }}</p>
+              <h1>{{ localizedText(item, 'title', locale) || t('homeHeroTitle') }}</h1>
+              <p>{{ localizedText(item, 'subtitle', locale) || t('homeHeroDesc') }}</p>
               <button class="join-btn" type="button" @click.stop="$router.push('/portal/contact')">
                 {{ t('joinUs') }}
               </button>
@@ -50,8 +50,8 @@
           >
             <img :src="resolveMediaUrl(p.coverUrl) || defaultCover('product')" class="row-img" alt="" />
             <div class="row-body">
-              <h3>{{ p.name }}</h3>
-              <p>{{ p.summary }}</p>
+              <h3>{{ localizedText(p, 'name', locale) }}</h3>
+              <p>{{ localizedText(p, 'summary', locale) }}</p>
             </div>
           </article>
         </div>
@@ -65,9 +65,10 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { carouselApi, productApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
+import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const router = useRouter()
 const aboutImg = '/images/about-diagram.jpg'
 const carousels = ref([])

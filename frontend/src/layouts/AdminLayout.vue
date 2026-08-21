@@ -106,6 +106,10 @@
               <el-icon><Tools /></el-icon>
               <template #title>{{ t('adminConfigs') }}</template>
             </el-menu-item>
+            <el-menu-item index="/admin/visits">
+              <el-icon><View /></el-icon>
+              <template #title>{{ t('adminVisits') }}</template>
+            </el-menu-item>
             <el-menu-item index="/admin/logs">
               <el-icon><List /></el-icon>
               <template #title>{{ t('adminLogs') }}</template>
@@ -190,7 +194,7 @@ import { useRoute, useRouter } from 'vue-router'
 import {
   DataAnalysis, Picture, Reading, Trophy,
   Briefcase, Box, ChatDotRound,
-  Setting, User, Tools, List, Fold, Expand, SwitchButton, Menu
+  Setting, User, Tools, List, Fold, Expand, SwitchButton, Menu, View
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { useTagsStore } from '@/stores/tags'

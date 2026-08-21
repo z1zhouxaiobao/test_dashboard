@@ -419,4 +419,19 @@ public class AdminController {
         adminService.deleteOperateLog(id);
         return ApiResponse.ok(null);
     }
+
+    @Operation(summary = "门户访问记录")
+    @GetMapping("/visit-logs")
+    public ApiResponse<PageResult<PortalVisitLog>> listVisitLogs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.ok(adminService.listVisitLogs(keyword, page, size));
+    }
+
+    @DeleteMapping("/visit-logs/{id}")
+    public ApiResponse<Void> deleteVisitLog(@PathVariable Long id) {
+        adminService.deleteVisitLog(id);
+        return ApiResponse.ok(null);
+    }
 }

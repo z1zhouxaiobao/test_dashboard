@@ -47,6 +47,8 @@ public class AdminService {
     private SysConfigRepository sysConfigRepository;
     @Autowired
     private OperateLogRepository operateLogRepository;
+    @Autowired
+    private PortalVisitLogRepository portalVisitLogRepository;
 
     public DashboardStatsResponse getDashboardStats() {
         DashboardStatsResponse stats = new DashboardStatsResponse();
@@ -407,5 +409,24 @@ public class AdminService {
     @Transactional
     public OperateLog saveOperateLog(OperateLog log) {
         return operateLogRepository.save(log);
+    }
+
+    public PageResult<PortalVisitLog> listVisitLogs(String keyword, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        String kw = keyword == null ? "" : keyword.trim();
+        Page<PortalVisitLog> result;
+        if (!StringUtils.hasText(kw)) {
+            result = portalVisitLogRepository.findAll(pageRequest);
+        } else {
+            result = portalVisitLogRepository
+                    .findByPathContainingIgnoreCaseOrIpContainingIgnoreCaseOrPageTitleContainingIgnoreCase(
+                            kw, kw, kw, pageRequest);
+        }
+        return new PageResult<>(result.getTotalElements(), page, size, result.getContent());
+    }
+
+    @Transactional
+    public void deleteVisitLog(Long id) {
+        portalVisitLogRepository.deleteById(id);
     }
 }

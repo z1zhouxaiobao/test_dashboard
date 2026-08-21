@@ -14,8 +14,15 @@ public class Honor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 简体中文标题（默认） */
     @Column(length = 200)
     private String title;
+
+    @Column(length = 200)
+    private String titleTw;
+
+    @Column(length = 200)
+    private String titleEn;
 
     @Column(length = 500)
     private String coverUrl;
@@ -26,8 +33,20 @@ public class Honor {
     @Column(length = 200)
     private String issuer;
 
+    @Column(length = 200)
+    private String issuerTw;
+
+    @Column(length = 200)
+    private String issuerEn;
+
     @Column(length = 500)
     private String summary;
+
+    @Column(length = 500)
+    private String summaryTw;
+
+    @Column(length = 500)
+    private String summaryEn;
 
     private Integer sortOrder;
 

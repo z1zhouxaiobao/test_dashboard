@@ -17,8 +17,20 @@ public class Carousel {
     @Column(length = 200)
     private String title;
 
+    @Column(length = 200)
+    private String titleTw;
+
+    @Column(length = 200)
+    private String titleEn;
+
     @Column(length = 500)
     private String subtitle;
+
+    @Column(length = 500)
+    private String subtitleTw;
+
+    @Column(length = 500)
+    private String subtitleEn;
 
     @Column(length = 500)
     private String imageUrl;

@@ -5,8 +5,8 @@
       <article v-for="item in list" :key="item.id" class="tech-row">
         <img :src="resolveMediaUrl(item.coverUrl || item.imageUrl) || defaultCover('product')" class="tech-img" alt="" />
         <div class="tech-body">
-          <h3>{{ item.title || item.name }}</h3>
-          <p>{{ item.summary || item.description }}</p>
+          <h3>{{ localizedText(item, 'title', locale) || item.name }}</h3>
+          <p>{{ localizedText(item, 'summary', locale) || item.description }}</p>
         </div>
       </article>
     </div>
@@ -18,9 +18,10 @@
 import { ref, onMounted } from 'vue'
 import { technologyApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
+import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const list = ref([])
 const loading = ref(false)
 

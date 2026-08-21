@@ -97,10 +97,16 @@ CREATE TABLE technology (
 CREATE TABLE honor (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(200),
+  title_tw VARCHAR(200),
+  title_en VARCHAR(200),
   cover_url VARCHAR(500),
   award_year VARCHAR(20),
   issuer VARCHAR(200),
+  issuer_tw VARCHAR(200),
+  issuer_en VARCHAR(200),
   summary VARCHAR(500),
+  summary_tw VARCHAR(500),
+  summary_en VARCHAR(500),
   sort_order INT DEFAULT 0,
   created_at DATETIME
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -210,10 +216,19 @@ INSERT INTO technology (id, title, cover_url, icon_url, summary, content, sort_o
  '结合历史负载与气象数据，动态调整冷却设定点，保障可靠性的同时节约运营成本。', 4, 1, '2026-01-28 10:00:00');
 
 -- ==================== 荣誉 ====================
-INSERT INTO honor (id, title, cover_url, award_year, issuer, summary, sort_order, created_at) VALUES
-(1, '国家高新技术企业', '/uploads/honor-1.jpg', '2024', '科技部火炬中心', '认定立冷科技为高新技术企业，认可液冷核心技术能力。', 1, '2024-06-01 10:00:00'),
-(2, '绿色数据中心优秀解决方案', '/uploads/honor-2.jpg', '2025', '中国电子节能技术协会', '液冷方案入选绿色数据中心优秀案例。', 2, '2025-05-18 10:00:00'),
-(3, '算力基础设施创新奖', '/uploads/honor-3.jpg', '2025', '中国通服科技创新大会', '表彰立冷科技在液冷算力基础设施的创新贡献。', 3, '2025-11-20 10:00:00');
+INSERT INTO honor (id, title, title_tw, title_en, cover_url, award_year, issuer, issuer_tw, issuer_en, summary, summary_tw, summary_en, sort_order, created_at) VALUES
+(1, '国家高新技术企业', '國家高新技術企業', 'National High-tech Enterprise', '/uploads/honor-1.jpg', '2024',
+ '科技部火炬中心', '科技部火炬中心', 'Torch Center, MOST',
+ '认定立冷科技为高新技术企业，认可液冷核心技术能力。', '認定立冷科技為高新技術企業，認可液冷核心技術能力。', 'Recognized Liquicool as a high-tech enterprise for core liquid cooling capabilities.',
+ 1, '2024-06-01 10:00:00'),
+(2, '绿色数据中心优秀解决方案', '綠色數據中心優秀解決方案', 'Outstanding Green Data Center Solution', '/uploads/honor-2.jpg', '2025',
+ '中国电子节能技术协会', '中國電子節能技術協會', 'China Electronics Energy Conservation Association',
+ '液冷方案入选绿色数据中心优秀案例。', '液冷方案入選綠色數據中心優秀案例。', 'Liquid cooling solution selected as an outstanding green data center case.',
+ 2, '2025-05-18 10:00:00'),
+(3, '算力基础设施创新奖', '算力基礎設施創新獎', 'Computing Infrastructure Innovation Award', '/uploads/honor-3.jpg', '2025',
+ '中国通服科技创新大会', '中國通服科技創新大會', 'China Comservice Innovation Conference',
+ '表彰立冷科技在液冷算力基础设施的创新贡献。', '表彰立冷科技在液冷算力基礎設施的創新貢獻。', 'Honoring Liquicool’s innovation in liquid-cooled computing infrastructure.',
+ 3, '2025-11-20 10:00:00');
 
 -- ==================== 案例 ====================
 INSERT INTO case_study (id, title, cover_url, client_name, industry, summary, content, status, created_at) VALUES

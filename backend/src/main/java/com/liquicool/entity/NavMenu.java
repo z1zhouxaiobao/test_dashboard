@@ -19,7 +19,7 @@ public class NavMenu {
 
     /**
      * 所属一级模块编码：
-     * PRODUCTS / SOLUTIONS / NEWS / ABOUT
+     * PRODUCTS / SOLUTIONS / NEWS / ABOUT / CONTACT
      */
     @Column(length = 40, nullable = false)
     private String moduleCode;

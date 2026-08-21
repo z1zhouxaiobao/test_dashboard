@@ -37,7 +37,7 @@ http.interceptors.response.use(
   (error) => {
     const status = error.response?.status
     const message = error.response?.data?.message || error.message || '网络错误'
-    if (!shouldSkipErrorToast(message) && !error.config?.skipErrorToast) {
+    if (!error.config?.skipErrorToast) {
       ElMessage.error(message)
     }
     if (status === 401) {

@@ -306,6 +306,16 @@ function fallbackMenus() {
         { id: 41, nameZh: '加入我们', nameTw: '加入我們', nameEn: 'Join Us', linkPath: '/portal/join', children: [] },
         { id: 42, nameZh: '获得奖项', nameTw: '獲得獎項', nameEn: 'Awards', linkPath: '/portal/honors', children: [] }
       ]
+    },
+    {
+      id: 5,
+      moduleCode: 'CONTACT',
+      levelNo: 1,
+      nameZh: '联系我们',
+      nameTw: '聯絡我們',
+      nameEn: 'Contact',
+      linkPath: '/portal/contact',
+      children: []
     }
   ]
 }

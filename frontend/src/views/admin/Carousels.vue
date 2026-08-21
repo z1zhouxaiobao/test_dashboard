@@ -35,7 +35,7 @@
       <el-pagination v-model:current-page="page" v-model:page-size="size" :total="total" layout="total, sizes, prev, pager, next" @current-change="loadData" @size-change="loadData" />
     </div>
 
-    <el-dialog v-model="dialogVisible" :title="form.id ? t('editCarousel') : t('addCarousel')" width="560px">
+    <el-dialog v-model="dialogVisible" :title="form.id ? t('editCarousel') : t('addCarousel')" width="860px" class="cms-dialog" top="6vh">
       <el-form :model="form" label-width="100px">
         <el-form-item :label="t('title')"><el-input v-model="form.title" /></el-form-item>
         <el-form-item :label="t('subtitle')"><el-input v-model="form.subtitle" /></el-form-item>
@@ -43,6 +43,7 @@
         <el-form-item :label="t('linkUrl')"><el-input v-model="form.linkUrl" /></el-form-item>
         <el-form-item :label="t('sortOrder')"><el-input-number v-model="form.sortOrder" :min="0" /></el-form-item>
         <el-form-item :label="t('enabled')"><el-switch v-model="form.enabled" /></el-form-item>
+        <I18nCollapse :model="form" :fields="[{ base: 'title' }, { base: 'subtitle' }]" />
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ t('cancel') }}</el-button>
@@ -61,6 +62,7 @@ import { resolveMediaUrl } from '@/utils/media'
 import TableToolbar from '@/components/TableToolbar.vue'
 import ImageUpload from '@/components/ImageUpload.vue'
 import PreviewImage from '@/components/PreviewImage.vue'
+import I18nCollapse from '@/components/I18nCollapse.vue'
 import { useI18n } from '@/composables/useI18n'
 import { useBatchDelete } from '@/composables/useBatchDelete'
 
@@ -74,7 +76,10 @@ const size = ref(10)
 const total = ref(0)
 const keyword = ref('')
 const dialogVisible = ref(false)
-const form = reactive({ id: null, title: '', subtitle: '', imageUrl: '', linkUrl: '', sortOrder: 0, enabled: true })
+const form = reactive({
+  id: null, title: '', titleTw: '', titleEn: '', subtitle: '', subtitleTw: '', subtitleEn: '',
+  imageUrl: '', linkUrl: '', sortOrder: 0, enabled: true
+})
 
 async function loadData() {
   loading.value = true
@@ -91,7 +96,10 @@ const { selected, deleting, onSelectionChange, handleDelete, handleBatchDelete }
   reload: loadData
 })
 function openDialog(row) {
-  Object.assign(form, { id: null, title: '', subtitle: '', imageUrl: '', linkUrl: '', sortOrder: 0, enabled: true })
+  Object.assign(form, {
+    id: null, title: '', titleTw: '', titleEn: '', subtitle: '', subtitleTw: '', subtitleEn: '',
+    imageUrl: '', linkUrl: '', sortOrder: 0, enabled: true
+  })
   if (row) Object.assign(form, row)
   dialogVisible.value = true
 }

@@ -134,6 +134,15 @@ export const logApi = {
   remove: (id) => http.delete(`/admin/operate-logs/${id}`)
 }
 
+export const visitApi = {
+  page: (params) => http.get('/admin/visit-logs', { params: pageParams(params) }),
+  remove: (id) => http.delete(`/admin/visit-logs/${id}`),
+  report: (data) =>
+    http.post('/portal/visits', data, {
+      skipErrorToast: true
+    })
+}
+
 export const dashboardApi = {
   stats: () => http.get('/admin/dashboard/stats')
 }

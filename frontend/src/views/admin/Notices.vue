@@ -31,7 +31,7 @@
       <el-pagination v-model:current-page="page" v-model:page-size="size" :total="total" layout="total, sizes, prev, pager, next" @current-change="loadData" @size-change="loadData" />
     </div>
 
-    <el-dialog v-model="dialogVisible" :title="form.id ? t('editNotice') : t('addNotice')" width="560px">
+    <el-dialog v-model="dialogVisible" :title="form.id ? t('editNotice') : t('addNotice')" width="860px" top="5vh">
       <el-form :model="form" label-width="100px">
         <el-form-item :label="t('title')"><el-input v-model="form.title" /></el-form-item>
         <el-form-item :label="t('type')">
@@ -43,6 +43,7 @@
         </el-form-item>
         <el-form-item :label="t('content')"><el-input v-model="form.content" type="textarea" :rows="5" /></el-form-item>
         <el-form-item :label="t('enabled')"><el-switch v-model="form.enabled" /></el-form-item>
+        <I18nCollapse :model="form" :fields="[{ base: 'title' }, { base: 'content', type: 'textarea', rows: 4 }]" />
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ t('cancel') }}</el-button>
@@ -58,6 +59,7 @@ import { ElMessage } from 'element-plus'
 import { noticeApi } from '@/api'
 import { formatDateTime } from '@/utils/datetime'
 import TableToolbar from '@/components/TableToolbar.vue'
+import I18nCollapse from '@/components/I18nCollapse.vue'
 import { useI18n } from '@/composables/useI18n'
 import { useBatchDelete } from '@/composables/useBatchDelete'
 
@@ -71,7 +73,10 @@ const size = ref(10)
 const total = ref(0)
 const keyword = ref('')
 const dialogVisible = ref(false)
-const form = reactive({ id: null, title: '', type: '系统公告', content: '', enabled: true })
+const form = reactive({
+  id: null, title: '', titleTw: '', titleEn: '', type: '系统公告',
+  content: '', contentTw: '', contentEn: '', enabled: true
+})
 
 async function loadData() {
   loading.value = true
@@ -87,7 +92,10 @@ const { selected, deleting, onSelectionChange, handleDelete, handleBatchDelete }
   reload: loadData
 })
 function openDialog(row) {
-  Object.assign(form, { id: null, title: '', type: '系统公告', content: '', enabled: true })
+  Object.assign(form, {
+    id: null, title: '', titleTw: '', titleEn: '', type: '系统公告',
+    content: '', contentTw: '', contentEn: '', enabled: true
+  })
   if (row) Object.assign(form, row)
   dialogVisible.value = true
 }

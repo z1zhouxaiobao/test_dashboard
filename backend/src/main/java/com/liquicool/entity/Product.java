@@ -17,6 +17,12 @@ public class Product {
     @Column(length = 200)
     private String name;
 
+    @Column(length = 200)
+    private String nameTw;
+
+    @Column(length = 200)
+    private String nameEn;
+
     @Column(length = 500)
     private String coverUrl;
 
@@ -27,8 +33,20 @@ public class Product {
     @Column(length = 500)
     private String summary;
 
+    @Column(length = 500)
+    private String summaryTw;
+
+    @Column(length = 500)
+    private String summaryEn;
+
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @Column(columnDefinition = "TEXT")
+    private String contentTw;
+
+    @Column(columnDefinition = "TEXT")
+    private String contentEn;
 
     @Column(columnDefinition = "TEXT")
     private String specs;

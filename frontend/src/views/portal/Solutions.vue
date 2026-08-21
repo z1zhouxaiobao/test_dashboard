@@ -43,8 +43,8 @@
         >
           <img :src="resolveMediaUrl(item.coverUrl) || defaultCover('case')" alt="" />
           <div>
-            <h3>{{ item.title }}</h3>
-            <p>{{ item.summary }}</p>
+            <h3>{{ localizedText(item, 'title', locale) }}</h3>
+            <p>{{ localizedText(item, 'summary', locale) }}</p>
           </div>
         </article>
       </div>
@@ -56,6 +56,7 @@
 import { ref, onMounted } from 'vue'
 import { navMenuApi, caseApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
+import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
 
 const { t, locale } = useI18n()

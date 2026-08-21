@@ -67,6 +67,7 @@
             <el-radio-button label="SOLUTIONS">解决方案</el-radio-button>
             <el-radio-button label="NEWS">新闻</el-radio-button>
             <el-radio-button label="ABOUT">关于</el-radio-button>
+            <el-radio-button label="CONTACT">联系我们</el-radio-button>
           </el-radio-group>
         </el-form-item>
 

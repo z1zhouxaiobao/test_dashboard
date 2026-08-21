@@ -4,6 +4,7 @@ import com.liquicool.common.PageResult;
 import com.liquicool.dto.ConsultationRequest;
 import com.liquicool.dto.FeedbackRequest;
 import com.liquicool.dto.PortalOverviewResponse;
+import com.liquicool.dto.VisitLogRequest;
 import com.liquicool.entity.*;
 import com.liquicool.enums.ConsultationStatus;
 import com.liquicool.exception.BusinessException;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 public class PortalService {
@@ -38,6 +40,9 @@ public class PortalService {
 
     @Autowired
     private CaseStudyRepository caseStudyRepository;
+
+    @Autowired
+    private PortalVisitLogRepository portalVisitLogRepository;
 
     @Autowired
     private FeedbackRepository feedbackRepository;
@@ -199,5 +204,25 @@ public class PortalService {
         consultation.setContent(request.getContent());
         consultation.setStatus(ConsultationStatus.待处理);
         return consultationRepository.save(consultation);
+    }
+
+    @Transactional
+    public PortalVisitLog recordVisit(VisitLogRequest request, String ip, String userAgent) {
+        PortalVisitLog log = new PortalVisitLog();
+        log.setPath(trimTo(request.getPath(), 500));
+        log.setPageTitle(trimTo(request.getPageTitle(), 200));
+        log.setReferer(trimTo(request.getReferer(), 500));
+        log.setLocale(trimTo(request.getLocale(), 20));
+        log.setIp(trimTo(ip, 64));
+        log.setUserAgent(trimTo(userAgent, 500));
+        return portalVisitLogRepository.save(log);
+    }
+
+    private String trimTo(String value, int max) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.length() <= max ? trimmed : trimmed.substring(0, max);
     }
 }

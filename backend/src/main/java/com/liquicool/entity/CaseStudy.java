@@ -17,6 +17,12 @@ public class CaseStudy {
     @Column(length = 200)
     private String title;
 
+    @Column(length = 200)
+    private String titleTw;
+
+    @Column(length = 200)
+    private String titleEn;
+
     @Column(length = 500)
     private String coverUrl;
 
@@ -26,11 +32,29 @@ public class CaseStudy {
     @Column(length = 100)
     private String industry;
 
+    @Column(length = 100)
+    private String industryTw;
+
+    @Column(length = 100)
+    private String industryEn;
+
     @Column(length = 500)
     private String summary;
 
+    @Column(length = 500)
+    private String summaryTw;
+
+    @Column(length = 500)
+    private String summaryEn;
+
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @Column(columnDefinition = "TEXT")
+    private String contentTw;
+
+    @Column(columnDefinition = "TEXT")
+    private String contentEn;
 
     private Integer status;
 

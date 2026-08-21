@@ -2,7 +2,7 @@
   <div class="contact-page">
     <section class="portal-section contact-top">
       <h1 class="page-title">{{ t('contactTitle') }}</h1>
-      <h2 class="talk-title">{{ settings.talkNow }}</h2>
+      <h2 class="talk-title">{{ localizedText(settings, 'talkNow', locale) }}</h2>
 
       <div class="service-list">
         <article class="service-row">
@@ -15,11 +15,11 @@
             </svg>
           </div>
           <div class="service-body">
-            <h3>{{ settings.presalesTitle }}</h3>
-            <p>{{ settings.presalesDesc }}</p>
+            <h3>{{ localizedText(settings, 'presalesTitle', locale) }}</h3>
+            <p>{{ localizedText(settings, 'presalesDesc', locale) }}</p>
             <strong class="service-phone">{{ settings.presalesPhone }}</strong>
           </div>
-          <a class="service-btn" :href="`tel:${settings.presalesPhone}`">{{ settings.presalesBtn }}</a>
+          <a class="service-btn" :href="`tel:${settings.presalesPhone}`">{{ localizedText(settings, 'presalesBtn', locale) }}</a>
         </article>
 
         <article class="service-row">
@@ -32,11 +32,11 @@
             </svg>
           </div>
           <div class="service-body">
-            <h3>{{ settings.aftersalesTitle }}</h3>
-            <p>{{ settings.aftersalesDesc }}</p>
+            <h3>{{ localizedText(settings, 'aftersalesTitle', locale) }}</h3>
+            <p>{{ localizedText(settings, 'aftersalesDesc', locale) }}</p>
             <strong class="service-phone">{{ settings.aftersalesPhone }}</strong>
           </div>
-          <a class="service-btn" :href="`tel:${settings.aftersalesPhone}`">{{ settings.aftersalesBtn }}</a>
+          <a class="service-btn" :href="`tel:${settings.aftersalesPhone}`">{{ localizedText(settings, 'aftersalesBtn', locale) }}</a>
         </article>
       </div>
     </section>
@@ -49,12 +49,12 @@
     </nav>
 
     <section id="contact-support" class="portal-section support-block">
-      <h2 class="section-heading">{{ settings.supportHeading }}</h2>
+      <h2 class="section-heading">{{ localizedText(settings, 'supportHeading', locale) }}</h2>
       <div class="support-grid">
         <div class="support-item">
           <el-icon :size="28"><Phone /></el-icon>
           <div>
-            <h3>{{ settings.presalesTitle }}</h3>
+            <h3>{{ localizedText(settings, 'presalesTitle', locale) }}</h3>
             <p>{{ settings.presalesPhone }}</p>
           </div>
         </div>
@@ -73,7 +73,7 @@
       <div class="company-info">
         <p><el-icon><Phone /></el-icon> {{ settings.companyPhone || settings.presalesPhone }}</p>
         <p><el-icon><Message /></el-icon> {{ settings.email }}</p>
-        <p><el-icon><Location /></el-icon> {{ settings.address }}</p>
+        <p><el-icon><Location /></el-icon> {{ localizedText(settings, 'address', locale) }}</p>
       </div>
     </section>
 
@@ -81,7 +81,6 @@
       <div id="contact-sales" class="contact-grid">
         <section class="panel">
           <h3>{{ t('onlineMsg') }}</h3>
-          <p class="panel-hint">{{ t('onlineMsgHint') }}</p>
           <el-form
             :model="form"
             :label-position="isMobile ? 'top' : 'right'"
@@ -141,9 +140,10 @@ import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
 import { Phone, Message, Location } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { feedbackApi, consultationApi, contactSettingsApi } from '@/api'
+import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const submitting = ref(false)
 const consulting = ref(false)
 const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1200)

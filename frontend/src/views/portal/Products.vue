@@ -43,8 +43,8 @@
         <article v-for="item in list" :key="item.id" class="product-row">
           <img :src="resolveMediaUrl(item.coverUrl) || defaultCover('product')" class="cover" alt="" />
           <div class="info">
-            <h3 @click="$router.push(`/portal/products/${item.id}`)">{{ item.name }}</h3>
-            <p>{{ item.summary }}</p>
+            <h3 @click="$router.push(`/portal/products/${item.id}`)">{{ localizedText(item, 'name', locale) }}</h3>
+            <p>{{ localizedText(item, 'summary', locale) }}</p>
           </div>
           <div class="actions">
             <a href="javascript:;" @click.prevent="$router.push(`/portal/products/${item.id}`)">{{ t('viewSeries') }}</a>
@@ -72,6 +72,7 @@ import { ref, reactive, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { productApi, navMenuApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
+import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
 
 const { t, locale } = useI18n()

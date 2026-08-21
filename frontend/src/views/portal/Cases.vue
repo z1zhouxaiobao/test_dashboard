@@ -10,9 +10,9 @@
       >
         <img :src="resolveMediaUrl(item.coverUrl) || defaultCover('case')" class="cover" alt="" />
         <div class="body">
-          <span v-if="item.industry" class="tag">{{ item.industry }}</span>
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.summary }}</p>
+          <span v-if="item.industry" class="tag">{{ localizedText(item, 'industry', locale) }}</span>
+          <h3>{{ localizedText(item, 'title', locale) }}</h3>
+          <p>{{ localizedText(item, 'summary', locale) }}</p>
         </div>
       </article>
     </div>
@@ -33,9 +33,10 @@ import { ref, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { caseApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
+import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const list = ref([])
 const page = ref(1)

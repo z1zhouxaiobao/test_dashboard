@@ -2,13 +2,13 @@
   <div class="portal-section page-card">
     <el-skeleton v-if="loading" :rows="8" animated />
     <template v-else-if="detail">
-      <h1 class="page-title">{{ detail.title }}</h1>
+      <h1 class="page-title">{{ localizedText(detail, 'title', locale) }}</h1>
       <div class="meta">
         <span>{{ formatDateTime(detail.publishTime || detail.createdAt) }}</span>
         <span>阅读 {{ detail.viewCount || 0 }}</span>
       </div>
       <img v-if="detail.coverUrl" :src="resolveMediaUrl(detail.coverUrl)" class="cover" alt="" />
-      <div class="content rich-content" v-html="detail.content"></div>
+      <div class="content rich-content" v-html="localizedText(detail, 'content', locale)"></div>
     </template>
     <el-empty v-else description="新闻不存在" />
   </div>
@@ -20,7 +20,10 @@ import { useRoute } from 'vue-router'
 import { newsApi } from '@/api'
 import { formatDateTime } from '@/utils/datetime'
 import { resolveMediaUrl } from '@/utils/media'
+import { localizedText } from '@/utils/localized'
+import { useI18n } from '@/composables/useI18n'
 
+const { locale } = useI18n()
 const route = useRoute()
 const detail = ref(null)
 const loading = ref(true)

@@ -1,12 +1,10 @@
 <template>
   <div class="page-card">
     <h2 class="page-title">{{ t('adminContactSettings') }}</h2>
-    <p class="hint">{{ t('adminContactSettingsHint') }}</p>
-
     <el-form
       v-loading="loading"
       :model="form"
-      label-width="120px"
+      label-width="100px"
       class="settings-form"
       @submit.prevent
     >
@@ -43,8 +41,8 @@
         <el-input v-model="form.aftersalesBtn" />
       </el-form-item>
 
-      <h3 class="block-title">{{ t('supportHeading') }}</h3>
-      <el-form-item :label="t('supportHeading')">
+      <h3 class="block-title">{{ t('cfgSupportBlock') }}</h3>
+      <el-form-item :label="t('cfgSupportHeading')">
         <el-input v-model="form.supportHeading" />
       </el-form-item>
       <el-form-item :label="t('contactEmail')">
@@ -53,9 +51,24 @@
       <el-form-item :label="t('cfgCompanyPhone')">
         <el-input v-model="form.companyPhone" />
       </el-form-item>
-      <el-form-item :label="t('address')">
+      <el-form-item :label="t('cfgAddress')">
         <el-input v-model="form.address" />
       </el-form-item>
+
+      <I18nCollapse
+        :model="form"
+        :fields="[
+          { base: 'talkNow', labelKey: 'talkNow' },
+          { base: 'presalesTitle', labelKey: 'presalesTitle' },
+          { base: 'presalesDesc', type: 'textarea', rows: 2, labelKey: 'cfgDesc' },
+          { base: 'presalesBtn', labelKey: 'cfgBtnText' },
+          { base: 'aftersalesTitle', labelKey: 'aftersalesTitle' },
+          { base: 'aftersalesDesc', type: 'textarea', rows: 2, labelKey: 'cfgDesc' },
+          { base: 'aftersalesBtn', labelKey: 'cfgBtnText' },
+          { base: 'supportHeading', labelKey: 'cfgSupportHeading' },
+          { base: 'address', labelKey: 'cfgAddress' }
+        ]"
+      />
 
       <el-form-item>
         <el-button type="primary" :loading="saving" @click="handleSave">{{ t('save') }}</el-button>
@@ -69,24 +82,25 @@
 import { reactive, ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { contactSettingsApi } from '@/api'
+import I18nCollapse from '@/components/I18nCollapse.vue'
 import { useI18n } from '@/composables/useI18n'
 
 const { t } = useI18n()
 const loading = ref(false)
 const saving = ref(false)
 const form = reactive({
-  talkNow: '',
-  presalesTitle: '',
-  presalesDesc: '',
+  talkNow: '', talkNowTw: '', talkNowEn: '',
+  presalesTitle: '', presalesTitleTw: '', presalesTitleEn: '',
+  presalesDesc: '', presalesDescTw: '', presalesDescEn: '',
   presalesPhone: '',
-  presalesBtn: '',
-  aftersalesTitle: '',
-  aftersalesDesc: '',
+  presalesBtn: '', presalesBtnTw: '', presalesBtnEn: '',
+  aftersalesTitle: '', aftersalesTitleTw: '', aftersalesTitleEn: '',
+  aftersalesDesc: '', aftersalesDescTw: '', aftersalesDescEn: '',
   aftersalesPhone: '',
-  aftersalesBtn: '',
-  supportHeading: '',
+  aftersalesBtn: '', aftersalesBtnTw: '', aftersalesBtnEn: '',
+  supportHeading: '', supportHeadingTw: '', supportHeadingEn: '',
   email: '',
-  address: '',
+  address: '', addressTw: '', addressEn: '',
   companyPhone: ''
 })
 

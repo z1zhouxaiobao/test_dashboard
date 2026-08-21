@@ -8,6 +8,7 @@ USE liquicool;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS portal_visit_log;
 DROP TABLE IF EXISTS operate_log;
 DROP TABLE IF EXISTS sys_config;
 DROP TABLE IF EXISTS feedback;
@@ -39,7 +40,11 @@ CREATE TABLE sys_user (
 CREATE TABLE carousel (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(200),
+  title_tw VARCHAR(200),
+  title_en VARCHAR(200),
   subtitle VARCHAR(500),
+  subtitle_tw VARCHAR(500),
+  subtitle_en VARCHAR(500),
   image_url VARCHAR(500),
   link_url VARCHAR(500),
   sort_order INT DEFAULT 0,
@@ -50,9 +55,15 @@ CREATE TABLE carousel (
 CREATE TABLE news (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(200),
+  title_tw VARCHAR(200),
+  title_en VARCHAR(200),
   cover_url VARCHAR(500),
   summary VARCHAR(500),
+  summary_tw VARCHAR(500),
+  summary_en VARCHAR(500),
   content TEXT,
+  content_tw TEXT,
+  content_en TEXT,
   view_count INT DEFAULT 0,
   status INT DEFAULT 1,
   publish_time DATETIME,
@@ -62,8 +73,12 @@ CREATE TABLE news (
 CREATE TABLE notice (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(200),
+  title_tw VARCHAR(200),
+  title_en VARCHAR(200),
   type VARCHAR(50),
   content TEXT,
+  content_tw TEXT,
+  content_en TEXT,
   status INT DEFAULT 1,
   created_at DATETIME
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -71,10 +86,16 @@ CREATE TABLE notice (
 CREATE TABLE product (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(200),
+  name_tw VARCHAR(200),
+  name_en VARCHAR(200),
   cover_url VARCHAR(500),
   category VARCHAR(80),
   summary VARCHAR(500),
+  summary_tw VARCHAR(500),
+  summary_en VARCHAR(500),
   content TEXT,
+  content_tw TEXT,
+  content_en TEXT,
   specs TEXT,
   price_hint VARCHAR(100),
   status INT DEFAULT 1,
@@ -103,10 +124,16 @@ CREATE TABLE nav_menu (
 CREATE TABLE technology (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(200),
+  title_tw VARCHAR(200),
+  title_en VARCHAR(200),
   cover_url VARCHAR(500),
   icon_url VARCHAR(500),
   summary VARCHAR(500),
+  summary_tw VARCHAR(500),
+  summary_en VARCHAR(500),
   content TEXT,
+  content_tw TEXT,
+  content_en TEXT,
   sort_order INT DEFAULT 0,
   status INT DEFAULT 1,
   created_at DATETIME
@@ -115,10 +142,16 @@ CREATE TABLE technology (
 CREATE TABLE honor (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(200),
+  title_tw VARCHAR(200),
+  title_en VARCHAR(200),
   cover_url VARCHAR(500),
   award_year VARCHAR(20),
   issuer VARCHAR(200),
+  issuer_tw VARCHAR(200),
+  issuer_en VARCHAR(200),
   summary VARCHAR(500),
+  summary_tw VARCHAR(500),
+  summary_en VARCHAR(500),
   sort_order INT DEFAULT 0,
   created_at DATETIME
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -126,11 +159,19 @@ CREATE TABLE honor (
 CREATE TABLE case_study (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   title VARCHAR(200),
+  title_tw VARCHAR(200),
+  title_en VARCHAR(200),
   cover_url VARCHAR(500),
   client_name VARCHAR(100),
   industry VARCHAR(100),
+  industry_tw VARCHAR(100),
+  industry_en VARCHAR(100),
   summary VARCHAR(500),
+  summary_tw VARCHAR(500),
+  summary_en VARCHAR(500),
   content TEXT,
+  content_tw TEXT,
+  content_en TEXT,
   status INT DEFAULT 1,
   created_at DATETIME
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -181,6 +222,17 @@ CREATE TABLE operate_log (
   created_at DATETIME
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE portal_visit_log (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  path VARCHAR(500),
+  page_title VARCHAR(200),
+  referer VARCHAR(500),
+  ip VARCHAR(64),
+  user_agent VARCHAR(500),
+  locale VARCHAR(20),
+  created_at DATETIME
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- ==================== 用户 ====================
 INSERT INTO sys_user (id, username, password, nickname, avatar, phone, email, role, status, created_at, updated_at) VALUES
 (1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', '系统管理员', '/uploads/avatar-admin.png', '13800000001', 'admin@liquicool.com', 'ADMIN', 1, '2026-01-10 09:00:00', '2026-01-10 09:00:00'),
@@ -196,6 +248,7 @@ INSERT INTO nav_menu (id, parent_id, module_code, level_no, name_zh, name_tw, na
 (2, NULL, 'SOLUTIONS', 1, '解决方案', '解決方案', 'Solutions', 'solutions', '/portal/solutions', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
 (3, NULL, 'NEWS', 1, '新闻', '新聞', 'News', 'news', '/portal/news', 3, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
 (4, NULL, 'ABOUT', 1, '关于', '關於', 'About', 'about', '/portal/about', 4, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
+(5, NULL, 'CONTACT', 1, '联系我们', '聯絡我們', 'Contact', 'contact', '/portal/contact', 5, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
 -- 产品二级
 (10, 1, 'PRODUCTS', 2, '液冷产品', '液冷產品', 'Liquid Cooling Products', 'lc-products', '/portal/products', 1, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
 (11, 1, 'PRODUCTS', 2, '热管理技术', '熱管理技術', 'Thermal Management', 'thermal', '/portal/technologies', 2, 1, '2026-08-20 10:00:00', '2026-08-20 10:00:00'),
@@ -270,10 +323,19 @@ INSERT INTO technology (id, title, cover_url, icon_url, summary, content, sort_o
  '结合历史负载与气象数据，动态调整冷却设定点，保障可靠性的同时节约运营成本。', 4, 1, '2026-01-28 10:00:00');
 
 -- ==================== 荣誉 ====================
-INSERT INTO honor (id, title, cover_url, award_year, issuer, summary, sort_order, created_at) VALUES
-(1, '国家高新技术企业', '/uploads/honor-1.jpg', '2024', '科技部火炬中心', '认定立冷科技为高新技术企业，认可液冷核心技术能力。', 1, '2024-06-01 10:00:00'),
-(2, '绿色数据中心优秀解决方案', '/uploads/honor-2.jpg', '2025', '中国电子节能技术协会', '液冷方案入选绿色数据中心优秀案例。', 2, '2025-05-18 10:00:00'),
-(3, '算力基础设施创新奖', '/uploads/honor-3.jpg', '2025', '中国通服科技创新大会', '表彰立冷科技在液冷算力基础设施的创新贡献。', 3, '2025-11-20 10:00:00');
+INSERT INTO honor (id, title, title_tw, title_en, cover_url, award_year, issuer, issuer_tw, issuer_en, summary, summary_tw, summary_en, sort_order, created_at) VALUES
+(1, '国家高新技术企业', '國家高新技術企業', 'National High-tech Enterprise', '/uploads/honor-1.jpg', '2024',
+ '科技部火炬中心', '科技部火炬中心', 'Torch Center, MOST',
+ '认定立冷科技为高新技术企业，认可液冷核心技术能力。', '認定立冷科技為高新技術企業，認可液冷核心技術能力。', 'Recognized Liquicool as a high-tech enterprise for core liquid cooling capabilities.',
+ 1, '2024-06-01 10:00:00'),
+(2, '绿色数据中心优秀解决方案', '綠色數據中心優秀解決方案', 'Outstanding Green Data Center Solution', '/uploads/honor-2.jpg', '2025',
+ '中国电子节能技术协会', '中國電子節能技術協會', 'China Electronics Energy Conservation Association',
+ '液冷方案入选绿色数据中心优秀案例。', '液冷方案入選綠色數據中心優秀案例。', 'Liquid cooling solution selected as an outstanding green data center case.',
+ 2, '2025-05-18 10:00:00'),
+(3, '算力基础设施创新奖', '算力基礎設施創新獎', 'Computing Infrastructure Innovation Award', '/uploads/honor-3.jpg', '2025',
+ '中国通服科技创新大会', '中國通服科技創新大會', 'China Comservice Innovation Conference',
+ '表彰立冷科技在液冷算力基础设施的创新贡献。', '表彰立冷科技在液冷算力基礎設施的創新貢獻。', 'Honoring Liquicool’s innovation in liquid-cooled computing infrastructure.',
+ 3, '2025-11-20 10:00:00');
 
 -- ==================== 案例 ====================
 INSERT INTO case_study (id, title, cover_url, client_name, industry, summary, content, status, created_at) VALUES

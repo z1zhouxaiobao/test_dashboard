@@ -4,12 +4,12 @@
     <div class="honor-grid">
       <article v-for="item in list" :key="item.id" class="honor-item">
         <img :src="resolveMediaUrl(item.coverUrl || item.imageUrl) || defaultCover('honor')" class="honor-img" alt="" />
-        <h3>{{ item.title || item.name }}</h3>
-        <p>{{ item.summary || item.description }}</p>
+        <h3>{{ localizedText(item, 'title', locale) }}</h3>
+        <p>{{ localizedText(item, 'summary', locale) }}</p>
         <span class="year">{{ item.awardYear || item.year }}</span>
       </article>
     </div>
-    <el-empty v-if="!loading && !list.length" description="暂无数据" />
+    <el-empty v-if="!loading && !list.length" :description="t('noData')" />
   </div>
 </template>
 
@@ -17,9 +17,10 @@
 import { ref, onMounted } from 'vue'
 import { honorApi } from '@/api'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
+import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const list = ref([])
 const loading = ref(false)
 
