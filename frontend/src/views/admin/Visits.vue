@@ -3,6 +3,7 @@
     <h2 class="page-title">{{ t('adminVisits') }}</h2>
     <TableToolbar v-model="keyword" :placeholder="t('phVisit')" @search="handleSearch" @refresh="loadData">
       <el-button type="danger" plain :disabled="!selected.length" :loading="deleting" @click="handleBatchDelete">{{ t('batchDelete') }}</el-button>
+      <el-button type="danger" :loading="clearing" :disabled="!total" @click="handleClearAll">{{ t('clearAllVisits') }}</el-button>
     </TableToolbar>
 
     <el-table v-loading="loading" :data="list" border align="center" header-align="center" row-key="id" @selection-change="onSelectionChange">
@@ -32,6 +33,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { visitApi } from '@/api'
 import { formatDateTime } from '@/utils/datetime'
 import TableToolbar from '@/components/TableToolbar.vue'
@@ -41,6 +43,7 @@ import { useBatchDelete } from '@/composables/useBatchDelete'
 const { t } = useI18n()
 
 const loading = ref(false)
+const clearing = ref(false)
 const list = ref([])
 const page = ref(1)
 const size = ref(10)
@@ -70,13 +73,26 @@ const { selected, deleting, onSelectionChange, handleDelete, handleBatchDelete }
   reload: loadData
 })
 
+async function handleClearAll() {
+  try {
+    await ElMessageBox.confirm(t('clearAllVisitsConfirm'), t('clearAllVisits'), {
+      type: 'warning',
+      confirmButtonText: t('confirmDelete') || '确定',
+      cancelButtonText: t('cancel') || '取消'
+    })
+  } catch {
+    return
+  }
+  clearing.value = true
+  try {
+    await visitApi.removeAll()
+    ElMessage.success(t('clearAllVisitsOk'))
+    page.value = 1
+    await loadData()
+  } catch { /* handled */ } finally {
+    clearing.value = false
+  }
+}
+
 onMounted(loadData)
 </script>
-
-<style scoped>
-.page-hint {
-  margin: -8px 0 16px;
-  color: #6b7280;
-  font-size: 13px;
-}
-</style>

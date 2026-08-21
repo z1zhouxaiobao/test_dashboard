@@ -51,6 +51,7 @@ public class Technology {
 
     private Integer status;
 
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist

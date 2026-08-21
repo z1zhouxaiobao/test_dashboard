@@ -44,8 +44,7 @@ export const newsApi = {
   create: (data) => http.post('/admin/news', data),
   update: (id, data) => http.put(`/admin/news/${id}`, data),
   remove: (id) => http.delete(`/admin/news/${id}`),
-  portalPage: (params) => http.get('/portal/news', { params: pageParams(params) }),
-  portalDetail: (id) => http.get(`/portal/news/${id}`)
+  portalPage: (params) => http.get('/portal/news', { params: pageParams(params) })
 }
 
 export const noticeApi = {
@@ -86,6 +85,14 @@ export const honorApi = {
   portalList: () => http.get('/portal/honors', { params: { page: 1, size: 50 } })
 }
 
+export const jobApi = {
+  page: (params) => http.get('/admin/jobs', { params: pageParams(params) }),
+  create: (data) => http.post('/admin/jobs', data),
+  update: (id, data) => http.put(`/admin/jobs/${id}`, data),
+  remove: (id) => http.delete(`/admin/jobs/${id}`),
+  portalList: () => http.get('/portal/jobs')
+}
+
 export const caseApi = {
   page: (params) => http.get('/admin/cases', { params: pageParams(params) }),
   create: (data) => http.post('/admin/cases', data),
@@ -111,7 +118,7 @@ export const consultationApi = {
 
 export const feedbackApi = {
   page: (params) => http.get('/admin/feedbacks', { params: pageParams(params) }),
-  create: (data) => http.post('/portal/feedbacks', data),
+  create: (data) => http.post('/user/feedbacks', data),
   update: (id, data) => http.put(`/admin/feedbacks/${id}`, data),
   remove: (id) => http.delete(`/admin/feedbacks/${id}`)
 }
@@ -137,6 +144,7 @@ export const logApi = {
 export const visitApi = {
   page: (params) => http.get('/admin/visit-logs', { params: pageParams(params) }),
   remove: (id) => http.delete(`/admin/visit-logs/${id}`),
+  removeAll: () => http.delete('/admin/visit-logs'),
   report: (data) =>
     http.post('/portal/visits', data, {
       skipErrorToast: true

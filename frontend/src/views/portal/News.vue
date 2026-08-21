@@ -1,7 +1,7 @@
 <template>
   <div class="portal-section">
     <h1 class="page-title">{{ t('newsTitle') }}</h1>
-    <div v-for="item in list" :key="item.id" class="news-item" @click="$router.push(`/portal/news/${item.id}`)">
+    <div v-for="item in list" :key="item.id" class="news-item" @click="openNews(item)">
       <img :src="resolveMediaUrl(item.coverUrl) || defaultCover('news')" class="thumb" alt="" />
       <div class="news-body">
         <h3>{{ localizedText(item, 'title', locale) }}</h3>
@@ -23,6 +23,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import { newsApi } from '@/api'
 import { formatDateTime } from '@/utils/datetime'
 import { resolveMediaUrl, defaultCover } from '@/utils/media'
@@ -34,6 +35,22 @@ const list = ref([])
 const page = ref(1)
 const size = ref(10)
 const total = ref(0)
+
+function normalizeHref(url) {
+  const raw = String(url || '').trim()
+  if (!raw) return ''
+  if (/^(https?:|mailto:|tel:)/i.test(raw) || raw.startsWith('/')) return raw
+  return `https://${raw}`
+}
+
+function openNews(item) {
+  const href = normalizeHref(item?.linkUrl)
+  if (!href) {
+    ElMessage.warning(t('newsNoLink'))
+    return
+  }
+  window.open(href, '_blank', 'noopener,noreferrer')
+}
 
 async function loadData() {
   try {

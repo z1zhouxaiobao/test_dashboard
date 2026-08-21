@@ -38,6 +38,8 @@ public class AdminService {
     @Autowired
     private HonorRepository honorRepository;
     @Autowired
+    private JobPositionRepository jobPositionRepository;
+    @Autowired
     private CaseStudyRepository caseStudyRepository;
     @Autowired
     private ConsultationRepository consultationRepository;
@@ -167,6 +169,10 @@ public class AdminService {
 
     @Transactional
     public Carousel saveCarousel(Carousel carousel) {
+        if (carousel.getId() != null && carousel.getCreatedAt() == null) {
+            Carousel existing = getCarousel(carousel.getId());
+            carousel.setCreatedAt(existing.getCreatedAt());
+        }
         return carouselRepository.save(carousel);
     }
 
@@ -224,6 +230,10 @@ public class AdminService {
 
     @Transactional
     public Notice saveNotice(Notice notice) {
+        if (notice.getId() != null && notice.getCreatedAt() == null) {
+            Notice existing = getNotice(notice.getId());
+            notice.setCreatedAt(existing.getCreatedAt());
+        }
         return noticeRepository.save(notice);
     }
 
@@ -245,6 +255,10 @@ public class AdminService {
 
     @Transactional
     public Product saveProduct(Product product) {
+        if (product.getId() != null && product.getCreatedAt() == null) {
+            Product existing = getProduct(product.getId());
+            product.setCreatedAt(existing.getCreatedAt());
+        }
         return productRepository.save(product);
     }
 
@@ -266,6 +280,10 @@ public class AdminService {
 
     @Transactional
     public Technology saveTechnology(Technology technology) {
+        if (technology.getId() != null && technology.getCreatedAt() == null) {
+            Technology existing = getTechnology(technology.getId());
+            technology.setCreatedAt(existing.getCreatedAt());
+        }
         return technologyRepository.save(technology);
     }
 
@@ -287,12 +305,43 @@ public class AdminService {
 
     @Transactional
     public Honor saveHonor(Honor honor) {
+        if (honor.getId() != null) {
+            Honor existing = getHonor(honor.getId());
+            if (honor.getCreatedAt() == null) {
+                honor.setCreatedAt(existing.getCreatedAt());
+            }
+        }
         return honorRepository.save(honor);
     }
 
     @Transactional
     public void deleteHonor(Long id) {
         honorRepository.deleteById(id);
+    }
+
+    public PageResult<JobPosition> listJobs(String keyword, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "sortOrder").and(Sort.by(Sort.Direction.DESC, "id")));
+        String kw = keyword == null ? "" : keyword;
+        Page<JobPosition> result = jobPositionRepository.findByTitleContainingIgnoreCase(kw, pageRequest);
+        return new PageResult<>(result.getTotalElements(), page, size, result.getContent());
+    }
+
+    public JobPosition getJob(Long id) {
+        return jobPositionRepository.findById(id).orElseThrow(() -> new BusinessException("岗位不存在"));
+    }
+
+    @Transactional
+    public JobPosition saveJob(JobPosition job) {
+        if (job.getId() != null && job.getCreatedAt() == null) {
+            JobPosition existing = getJob(job.getId());
+            job.setCreatedAt(existing.getCreatedAt());
+        }
+        return jobPositionRepository.save(job);
+    }
+
+    @Transactional
+    public void deleteJob(Long id) {
+        jobPositionRepository.deleteById(id);
     }
 
     public PageResult<CaseStudy> listCases(String keyword, int page, int size) {
@@ -308,6 +357,10 @@ public class AdminService {
 
     @Transactional
     public CaseStudy saveCase(CaseStudy caseStudy) {
+        if (caseStudy.getId() != null && caseStudy.getCreatedAt() == null) {
+            CaseStudy existing = getCase(caseStudy.getId());
+            caseStudy.setCreatedAt(existing.getCreatedAt());
+        }
         return caseStudyRepository.save(caseStudy);
     }
 
@@ -428,5 +481,10 @@ public class AdminService {
     @Transactional
     public void deleteVisitLog(Long id) {
         portalVisitLogRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteAllVisitLogs() {
+        portalVisitLogRepository.deleteAllInBatch();
     }
 }

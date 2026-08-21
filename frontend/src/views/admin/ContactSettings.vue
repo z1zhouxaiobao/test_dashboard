@@ -19,6 +19,19 @@
     >
       <section class="cs-panel">
         <div class="cs-panel-head">
+          <span class="cs-panel-index">00</span>
+          <div>
+            <h3 class="cs-panel-title">{{ t('cfgSiteLogo') }}</h3>
+            <p class="cs-panel-sub">{{ t('cfgSiteLogoHint') }}</p>
+          </div>
+        </div>
+        <el-form-item :label="t('cfgSiteLogo')">
+          <ImageUpload v-model="form.logoUrl" fit="contain" width="280px" height="88px" />
+        </el-form-item>
+      </section>
+
+      <section class="cs-panel">
+        <div class="cs-panel-head">
           <span class="cs-panel-index">01</span>
           <div>
             <h3 class="cs-panel-title">{{ t('talkNow') }}</h3>
@@ -52,6 +65,12 @@
         <el-form-item :label="t('cfgBtnText')">
           <el-input v-model="form.presalesBtn" />
         </el-form-item>
+        <el-form-item :label="t('cfgBtnLink')">
+          <el-input
+            v-model="form.presalesBtnLink"
+            :placeholder="t('cfgBtnLinkPh')"
+          />
+        </el-form-item>
       </section>
 
       <section class="cs-panel">
@@ -75,6 +94,12 @@
         </el-form-item>
         <el-form-item :label="t('cfgBtnText')">
           <el-input v-model="form.aftersalesBtn" />
+        </el-form-item>
+        <el-form-item :label="t('cfgBtnLink')">
+          <el-input
+            v-model="form.aftersalesBtnLink"
+            :placeholder="t('cfgBtnLinkPh')"
+          />
         </el-form-item>
       </section>
 
@@ -138,6 +163,43 @@
         </el-button>
       </section>
 
+      <section class="cs-panel">
+        <div class="cs-panel-head">
+          <span class="cs-panel-index">06</span>
+          <div>
+            <h3 class="cs-panel-title">{{ t('cfgSocialAccounts') }}</h3>
+            <p class="cs-panel-sub">{{ t('cfgSocialAccountsHint') }}</p>
+          </div>
+        </div>
+
+        <div v-for="(item, index) in form.socialAccounts" :key="index" class="addr-card">
+          <div class="addr-card-head">
+            <span class="addr-badge">{{ t('cfgSocialAccount') }} {{ index + 1 }}</span>
+            <el-button type="danger" link @click="removeSocial(index)">{{ t('delete') }}</el-button>
+          </div>
+          <div class="cs-grid">
+            <el-form-item :label="t('cfgSocialName')">
+              <el-input v-model="item.name" :placeholder="t('cfgSocialNamePh')" />
+            </el-form-item>
+            <el-form-item :label="t('cfgSocialQr')">
+              <ImageUpload v-model="item.qrUrl" />
+            </el-form-item>
+          </div>
+          <div class="cs-grid">
+            <el-form-item :label="t('cfgAddressTw')">
+              <el-input v-model="item.nameTw" :placeholder="t('i18nFallbackZh')" />
+            </el-form-item>
+            <el-form-item :label="t('cfgAddressEn')">
+              <el-input v-model="item.nameEn" :placeholder="t('i18nFallbackZh')" />
+            </el-form-item>
+          </div>
+        </div>
+
+        <el-button class="add-addr-btn" type="primary" plain @click="addSocial">
+          {{ t('cfgAddSocial') }}
+        </el-button>
+      </section>
+
       <section class="cs-panel cs-panel-i18n">
         <I18nCollapse
           :model="form"
@@ -162,9 +224,12 @@ import { reactive, ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { contactSettingsApi } from '@/api'
 import I18nCollapse from '@/components/I18nCollapse.vue'
+import ImageUpload from '@/components/ImageUpload.vue'
 import { useI18n } from '@/composables/useI18n'
+import { useSiteLogo } from '@/composables/useSiteLogo'
 
 const { t } = useI18n()
+const { setSiteLogo } = useSiteLogo()
 const loading = ref(false)
 const saving = ref(false)
 
@@ -172,20 +237,28 @@ function emptyAddress() {
   return { text: '', textTw: '', textEn: '' }
 }
 
+function emptySocial() {
+  return { name: '', nameTw: '', nameEn: '', qrUrl: '' }
+}
+
 const form = reactive({
+  logoUrl: '',
   talkNow: '', talkNowTw: '', talkNowEn: '',
   presalesTitle: '', presalesTitleTw: '', presalesTitleEn: '',
   presalesDesc: '', presalesDescTw: '', presalesDescEn: '',
   presalesPhone: '',
   presalesBtn: '', presalesBtnTw: '', presalesBtnEn: '',
+  presalesBtnLink: '',
   aftersalesTitle: '', aftersalesTitleTw: '', aftersalesTitleEn: '',
   aftersalesDesc: '', aftersalesDescTw: '', aftersalesDescEn: '',
   aftersalesPhone: '',
   aftersalesBtn: '', aftersalesBtnTw: '', aftersalesBtnEn: '',
+  aftersalesBtnLink: '',
   supportHeading: '', supportHeadingTw: '', supportHeadingEn: '',
   email: '',
   companyPhone: '',
-  addresses: [emptyAddress()]
+  addresses: [emptyAddress()],
+  socialAccounts: []
 })
 
 function addAddress() {
@@ -195,6 +268,14 @@ function addAddress() {
 function removeAddress(index) {
   if (form.addresses.length <= 1) return
   form.addresses.splice(index, 1)
+}
+
+function addSocial() {
+  form.socialAccounts.push(emptySocial())
+}
+
+function removeSocial(index) {
+  form.socialAccounts.splice(index, 1)
 }
 
 function normalizeLoaded(data) {
@@ -210,6 +291,13 @@ function normalizeLoaded(data) {
         textEn: a.textEn || ''
       }))
     : [emptyAddress()]
+  const socials = Array.isArray(data?.socialAccounts) ? data.socialAccounts : []
+  form.socialAccounts = socials.map((s) => ({
+    name: s.name || '',
+    nameTw: s.nameTw || '',
+    nameEn: s.nameEn || '',
+    qrUrl: s.qrUrl || ''
+  }))
 }
 
 async function loadData() {
@@ -227,10 +315,12 @@ async function handleSave() {
   try {
     const payload = {
       ...form,
-      addresses: form.addresses.filter((a) => (a.text || '').trim())
+      addresses: form.addresses.filter((a) => (a.text || '').trim()),
+      socialAccounts: form.socialAccounts.filter((s) => (s.name || '').trim())
     }
     const res = await contactSettingsApi.save(payload)
     normalizeLoaded(res.data || res || form)
+    setSiteLogo(form.logoUrl)
     ElMessage.success(t('saveOk') || '已保存')
   } catch { /* handled */ } finally {
     saving.value = false

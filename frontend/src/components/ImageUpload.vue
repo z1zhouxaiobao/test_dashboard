@@ -1,19 +1,27 @@
 <template>
-  <div class="image-upload">
-    <el-upload
-      class="uploader"
-      :action="uploadUrl"
-      :headers="headers"
-      :show-file-list="false"
-      :before-upload="beforeUpload"
-      :on-success="handleSuccess"
-      :on-error="handleError"
-      accept="image/*"
-    >
-      <img v-if="modelValue" :src="displayUrl" class="preview" alt="preview" />
+  <div class="image-upload" :class="{ 'is-wide': fit === 'contain' }">
+    <div class="preview-box" :style="boxStyle">
+      <img v-if="modelValue" :src="displayUrl" class="preview" :style="{ objectFit: fit }" alt="preview" />
       <el-icon v-else class="uploader-icon"><Plus /></el-icon>
-    </el-upload>
-    <el-button v-if="modelValue" type="danger" link @click="clear">{{ t('clearImage') }}</el-button>
+    </div>
+    <div class="actions">
+      <el-upload
+        :action="uploadUrl"
+        :headers="headers"
+        :show-file-list="false"
+        :before-upload="beforeUpload"
+        :on-success="handleSuccess"
+        :on-error="handleError"
+        accept="image/*"
+      >
+        <el-button type="primary" plain size="small">
+          {{ modelValue ? t('changeImage') : t('uploadImage') }}
+        </el-button>
+      </el-upload>
+      <el-button v-if="modelValue" type="danger" link size="small" @click="clear">
+        {{ t('clearImage') }}
+      </el-button>
+    </div>
   </div>
 </template>
 
@@ -28,7 +36,11 @@ import { useI18n } from '@/composables/useI18n'
 const { t } = useI18n()
 
 const props = defineProps({
-  modelValue: { type: String, default: '' }
+  modelValue: { type: String, default: '' },
+  /** cover 裁切（封面等）| contain 完整展示（Logo 等） */
+  fit: { type: String, default: 'cover' },
+  width: { type: String, default: '' },
+  height: { type: String, default: '' }
 })
 const emit = defineEmits(['update:modelValue'])
 
@@ -38,6 +50,10 @@ const headers = computed(() => ({
   Authorization: auth.token ? `Bearer ${auth.token}` : ''
 }))
 const displayUrl = computed(() => resolveMediaUrl(props.modelValue))
+const boxStyle = computed(() => ({
+  width: props.width || (props.fit === 'contain' ? '240px' : '120px'),
+  height: props.height || (props.fit === 'contain' ? '80px' : '120px')
+}))
 
 function beforeUpload(file) {
   const isImage = file.type.startsWith('image/')
@@ -66,26 +82,37 @@ function clear() {
 .image-upload {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
-.uploader :deep(.el-upload) {
+.preview-box {
   border: 1px dashed var(--el-border-color);
   border-radius: 6px;
-  cursor: pointer;
-  overflow: hidden;
-  width: 120px;
-  height: 120px;
+  background: #f7f9fc;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.is-wide .preview-box {
+  background: #fff;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.preview {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 .uploader-icon {
   font-size: 28px;
   color: #8c939d;
 }
-.preview {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
 }
 </style>

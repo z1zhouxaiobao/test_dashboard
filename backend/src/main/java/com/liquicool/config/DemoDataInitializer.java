@@ -3,6 +3,7 @@ package com.liquicool.config;
 import com.liquicool.repository.NavMenuRepository;
 import com.liquicool.repository.ProductRepository;
 import com.liquicool.service.ContactSettingsService;
+import com.liquicool.service.JobPositionSeedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +36,20 @@ public class DemoDataInitializer implements ApplicationRunner {
     @Autowired
     private ContactSettingsService contactSettingsService;
 
+    @Autowired
+    private JobPositionSeedService jobPositionSeedService;
+
     @Override
     public void run(ApplicationArguments args) {
         try {
             contactSettingsService.ensureDefaults();
         } catch (Exception e) {
             log.warn("联系页配置初始化跳过: {}", e.getMessage());
+        }
+        try {
+            jobPositionSeedService.ensureDefaults();
+        } catch (Exception e) {
+            log.warn("招聘岗位初始化跳过: {}", e.getMessage());
         }
         if (productRepository.count() == 0) {
             try (Connection connection = dataSource.getConnection()) {

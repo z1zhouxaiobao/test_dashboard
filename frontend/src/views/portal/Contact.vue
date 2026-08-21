@@ -19,7 +19,13 @@
             <p>{{ localizedText(settings, 'presalesDesc', locale) }}</p>
             <strong class="service-phone">{{ settings.presalesPhone }}</strong>
           </div>
-          <a class="service-btn" :href="`tel:${settings.presalesPhone}`">{{ localizedText(settings, 'presalesBtn', locale) }}</a>
+          <a
+            class="service-btn"
+            :href="resolveActionHref(settings.presalesBtnLink, settings.presalesPhone)"
+            :target="isExternalHref(settings.presalesBtnLink) ? '_blank' : undefined"
+            :rel="isExternalHref(settings.presalesBtnLink) ? 'noopener noreferrer' : undefined"
+            @click="onServiceBtnClick($event, settings.presalesBtnLink, settings.presalesPhone)"
+          >{{ localizedText(settings, 'presalesBtn', locale) }}</a>
         </article>
 
         <article class="service-row">
@@ -36,7 +42,13 @@
             <p>{{ localizedText(settings, 'aftersalesDesc', locale) }}</p>
             <strong class="service-phone">{{ settings.aftersalesPhone }}</strong>
           </div>
-          <a class="service-btn" :href="`tel:${settings.aftersalesPhone}`">{{ localizedText(settings, 'aftersalesBtn', locale) }}</a>
+          <a
+            class="service-btn"
+            :href="resolveActionHref(settings.aftersalesBtnLink, settings.aftersalesPhone)"
+            :target="isExternalHref(settings.aftersalesBtnLink) ? '_blank' : undefined"
+            :rel="isExternalHref(settings.aftersalesBtnLink) ? 'noopener noreferrer' : undefined"
+            @click="onServiceBtnClick($event, settings.aftersalesBtnLink, settings.aftersalesPhone)"
+          >{{ localizedText(settings, 'aftersalesBtn', locale) }}</a>
         </article>
       </div>
     </section>
@@ -83,22 +95,28 @@
       <div id="contact-sales" class="contact-grid">
         <section class="panel">
           <h3>{{ t('onlineMsg') }}</h3>
+          <p v-if="!auth.isLoggedIn" class="panel-hint login-hint">
+            {{ t('msgNeedLogin') }}
+            <router-link :to="{ path: '/login', query: { redirect: '/portal/contact', redirectHash: 'contact-message' } }">{{ t('login') }}</router-link>
+            /
+            <router-link :to="{ path: '/register', query: { redirect: '/portal/contact', redirectHash: 'contact-message' } }">{{ t('registerTitle') }}</router-link>
+          </p>
           <el-form
             :model="form"
             :label-position="isMobile ? 'top' : 'right'"
             :label-width="isMobile ? undefined : '80px'"
           >
             <el-form-item :label="t('name')" required>
-              <el-input v-model="form.name" />
+              <el-input v-model="form.name" :disabled="!auth.isLoggedIn" />
             </el-form-item>
             <el-form-item :label="t('phone')" required>
-              <el-input v-model="form.phone" />
+              <el-input v-model="form.phone" :disabled="!auth.isLoggedIn" />
             </el-form-item>
             <el-form-item :label="t('message')" required>
-              <el-input v-model="form.content" type="textarea" :rows="4" />
+              <el-input v-model="form.content" type="textarea" :rows="4" :disabled="!auth.isLoggedIn" />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" :loading="submitting" @click="submitFeedback">
+              <el-button type="primary" :loading="submitting" :disabled="!auth.isLoggedIn" @click="submitFeedback">
                 {{ t('submitMsg') }}
               </el-button>
             </el-form-item>
@@ -139,13 +157,17 @@
 
 <script setup>
 import { reactive, ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Phone, Message, Location } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { feedbackApi, consultationApi, contactSettingsApi } from '@/api'
 import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
+import { useAuthStore } from '@/stores/auth'
 
 const { t, locale } = useI18n()
+const auth = useAuthStore()
+const router = useRouter()
 const submitting = ref(false)
 const consulting = ref(false)
 const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1200)
@@ -159,10 +181,12 @@ const settings = reactive({
   presalesDesc: '售前咨询、方案选型与商务对接，工作日人工客服在线响应。',
   presalesPhone: '400-888-0000',
   presalesBtn: '售前人工客服',
+  presalesBtnLink: 'tel:400-888-0000',
   aftersalesTitle: '售后技术支持',
   aftersalesDesc: '已购产品的技术支持、故障排查与运维协助，智能与人工协同服务。',
   aftersalesPhone: '400-888-0001',
   aftersalesBtn: '售后技术支持',
+  aftersalesBtnLink: 'tel:400-888-0001',
   supportHeading: '获取产品和服务支持',
   email: 'contact@liquicool.com',
   address: '北京市海淀区科技园区',
@@ -193,6 +217,47 @@ function scrollTo(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
+/** 按钮链接：支持 tel: / mailto: / http(s):；为空时回退到电话 */
+function resolveActionHref(link, phoneFallback) {
+  const raw = String(link || '').trim()
+  if (raw) {
+    if (/^(https?:|mailto:|tel:)/i.test(raw)) return raw
+    if (raw.includes('@')) return `mailto:${raw}`
+    if (/^[\d\s\-()+]+$/.test(raw)) return `tel:${raw.replace(/\s/g, '')}`
+    if (raw.startsWith('/')) return raw
+    return `https://${raw}`
+  }
+  const phone = String(phoneFallback || '').trim().replace(/\s/g, '')
+  return phone ? `tel:${phone}` : '#'
+}
+
+function isExternalHref(link) {
+  const href = resolveActionHref(link, '')
+  return /^https?:/i.test(href)
+}
+
+/** 仅做提示，绝不 preventDefault，否则会打断系统打开 tel:/mailto: */
+function onServiceBtnClick(_e, link, phoneFallback) {
+  const href = resolveActionHref(link, phoneFallback)
+  if (/^mailto:/i.test(href)) {
+    const email = decodeURIComponent(href.replace(/^mailto:/i, '').split('?')[0].trim())
+    if (!email) return
+    navigator.clipboard?.writeText(email).then(
+      () => ElMessage.success(t('mailtoCopied', { email })),
+      () => ElMessage.info(t('mailtoHint', { email }))
+    )
+    return
+  }
+  if (/^tel:/i.test(href)) {
+    const phone = href.replace(/^tel:/i, '').trim()
+    if (!phone || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) return
+    navigator.clipboard?.writeText(phone).then(
+      () => ElMessage.success(t('telCopied', { phone })),
+      () => ElMessage.info(t('telHint', { phone }))
+    )
+  }
+}
+
 async function loadSettings() {
   try {
     const res = await contactSettingsApi.portal()
@@ -201,6 +266,11 @@ async function loadSettings() {
 }
 
 async function submitFeedback() {
+  if (!auth.isLoggedIn) {
+    ElMessage.warning(t('pleaseLogin'))
+    router.push({ path: '/login', query: { redirect: '/portal/contact', redirectHash: 'contact-message' } })
+    return
+  }
   if (!form.name.trim() || !form.phone.trim() || !form.content.trim()) {
     ElMessage.warning(t('fillRequired'))
     return
@@ -248,6 +318,10 @@ onMounted(() => {
   onResize()
   window.addEventListener('resize', onResize)
   loadSettings()
+  if (auth.isLoggedIn && auth.user) {
+    if (!form.name) form.name = auth.user.nickname || auth.user.username || ''
+    if (!form.phone) form.phone = auth.user.phone || ''
+  }
 })
 
 onUnmounted(() => {
@@ -395,6 +469,13 @@ onUnmounted(() => {
   margin: 0 0 18px;
   color: #8a929c;
   font-size: 13px;
+}
+.login-hint a {
+  color: #0a4fb8;
+  text-decoration: none;
+}
+.login-hint a:hover {
+  text-decoration: underline;
 }
 @media (max-width: 900px) {
   .service-row {

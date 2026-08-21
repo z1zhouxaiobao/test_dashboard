@@ -286,6 +286,36 @@ public class AdminController {
         return ApiResponse.ok(null);
     }
 
+    @GetMapping("/jobs")
+    public ApiResponse<PageResult<JobPosition>> listJobs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.ok(adminService.listJobs(keyword, page, size));
+    }
+
+    @GetMapping("/jobs/{id}")
+    public ApiResponse<JobPosition> getJob(@PathVariable Long id) {
+        return ApiResponse.ok(adminService.getJob(id));
+    }
+
+    @PostMapping("/jobs")
+    public ApiResponse<JobPosition> createJob(@RequestBody JobPosition job) {
+        return ApiResponse.ok(adminService.saveJob(job));
+    }
+
+    @PutMapping("/jobs/{id}")
+    public ApiResponse<JobPosition> updateJob(@PathVariable Long id, @RequestBody JobPosition job) {
+        job.setId(id);
+        return ApiResponse.ok(adminService.saveJob(job));
+    }
+
+    @DeleteMapping("/jobs/{id}")
+    public ApiResponse<Void> deleteJob(@PathVariable Long id) {
+        adminService.deleteJob(id);
+        return ApiResponse.ok(null);
+    }
+
     @GetMapping("/cases")
     public ApiResponse<PageResult<CaseStudy>> listCases(
             @RequestParam(required = false) String keyword,
@@ -432,6 +462,13 @@ public class AdminController {
     @DeleteMapping("/visit-logs/{id}")
     public ApiResponse<Void> deleteVisitLog(@PathVariable Long id) {
         adminService.deleteVisitLog(id);
+        return ApiResponse.ok(null);
+    }
+
+    @Operation(summary = "清空全部访问记录")
+    @DeleteMapping("/visit-logs")
+    public ApiResponse<Void> deleteAllVisitLogs() {
+        adminService.deleteAllVisitLogs();
         return ApiResponse.ok(null);
     }
 }

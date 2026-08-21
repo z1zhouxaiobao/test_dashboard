@@ -7,6 +7,9 @@ import java.util.List;
 
 @Data
 public class ContactSettingsDto {
+    /** 站点 Logo（顶栏/页脚），空则用默认 /logo.svg */
+    private String logoUrl;
+
     private String talkNow;
     private String talkNowTw;
     private String talkNowEn;
@@ -20,6 +23,8 @@ public class ContactSettingsDto {
     private String presalesBtn;
     private String presalesBtnTw;
     private String presalesBtnEn;
+    /** 售前按钮链接，支持 tel: / mailto: / https:// */
+    private String presalesBtnLink;
     private String aftersalesTitle;
     private String aftersalesTitleTw;
     private String aftersalesTitleEn;
@@ -30,6 +35,8 @@ public class ContactSettingsDto {
     private String aftersalesBtn;
     private String aftersalesBtnTw;
     private String aftersalesBtnEn;
+    /** 售后按钮链接，支持 tel: / mailto: / https:// */
+    private String aftersalesBtnLink;
     private String supportHeading;
     private String supportHeadingTw;
     private String supportHeadingEn;
@@ -38,6 +45,9 @@ public class ContactSettingsDto {
 
     /** 多地址（含三语） */
     private List<ContactAddressItem> addresses = new ArrayList<>();
+
+    /** 品宣账号二维码（公众号、抖音等） */
+    private List<ContactSocialAccountItem> socialAccounts = new ArrayList<>();
 
     /**
      * 兼容旧字段：取第一条地址简体

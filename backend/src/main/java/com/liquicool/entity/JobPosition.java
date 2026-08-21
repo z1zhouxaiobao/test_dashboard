@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "news")
-public class News {
+@Table(name = "job_position")
+public class JobPosition {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +23,7 @@ public class News {
     @Column(length = 200)
     private String titleEn;
 
-    @Column(length = 500)
-    private String coverUrl;
-
+    /** 列表摘要（始终展示） */
     @Column(length = 500)
     private String summary;
 
@@ -35,24 +33,39 @@ public class News {
     @Column(length = 500)
     private String summaryEn;
 
+    /** 岗位职责（展开后展示，可较长） */
     @Column(columnDefinition = "TEXT")
-    private String content;
-
-    @Column(columnDefinition = "TEXT")
-    private String contentTw;
+    private String responsibilities;
 
     @Column(columnDefinition = "TEXT")
-    private String contentEn;
+    private String responsibilitiesTw;
 
-    private Integer viewCount;
+    @Column(columnDefinition = "TEXT")
+    private String responsibilitiesEn;
 
+    /** 任职要求（展开后展示，多行） */
+    @Column(columnDefinition = "TEXT")
+    private String requirements;
+
+    @Column(columnDefinition = "TEXT")
+    private String requirementsTw;
+
+    @Column(columnDefinition = "TEXT")
+    private String requirementsEn;
+
+    @Column(length = 100)
+    private String location;
+
+    @Column(length = 100)
+    private String locationTw;
+
+    @Column(length = 100)
+    private String locationEn;
+
+    /** 1=发布 0=下架 */
     private Integer status;
 
-    private LocalDateTime publishTime;
-
-    /** 外链（有则前台可跳转外部） */
-    @Column(length = 500)
-    private String linkUrl;
+    private Integer sortOrder;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -69,14 +82,11 @@ public class News {
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        if (this.viewCount == null) {
-            this.viewCount = 0;
+        if (this.sortOrder == null) {
+            this.sortOrder = 0;
         }
         if (this.status == null) {
             this.status = 1;
-        }
-        if (this.publishTime == null) {
-            this.publishTime = LocalDateTime.now();
         }
     }
 }

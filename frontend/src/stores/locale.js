@@ -24,7 +24,7 @@ export const useLocaleStore = defineStore('locale', {
       if (!messages[locale]) return
       this.locale = locale
       localStorage.setItem('liquicool_locale', locale)
-      document.documentElement.lang = locale === 'en' ? 'en' : 'zh'
+      document.documentElement.lang = locale === 'en' ? 'en' : locale === 'zh-TW' ? 'zh-TW' : 'zh-CN'
     },
     t(key) {
       const pack = messages[this.locale] || messages['zh-CN']

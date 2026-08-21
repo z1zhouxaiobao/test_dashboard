@@ -3,7 +3,7 @@
     <div class="register-overlay"></div>
     <div class="register-card">
       <div class="brand">
-        <img src="/logo.svg" alt="LIQUICOOL" class="login-logo" />
+        <img :src="siteLogo" alt="LIQUICOOL" class="login-logo" />
         <h1>注册账号</h1>
         <p>加入立冷科技 LIQUICOOL</p>
       </div>
@@ -22,7 +22,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :loading="loading" @click="handleRegister">注册</el-button>
-          <el-button @click="$router.push('/login')">返回登录</el-button>
+          <el-button @click="$router.push({ path: '/login', query: $route.query })">返回登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -31,14 +31,18 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
+import { useSiteLogo } from '@/composables/useSiteLogo'
 import CodeLocator from '@/components/CodeLocator.vue'
 
 const router = useRouter()
+const route = useRoute()
 const auth = useAuthStore()
+const { siteLogo, loadSiteLogo } = useSiteLogo()
+onMounted(loadSiteLogo)
 const formRef = ref()
 const loading = ref(false)
 
@@ -61,6 +65,16 @@ const rules = {
   confirmPassword: [{ required: true, validator: validateConfirm, trigger: 'blur' }]
 }
 
+function resolveRedirect() {
+  const raw = typeof route.query.redirect === 'string' ? route.query.redirect : ''
+  const hashRaw = typeof route.query.redirectHash === 'string' ? route.query.redirectHash : ''
+  const hash = hashRaw ? (hashRaw.startsWith('#') ? hashRaw : `#${hashRaw}`) : ''
+  if (raw.startsWith('/') && !raw.startsWith('//')) {
+    return { path: raw, hash }
+  }
+  return { path: '/portal/home' }
+}
+
 async function handleRegister() {
   await formRef.value?.validate()
   loading.value = true
@@ -71,7 +85,7 @@ async function handleRegister() {
       password: form.password
     })
     ElMessage.success('注册成功')
-    router.push('/portal/home')
+    await router.push(resolveRedirect())
   } catch {
     /* handled */
   } finally {

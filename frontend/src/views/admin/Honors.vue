@@ -36,8 +36,21 @@
       <el-form :model="form" label-width="110px">
         <el-form-item :label="t('itemName')"><el-input v-model="form.title" /></el-form-item>
         <el-form-item :label="t('year')"><el-input v-model="form.awardYear" /></el-form-item>
+        <el-form-item :label="t('createdAt')">
+          <el-date-picker
+            v-model="form.createdAt"
+            type="datetime"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            format="YYYY-MM-DD HH:mm:ss"
+            :placeholder="t('createdAt')"
+            style="width: 100%"
+          />
+        </el-form-item>
         <el-form-item :label="t('issuer')"><el-input v-model="form.issuer" /></el-form-item>
         <el-form-item :label="t('summary')"><el-input v-model="form.summary" type="textarea" :rows="3" /></el-form-item>
+        <el-form-item :label="t('honorLink')">
+          <el-input v-model="form.linkUrl" :placeholder="t('honorLinkPh')" />
+        </el-form-item>
         <el-form-item :label="t('image')"><ImageUpload v-model="form.coverUrl" /></el-form-item>
         <I18nCollapse
           :model="form"
@@ -83,7 +96,9 @@ const emptyForm = () => ({
   summary: '',
   summaryTw: '',
   summaryEn: '',
-  coverUrl: ''
+  coverUrl: '',
+  linkUrl: '',
+  createdAt: formatDateTime(new Date())
 })
 
 const loading = ref(false)
@@ -109,16 +124,30 @@ const { selected, deleting, onSelectionChange, handleDelete, handleBatchDelete }
   remove: (id) => honorApi.remove(id),
   reload: loadData
 })
+
+function toPickerTime(value) {
+  if (!value) return formatDateTime(new Date())
+  const formatted = formatDateTime(value)
+  return formatted === '-' ? formatDateTime(new Date()) : formatted
+}
+
 function openDialog(row) {
   Object.assign(form, emptyForm())
-  if (row) Object.assign(form, row)
+  if (row) {
+    Object.assign(form, {
+      ...row,
+      linkUrl: row.linkUrl || '',
+      createdAt: toPickerTime(row.createdAt)
+    })
+  }
   dialogVisible.value = true
 }
 async function handleSave() {
   saving.value = true
   try {
-    if (form.id) await honorApi.update(form.id, { ...form })
-    else await honorApi.create({ ...form })
+    const payload = { ...form, createdAt: form.createdAt || null }
+    if (form.id) await honorApi.update(form.id, payload)
+    else await honorApi.create(payload)
     ElMessage.success(t('saveSuccess'))
     dialogVisible.value = false
     loadData()

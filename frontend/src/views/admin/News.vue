@@ -41,6 +41,19 @@
         <el-form-item :label="t('cover')"><ImageUpload v-model="form.coverUrl" /></el-form-item>
         <el-form-item :label="t('content')"><el-input v-model="form.content" type="textarea" :rows="6" /></el-form-item>
         <el-form-item :label="t('published')"><el-switch v-model="form.published" /></el-form-item>
+        <el-form-item :label="t('publishedAt')">
+          <el-date-picker
+            v-model="form.publishTime"
+            type="datetime"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            format="YYYY-MM-DD HH:mm:ss"
+            :placeholder="t('publishedAt')"
+            style="width: 100%"
+          />
+        </el-form-item>
+        <el-form-item :label="t('honorLink')">
+          <el-input v-model="form.linkUrl" :placeholder="t('newsLinkPh')" />
+        </el-form-item>
         <I18nCollapse :model="form" :fields="i18nFields" />
       </el-form>
       <template #footer>
@@ -82,7 +95,9 @@ const keyword = ref('')
 const dialogVisible = ref(false)
 const emptyForm = () => ({
   id: null, title: '', titleTw: '', titleEn: '', summary: '', summaryTw: '', summaryEn: '',
-  coverUrl: '', content: '', contentTw: '', contentEn: '', published: true
+  coverUrl: '', content: '', contentTw: '', contentEn: '', published: true,
+  publishTime: formatDateTime(new Date()),
+  linkUrl: ''
 })
 const form = reactive(emptyForm())
 
@@ -99,6 +114,13 @@ const { selected, deleting, onSelectionChange, handleDelete, handleBatchDelete }
   remove: (id) => newsApi.remove(id),
   reload: loadData
 })
+
+function toPickerTime(value) {
+  if (!value) return formatDateTime(new Date())
+  const formatted = formatDateTime(value)
+  return formatted === '-' ? formatDateTime(new Date()) : formatted
+}
+
 function openDialog(row) {
   Object.assign(form, emptyForm())
   if (row) {
@@ -115,7 +137,9 @@ function openDialog(row) {
       content: row.content || '',
       contentTw: row.contentTw || '',
       contentEn: row.contentEn || '',
-      published: row.published === true || row.status === 1
+      published: row.published === true || row.status === 1,
+      publishTime: toPickerTime(row.publishTime || row.createdAt),
+      linkUrl: row.linkUrl || ''
     })
   }
   dialogVisible.value = true
@@ -136,7 +160,9 @@ async function handleSave() {
       contentTw: form.contentTw,
       contentEn: form.contentEn,
       published: form.published,
-      status: form.published ? 1 : 0
+      status: form.published ? 1 : 0,
+      publishTime: form.publishTime || null,
+      linkUrl: form.linkUrl || ''
     }
     if (form.id) await newsApi.update(form.id, payload)
     else await newsApi.create(payload)

@@ -1,11 +1,7 @@
 <template>
   <el-dropdown trigger="click" @command="onLangChange">
     <button class="lang-btn" :class="variant" type="button">
-      <svg v-if="variant === 'portal'" class="globe" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6" />
-        <path d="M3 12h18M12 3c2.5 2.8 3.8 5.8 3.8 9s-1.3 6.2-3.8 9c-2.5-2.8-3.8-5.8-3.8-9S9.5 5.8 12 3z" fill="none" stroke="currentColor" stroke-width="1.6" />
-      </svg>
-      <span>{{ localeStore.langButtonText }}</span>
+      <span>{{ currentLangLabel }}</span>
       <el-icon><ArrowDown /></el-icon>
     </button>
     <template #dropdown>
@@ -25,18 +21,40 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { ArrowDown } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { useI18n } from '@/composables/useI18n'
+import { isValidLocale } from '@/utils/hreflang'
 
-defineProps({
+const props = defineProps({
   variant: { type: String, default: 'portal' }
 })
 
 const { t, locale, setLocale, localeStore } = useI18n()
+const router = useRouter()
+const route = useRoute()
+
+const currentLangLabel = computed(() => {
+  if (props.variant === 'portal') {
+    if (locale.value === 'zh-TW') return t('langZhTW')
+    if (locale.value === 'en') return t('langEn')
+    return t('langZhCN')
+  }
+  return localeStore.langButtonText
+})
 
 function onLangChange(lang) {
+  if (!isValidLocale(lang)) return
   setLocale(lang)
+  if (route.path.startsWith('/portal')) {
+    router.replace({
+      path: route.path,
+      query: { ...route.query, lang },
+      hash: route.hash
+    })
+  }
   ElMessage.success(t('switchOk'))
 }
 </script>
@@ -50,21 +68,19 @@ function onLangChange(lang) {
   font-size: 12px;
   font-family: inherit;
 }
-.globe {
-  flex-shrink: 0;
-  opacity: 0.8;
-}
 .portal {
-  height: auto;
-  padding: 0;
+  height: 34px;
+  padding: 0 14px;
   border: none;
-  border-radius: 0;
-  background: transparent;
-  color: #333;
-  font-weight: 400;
+  border-radius: 999px;
+  background: #0a4fb8;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  box-shadow: 0 6px 16px rgba(10, 79, 184, 0.28);
 }
 .portal:hover {
-  color: #0a4fb8;
+  background: #0860d8;
 }
 .admin {
   height: auto;

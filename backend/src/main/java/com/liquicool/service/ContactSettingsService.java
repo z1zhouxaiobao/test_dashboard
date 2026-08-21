@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liquicool.dto.ContactAddressItem;
 import com.liquicool.dto.ContactSettingsDto;
+import com.liquicool.dto.ContactSocialAccountItem;
 import com.liquicool.entity.SysConfig;
 import com.liquicool.repository.SysConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,12 @@ import java.util.stream.Collectors;
 public class ContactSettingsService {
 
     public static final String ADDRESSES_KEY = "contact.addresses";
+    public static final String SOCIAL_ACCOUNTS_KEY = "contact.social_accounts";
 
     public static final Map<String, String[]> DEFAULTS = new LinkedHashMap<>();
 
     static {
+        DEFAULTS.put("site.logo_url", new String[]{"", "站点Logo图片URL"});
         DEFAULTS.put("contact.talk_now", new String[]{"即刻对话", "联系页-即刻对话标题"});
         DEFAULTS.put("contact.talk_now.tw", new String[]{"即刻對話", "联系页-即刻对话标题-繁"});
         DEFAULTS.put("contact.talk_now.en", new String[]{"Talk Now", "联系页-即刻对话标题-英"});
@@ -39,6 +42,7 @@ public class ContactSettingsService {
         DEFAULTS.put("contact.presales.btn", new String[]{"售前人工客服", "联系页-售前按钮"});
         DEFAULTS.put("contact.presales.btn.tw", new String[]{"售前人工客服", "联系页-售前按钮-繁"});
         DEFAULTS.put("contact.presales.btn.en", new String[]{"Presales Support", "联系页-售前按钮-英"});
+        DEFAULTS.put("contact.presales.btn_link", new String[]{"tel:400-888-0000", "联系页-售前按钮链接"});
         DEFAULTS.put("contact.aftersales.title", new String[]{"售后技术支持", "联系页-售后标题"});
         DEFAULTS.put("contact.aftersales.title.tw", new String[]{"售後技術支持", "联系页-售后标题-繁"});
         DEFAULTS.put("contact.aftersales.title.en", new String[]{"After-sales Support", "联系页-售后标题-英"});
@@ -49,6 +53,7 @@ public class ContactSettingsService {
         DEFAULTS.put("contact.aftersales.btn", new String[]{"售后技术支持", "联系页-售后按钮"});
         DEFAULTS.put("contact.aftersales.btn.tw", new String[]{"售後技術支持", "联系页-售后按钮-繁"});
         DEFAULTS.put("contact.aftersales.btn.en", new String[]{"After-sales Support", "联系页-售后按钮-英"});
+        DEFAULTS.put("contact.aftersales.btn_link", new String[]{"tel:400-888-0001", "联系页-售后按钮链接"});
         DEFAULTS.put("contact.support_heading", new String[]{"获取产品和服务支持", "联系页-支持区标题"});
         DEFAULTS.put("contact.support_heading.tw", new String[]{"獲取產品和服務支持", "联系页-支持区标题-繁"});
         DEFAULTS.put("contact.support_heading.en", new String[]{"Get Product & Service Support", "联系页-支持区标题-英"});
@@ -61,6 +66,13 @@ public class ContactSettingsService {
                 "[{\"text\":\"北京市海淀区科技园区\",\"textTw\":\"北京市海淀區科技園區\",\"textEn\":\"Haidian Science Park, Beijing\"}]",
                 "联系页-地址列表JSON"
         });
+        DEFAULTS.put(SOCIAL_ACCOUNTS_KEY, new String[]{
+                "["
+                        + "{\"name\":\"微信公众号\",\"nameTw\":\"微信公眾號\",\"nameEn\":\"WeChat Official Account\",\"qrUrl\":\"\"},"
+                        + "{\"name\":\"抖音\",\"nameTw\":\"抖音\",\"nameEn\":\"Douyin\",\"qrUrl\":\"\"}"
+                        + "]",
+                "品宣账号二维码列表JSON"
+        });
     }
 
     @Autowired
@@ -71,6 +83,7 @@ public class ContactSettingsService {
 
     public ContactSettingsDto getSettings() {
         ContactSettingsDto dto = new ContactSettingsDto();
+        dto.setLogoUrl(get("site.logo_url"));
         dto.setTalkNow(get("contact.talk_now"));
         dto.setTalkNowTw(get("contact.talk_now.tw"));
         dto.setTalkNowEn(get("contact.talk_now.en"));
@@ -84,6 +97,7 @@ public class ContactSettingsService {
         dto.setPresalesBtn(get("contact.presales.btn"));
         dto.setPresalesBtnTw(get("contact.presales.btn.tw"));
         dto.setPresalesBtnEn(get("contact.presales.btn.en"));
+        dto.setPresalesBtnLink(get("contact.presales.btn_link"));
         dto.setAftersalesTitle(get("contact.aftersales.title"));
         dto.setAftersalesTitleTw(get("contact.aftersales.title.tw"));
         dto.setAftersalesTitleEn(get("contact.aftersales.title.en"));
@@ -94,17 +108,20 @@ public class ContactSettingsService {
         dto.setAftersalesBtn(get("contact.aftersales.btn"));
         dto.setAftersalesBtnTw(get("contact.aftersales.btn.tw"));
         dto.setAftersalesBtnEn(get("contact.aftersales.btn.en"));
+        dto.setAftersalesBtnLink(get("contact.aftersales.btn_link"));
         dto.setSupportHeading(get("contact.support_heading"));
         dto.setSupportHeadingTw(get("contact.support_heading.tw"));
         dto.setSupportHeadingEn(get("contact.support_heading.en"));
         dto.setEmail(get("contact.email"));
         dto.setCompanyPhone(get("contact.company_phone"));
         dto.setAddresses(loadAddresses());
+        dto.setSocialAccounts(loadSocialAccounts());
         return dto;
     }
 
     @Transactional
     public ContactSettingsDto saveSettings(ContactSettingsDto dto) {
+        put("site.logo_url", dto.getLogoUrl());
         put("contact.talk_now", dto.getTalkNow());
         put("contact.talk_now.tw", dto.getTalkNowTw());
         put("contact.talk_now.en", dto.getTalkNowEn());
@@ -118,6 +135,7 @@ public class ContactSettingsService {
         put("contact.presales.btn", dto.getPresalesBtn());
         put("contact.presales.btn.tw", dto.getPresalesBtnTw());
         put("contact.presales.btn.en", dto.getPresalesBtnEn());
+        put("contact.presales.btn_link", dto.getPresalesBtnLink());
         put("contact.aftersales.title", dto.getAftersalesTitle());
         put("contact.aftersales.title.tw", dto.getAftersalesTitleTw());
         put("contact.aftersales.title.en", dto.getAftersalesTitleEn());
@@ -128,6 +146,7 @@ public class ContactSettingsService {
         put("contact.aftersales.btn", dto.getAftersalesBtn());
         put("contact.aftersales.btn.tw", dto.getAftersalesBtnTw());
         put("contact.aftersales.btn.en", dto.getAftersalesBtnEn());
+        put("contact.aftersales.btn_link", dto.getAftersalesBtnLink());
         put("contact.support_heading", dto.getSupportHeading());
         put("contact.support_heading.tw", dto.getSupportHeadingTw());
         put("contact.support_heading.en", dto.getSupportHeadingEn());
@@ -147,14 +166,15 @@ public class ContactSettingsService {
             put("contact.address.tw", "");
             put("contact.address.en", "");
         }
+        saveSocialAccounts(normalizeSocialAccounts(dto.getSocialAccounts()));
         return getSettings();
     }
 
     @Transactional
     public void ensureDefaults() {
         for (Map.Entry<String, String[]> e : DEFAULTS.entrySet()) {
-            // 地址列表单独迁移，避免覆盖已有自定义单地址
-            if (ADDRESSES_KEY.equals(e.getKey())) {
+            // 地址/品宣列表单独处理，避免覆盖已有配置
+            if (ADDRESSES_KEY.equals(e.getKey()) || SOCIAL_ACCOUNTS_KEY.equals(e.getKey())) {
                 continue;
             }
             if (!sysConfigRepository.findByConfigKey(e.getKey()).isPresent()) {
@@ -177,6 +197,10 @@ public class ContactSettingsService {
                 item.setTextEn("Haidian Science Park, Beijing");
             }
             saveAddresses(Collections.singletonList(item));
+        }
+        if (!sysConfigRepository.findByConfigKey(SOCIAL_ACCOUNTS_KEY).isPresent()) {
+            String[] def = DEFAULTS.get(SOCIAL_ACCOUNTS_KEY);
+            put(SOCIAL_ACCOUNTS_KEY, def != null ? def[0] : "[]");
         }
     }
 
@@ -215,6 +239,48 @@ public class ContactSettingsService {
         } catch (Exception e) {
             put(ADDRESSES_KEY, "[]");
         }
+    }
+
+    private List<ContactSocialAccountItem> loadSocialAccounts() {
+        String json = sysConfigRepository.findByConfigKey(SOCIAL_ACCOUNTS_KEY)
+                .map(SysConfig::getConfigValue)
+                .orElse("");
+        if (!StringUtils.hasText(json)) {
+            return new ArrayList<>();
+        }
+        try {
+            List<ContactSocialAccountItem> list = objectMapper.readValue(
+                    json, new TypeReference<List<ContactSocialAccountItem>>() {});
+            return normalizeSocialAccounts(list);
+        } catch (Exception ignored) {
+            return new ArrayList<>();
+        }
+    }
+
+    private void saveSocialAccounts(List<ContactSocialAccountItem> list) {
+        try {
+            String json = objectMapper.writeValueAsString(list == null ? Collections.emptyList() : list);
+            put(SOCIAL_ACCOUNTS_KEY, json);
+        } catch (Exception e) {
+            put(SOCIAL_ACCOUNTS_KEY, "[]");
+        }
+    }
+
+    private List<ContactSocialAccountItem> normalizeSocialAccounts(List<ContactSocialAccountItem> source) {
+        if (source == null) {
+            return new ArrayList<>();
+        }
+        return source.stream()
+                .filter(item -> item != null && StringUtils.hasText(item.getName()))
+                .map(item -> {
+                    ContactSocialAccountItem copy = new ContactSocialAccountItem();
+                    copy.setName(trimTo(item.getName(), 100));
+                    copy.setNameTw(trimTo(item.getNameTw(), 100));
+                    copy.setNameEn(trimTo(item.getNameEn(), 100));
+                    copy.setQrUrl(trimTo(item.getQrUrl(), 500));
+                    return copy;
+                })
+                .collect(Collectors.toList());
     }
 
     private List<ContactAddressItem> normalizeAddresses(List<ContactAddressItem> source) {

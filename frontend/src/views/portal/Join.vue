@@ -8,14 +8,43 @@
       </div>
     </section>
     <section class="portal-section">
-      <div class="jobs">
-        <article v-for="job in jobs" :key="job.title" class="job-card">
-          <h3>{{ job.title }}</h3>
-          <p>{{ job.desc }}</p>
-          <ul>
-            <li v-for="req in job.reqs" :key="req">{{ req }}</li>
-          </ul>
+      <div v-loading="loading" class="jobs">
+        <article
+          v-for="job in jobs"
+          :key="job.id"
+          class="job-card"
+          :class="{ open: expandedId === job.id }"
+        >
+          <button class="job-head" type="button" @click="toggle(job.id)">
+            <div class="job-head-text">
+              <h3>{{ localizedText(job, 'title', locale) }}</h3>
+              <p class="job-summary">{{ localizedText(job, 'summary', locale) }}</p>
+              <span v-if="localizedText(job, 'location', locale)" class="job-loc">
+                {{ localizedText(job, 'location', locale) }}
+              </span>
+            </div>
+            <span class="job-toggle">{{ expandedId === job.id ? t('jobCollapse') : t('jobExpand') }}</span>
+          </button>
+          <div v-show="expandedId === job.id" class="job-detail">
+            <div v-if="localizedText(job, 'responsibilities', locale)" class="detail-block">
+              <h4>{{ t('jobResponsibilities') }}</h4>
+              <ul>
+                <li v-for="(line, i) in linesOf(localizedText(job, 'responsibilities', locale))" :key="'r' + i">
+                  {{ line }}
+                </li>
+              </ul>
+            </div>
+            <div v-if="localizedText(job, 'requirements', locale)" class="detail-block">
+              <h4>{{ t('jobRequirements') }}</h4>
+              <ul>
+                <li v-for="(line, i) in linesOf(localizedText(job, 'requirements', locale))" :key="'q' + i">
+                  {{ line }}
+                </li>
+              </ul>
+            </div>
+          </div>
         </article>
+        <el-empty v-if="!loading && !jobs.length" :description="t('noData')" />
       </div>
       <div class="cta">
         <p>{{ t('joinCta') }}</p>
@@ -26,32 +55,40 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, onMounted } from 'vue'
+import { jobApi } from '@/api'
+import { localizedText } from '@/utils/localized'
 import { useI18n } from '@/composables/useI18n'
 
 const { t, locale } = useI18n()
+const loading = ref(false)
+const jobs = ref([])
+const expandedId = ref(null)
 
-const jobs = computed(() => {
-  if (locale.value === 'en') {
-    return [
-      { title: 'Thermal Solution Engineer', desc: 'Design liquid cooling solutions for high-density data centers.', reqs: ['Thermal engineering background', '3+ years experience', 'On-site deployment capability'] },
-      { title: 'CDU Product Manager', desc: 'Own CDU roadmap and customer delivery.', reqs: ['Mechanical / electrical background', 'B2B product experience'] },
-      { title: 'Field Service Engineer', desc: 'Commissioning and O&M for liquid cooling systems.', reqs: ['Willingness to travel', 'Strong troubleshooting skills'] }
-    ]
+function linesOf(text) {
+  return String(text || '')
+    .split(/\r?\n/)
+    .map((s) => s.replace(/^\d+[\.、．)\s]+/, '').trim())
+    .filter(Boolean)
+}
+
+function toggle(id) {
+  expandedId.value = expandedId.value === id ? null : id
+}
+
+async function loadJobs() {
+  loading.value = true
+  try {
+    const res = await jobApi.portalList()
+    jobs.value = res.data || res || []
+  } catch {
+    jobs.value = []
+  } finally {
+    loading.value = false
   }
-  if (locale.value === 'zh-TW') {
-    return [
-      { title: '熱管理方案工程師', desc: '面向高密度資料中心設計液冷方案。', reqs: ['熱管理相關背景', '3年以上經驗', '具備現場交付能力'] },
-      { title: 'CDU 產品經理', desc: '負責 CDU 產品規劃與客戶交付。', reqs: ['機電背景優先', 'B2B 產品經驗'] },
-      { title: '現場服務工程師', desc: '負責液冷系統調試與運維。', reqs: ['可接受出差', '故障排查能力強'] }
-    ]
-  }
-  return [
-    { title: '热管理方案工程师', desc: '面向高密度数据中心设计液冷解决方案。', reqs: ['热管理相关背景', '3年以上经验', '具备现场交付能力'] },
-    { title: 'CDU 产品经理', desc: '负责 CDU 产品规划与客户交付。', reqs: ['机电背景优先', 'B2B 产品经验'] },
-    { title: '现场服务工程师', desc: '负责液冷系统调试与运维支持。', reqs: ['可接受出差', '故障排查能力强'] }
-  ]
-})
+}
+
+onMounted(loadJobs)
 </script>
 
 <style scoped>
@@ -81,34 +118,75 @@ const jobs = computed(() => {
   line-height: 1.7;
 }
 .jobs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
+  display: flex;
+  flex-direction: column;
   border: 1px solid #d5dae0;
+  background: #fff;
+  min-height: 80px;
 }
 .job-card {
-  padding: 22px 20px;
-  border-right: 1px solid #d5dae0;
-  background: #fff;
+  border-bottom: 1px solid #d5dae0;
 }
 .job-card:last-child {
-  border-right: none;
+  border-bottom: none;
 }
-.job-card h3 {
-  margin: 0 0 10px;
+.job-head {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 20px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+.job-head:hover {
+  background: #f7f9fc;
+}
+.job-head-text h3 {
+  margin: 0 0 8px;
   font-size: 17px;
+  color: #101820;
 }
-.job-card p {
+.job-summary {
+  margin: 0;
   color: #5c6570;
   font-size: 14px;
   line-height: 1.6;
 }
-.job-card ul {
-  margin: 12px 0 0;
+.job-loc {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #0a4fb8;
+}
+.job-toggle {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: #0a4fb8;
+  padding-top: 2px;
+  white-space: nowrap;
+}
+.job-detail {
+  padding: 0 20px 22px;
+}
+.detail-block + .detail-block {
+  margin-top: 14px;
+}
+.detail-block h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #101820;
+}
+.detail-block ul {
+  margin: 0;
   padding-left: 18px;
   color: #333;
   font-size: 13px;
-  line-height: 1.8;
+  line-height: 1.85;
 }
 .cta {
   margin-top: 28px;
@@ -124,13 +202,6 @@ const jobs = computed(() => {
   color: #333;
 }
 @media (max-width: 900px) {
-  .jobs {
-    grid-template-columns: 1fr;
-  }
-  .job-card {
-    border-right: none;
-    border-bottom: 1px solid #d5dae0;
-  }
   .cta {
     flex-direction: column;
     align-items: flex-start;

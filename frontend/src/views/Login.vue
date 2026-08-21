@@ -3,7 +3,7 @@
     <div class="login-overlay"></div>
     <div class="login-card">
       <div class="brand">
-        <img src="/logo.svg" alt="LIQUICOOL" class="login-logo" />
+        <img :src="siteLogo" alt="LIQUICOOL" class="login-logo" />
         <p>用户登录</p>
       </div>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="0" @submit.prevent="handleLogin">
@@ -27,7 +27,7 @@
           </el-button>
         </el-form-item>
         <div class="links">
-          <router-link to="/register">注册账号</router-link>
+          <router-link :to="{ path: '/register', query: $route.query }">注册账号</router-link>
           <router-link to="/portal/home">返回门户</router-link>
         </div>
       </el-form>
@@ -41,14 +41,18 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
+import { useSiteLogo } from '@/composables/useSiteLogo'
 import CodeLocator from '@/components/CodeLocator.vue'
 
 const router = useRouter()
+const route = useRoute()
 const auth = useAuthStore()
+const { siteLogo, loadSiteLogo } = useSiteLogo()
+onMounted(loadSiteLogo)
 const formRef = ref()
 const loading = ref(false)
 
@@ -62,16 +66,23 @@ const rules = {
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
 
+function resolveRedirect(user) {
+  const raw = typeof route.query.redirect === 'string' ? route.query.redirect : ''
+  const hashRaw = typeof route.query.redirectHash === 'string' ? route.query.redirectHash : ''
+  const hash = hashRaw ? (hashRaw.startsWith('#') ? hashRaw : `#${hashRaw}`) : ''
+  if (raw.startsWith('/') && !raw.startsWith('//')) {
+    return { path: raw, hash }
+  }
+  if (user?.role === 'ADMIN') return { path: '/admin/dashboard' }
+  return { path: '/portal/home' }
+}
+
 async function doLogin(credentials) {
   loading.value = true
   try {
     const user = await auth.login(credentials)
     ElMessage.success('登录成功')
-    if (user?.role === 'ADMIN') {
-      router.push('/admin/dashboard')
-    } else {
-      router.push('/portal/home')
-    }
+    await router.push(resolveRedirect(user))
   } catch {
     /* handled by http interceptor */
   } finally {

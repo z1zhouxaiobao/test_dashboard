@@ -58,6 +58,7 @@ public class Product {
 
     private Integer sortOrder;
 
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist

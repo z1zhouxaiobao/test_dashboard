@@ -395,15 +395,17 @@ INSERT INTO sys_config (id, config_key, config_value, remark) VALUES
 (8, 'contact.presales.desc', '售前咨询、方案选型与商务对接，工作日人工客服在线响应。', '联系页-售前说明'),
 (9, 'contact.presales.phone', '400-888-0000', '联系页-售前电话'),
 (10, 'contact.presales.btn', '售前人工客服', '联系页-售前按钮'),
-(11, 'contact.aftersales.title', '售后技术支持', '联系页-售后标题'),
-(12, 'contact.aftersales.desc', '已购产品的技术支持、故障排查与运维协助，智能与人工协同服务。', '联系页-售后说明'),
-(13, 'contact.aftersales.phone', '400-888-0001', '联系页-售后电话'),
-(14, 'contact.aftersales.btn', '售后技术支持', '联系页-售后按钮'),
-(15, 'contact.support_heading', '获取产品和服务支持', '联系页-支持区标题'),
-(16, 'contact.email', 'contact@liquicool.com', '联系页-邮箱'),
-(17, 'contact.address', '北京市海淀区科技园区', '联系页-地址'),
-(18, 'contact.company_phone', '400-888-0000', '联系页-公司电话'),
-(19, 'contact.addresses', '[{"text":"北京市海淀区科技园区","textTw":"北京市海淀區科技園區","textEn":"Haidian Science Park, Beijing"}]', '联系页-地址列表JSON');
+(11, 'contact.presales.btn_link', 'tel:400-888-0000', '联系页-售前按钮链接'),
+(12, 'contact.aftersales.title', '售后技术支持', '联系页-售后标题'),
+(13, 'contact.aftersales.desc', '已购产品的技术支持、故障排查与运维协助，智能与人工协同服务。', '联系页-售后说明'),
+(14, 'contact.aftersales.phone', '400-888-0001', '联系页-售后电话'),
+(15, 'contact.aftersales.btn', '售后技术支持', '联系页-售后按钮'),
+(16, 'contact.aftersales.btn_link', 'tel:400-888-0001', '联系页-售后按钮链接'),
+(17, 'contact.support_heading', '获取产品和服务支持', '联系页-支持区标题'),
+(18, 'contact.email', 'contact@liquicool.com', '联系页-邮箱'),
+(19, 'contact.address', '北京市海淀区科技园区', '联系页-地址'),
+(20, 'contact.company_phone', '400-888-0000', '联系页-公司电话'),
+(21, 'contact.addresses', '[{"text":"北京市海淀区科技园区","textTw":"北京市海淀區科技園區","textEn":"Haidian Science Park, Beijing"}]', '联系页-地址列表JSON');
 
 -- ==================== 日志 ====================
 INSERT INTO operate_log (id, user_id, username, action, module, detail, ip, created_at) VALUES

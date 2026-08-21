@@ -38,7 +38,7 @@ import { toTraditional, toEnglish } from '@/utils/i18nConvert'
 
 const props = defineProps({
   model: { type: Object, required: true },
-  /** [{ base: 'title', type?: 'textarea', rows?: number, labelKey?: string }] */
+  /** [{ base: 'title', zhKey?: 'nameZh', type?: 'textarea', rows?: number, labelKey?: string }] */
   fields: { type: Array, required: true }
 })
 
@@ -62,7 +62,10 @@ function placeholderOf(f, lang) {
 
 async function handleConvert() {
   const sources = props.fields
-    .map((f) => ({ f, zh: String(props.model[f.base] || '').trim() }))
+    .map((f) => {
+      const zhKey = f.zhKey || f.base
+      return { f, zhKey, zh: String(props.model[zhKey] || '').trim() }
+    })
     .filter((x) => x.zh)
 
   if (!sources.length) {

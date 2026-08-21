@@ -50,11 +50,17 @@ public class Honor {
 
     private Integer sortOrder;
 
+    /** 奖项详情/证书外链 */
+    @Column(length = 500)
+    private String linkUrl;
+
     private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
         if (this.sortOrder == null) {
             this.sortOrder = 0;
         }

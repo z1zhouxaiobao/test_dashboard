@@ -42,6 +42,7 @@ public class Carousel {
 
     private Integer status;
 
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist

@@ -4,7 +4,6 @@ import com.liquicool.common.ApiResponse;
 import com.liquicool.common.PageResult;
 import com.liquicool.dto.ConsultationRequest;
 import com.liquicool.dto.ContactSettingsDto;
-import com.liquicool.dto.FeedbackRequest;
 import com.liquicool.dto.NavMenuTreeNode;
 import com.liquicool.dto.PortalOverviewResponse;
 import com.liquicool.dto.VisitLogRequest;
@@ -70,12 +69,6 @@ public class PortalController {
         return ApiResponse.ok(portalService.listNews(keyword, page, size));
     }
 
-    @Operation(summary = "新闻详情")
-    @GetMapping("/news/{id}")
-    public ApiResponse<News> newsDetail(@PathVariable Long id) {
-        return ApiResponse.ok(portalService.getNewsDetail(id));
-    }
-
     @Operation(summary = "公告列表")
     @GetMapping("/notices")
     public ApiResponse<PageResult<Notice>> notices(
@@ -137,6 +130,12 @@ public class PortalController {
         return ApiResponse.ok(portalService.getHonorDetail(id));
     }
 
+    @Operation(summary = "招聘岗位列表")
+    @GetMapping("/jobs")
+    public ApiResponse<List<JobPosition>> jobs() {
+        return ApiResponse.ok(portalService.listPublishedJobs());
+    }
+
     @Operation(summary = "案例列表")
     @GetMapping("/cases")
     public ApiResponse<PageResult<CaseStudy>> cases(
@@ -151,12 +150,6 @@ public class PortalController {
     @GetMapping("/cases/{id}")
     public ApiResponse<CaseStudy> caseDetail(@PathVariable Long id) {
         return ApiResponse.ok(portalService.getCaseDetail(id));
-    }
-
-    @Operation(summary = "公开提交留言（无需登录）")
-    @PostMapping("/feedbacks")
-    public ApiResponse<Feedback> submitFeedback(@Validated @RequestBody FeedbackRequest request) {
-        return ApiResponse.ok(portalService.submitFeedback(request));
     }
 
     @Operation(summary = "公开提交咨询（无需登录）")

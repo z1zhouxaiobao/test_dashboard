@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PortalService {
@@ -40,6 +41,9 @@ public class PortalService {
 
     @Autowired
     private HonorRepository honorRepository;
+
+    @Autowired
+    private JobPositionRepository jobPositionRepository;
 
     @Autowired
     private CaseStudyRepository caseStudyRepository;
@@ -74,17 +78,6 @@ public class PortalService {
         String kw = keyword == null ? "" : keyword;
         Page<News> result = newsRepository.findByStatusAndTitleContainingIgnoreCase(1, kw, pageRequest);
         return new PageResult<>(result.getTotalElements(), page, size, result.getContent());
-    }
-
-    @Transactional
-    public News getNewsDetail(Long id) {
-        News news = newsRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("新闻不存在"));
-        if (news.getStatus() == null || news.getStatus() != 1) {
-            throw new BusinessException("新闻不存在或已下架");
-        }
-        news.setViewCount(news.getViewCount() == null ? 1 : news.getViewCount() + 1);
-        return newsRepository.save(news);
     }
 
     public PageResult<Notice> listNotices(String keyword, int page, int size) {
@@ -155,6 +148,10 @@ public class PortalService {
     public Honor getHonorDetail(Long id) {
         return honorRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("荣誉不存在"));
+    }
+
+    public List<JobPosition> listPublishedJobs() {
+        return jobPositionRepository.findByStatusOrderBySortOrderAscIdAsc(1);
     }
 
     public PageResult<CaseStudy> listCases(String keyword, String industry, int page, int size) {

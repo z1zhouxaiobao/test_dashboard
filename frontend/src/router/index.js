@@ -5,6 +5,7 @@ import { useLocaleStore } from '@/stores/locale'
 import { adminTitleKeys } from '@/i18n/admin'
 import { visitApi } from '@/api'
 import { ElMessage } from 'element-plus'
+import { isValidLocale, syncHtmlLang, updateHreflangLinks, DEFAULT_LOCALE } from '@/utils/hreflang'
 
 const Login = () => import('@/views/Login.vue')
 const Register = () => import('@/views/Register.vue')
@@ -32,7 +33,7 @@ const routes = [
       { path: 'cases', name: 'PortalCases', component: () => import('@/views/portal/Cases.vue'), meta: { public: true, title: '成功案例', titleKey: 'casesTitle' } },
       { path: 'cases/:id', name: 'PortalCaseDetail', component: () => import('@/views/portal/CaseDetail.vue'), meta: { public: true, title: '案例详情', titleKey: 'caseDetailTitle' } },
       { path: 'news', name: 'PortalNews', component: () => import('@/views/portal/News.vue'), meta: { public: true, title: '新闻', titleKey: 'newsTitle' } },
-      { path: 'news/:id', name: 'PortalNewsDetail', component: () => import('@/views/portal/NewsDetail.vue'), meta: { public: true, title: '新闻详情', titleKey: 'newsDetailTitle' } },
+      { path: 'news/:id', redirect: '/portal/news' },
       { path: 'contact', name: 'PortalContact', component: () => import('@/views/portal/Contact.vue'), meta: { public: true, title: '联系我们', titleKey: 'contactTitle' } }
     ]
   },
@@ -49,6 +50,7 @@ const routes = [
       { path: 'notices', name: 'AdminNotices', component: () => import('@/views/admin/Notices.vue'), meta: { requiresAdmin: true, title: '公告通知' } },
       { path: 'technologies', name: 'AdminTechnologies', component: () => import('@/views/admin/Technologies.vue'), meta: { requiresAdmin: true, title: '热管理技术' } },
       { path: 'honors', name: 'AdminHonors', component: () => import('@/views/admin/Honors.vue'), meta: { requiresAdmin: true, title: '获得奖项' } },
+      { path: 'jobs', name: 'AdminJobs', component: () => import('@/views/admin/Jobs.vue'), meta: { requiresAdmin: true, title: '招聘岗位' } },
       { path: 'products', name: 'AdminProducts', component: () => import('@/views/admin/Products.vue'), meta: { requiresAdmin: true, title: '产品列表' } },
       { path: 'cases', name: 'AdminCases', component: () => import('@/views/admin/Cases.vue'), meta: { requiresAdmin: true, title: '成功案例' } },
       { path: 'consultations', name: 'AdminConsultations', component: () => import('@/views/admin/Consultations.vue'), meta: { requiresAdmin: true, title: '咨询工单' } },
@@ -120,6 +122,24 @@ export function refreshDocumentTitle() {
 
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
+  const localeStore = useLocaleStore()
+
+  // 门户：?lang= 同步语言（SEO / 分享链接）
+  if (to.path.startsWith('/portal')) {
+    const qLang = typeof to.query.lang === 'string' ? to.query.lang : ''
+    if (isValidLocale(qLang) && qLang !== localeStore.locale) {
+      localeStore.setLocale(qLang)
+    } else if (!qLang) {
+      // 无 lang 时补上当前语言，便于爬虫看到可区分 URL
+      return next({
+        path: to.path,
+        query: { ...to.query, lang: localeStore.locale || DEFAULT_LOCALE },
+        hash: to.hash,
+        replace: true
+      })
+    }
+  }
+
   if (auth.token && !auth.user) {
     await auth.fetchMe()
   }
@@ -157,8 +177,12 @@ router.afterEach((to) => {
   if (to.path.startsWith('/admin')) {
     tags.addView(to)
   }
-  if (to.path.startsWith('/portal')) {
-    const locale = useLocaleStore()
+
+  const isPortal = to.path.startsWith('/portal')
+  const locale = useLocaleStore()
+  if (isPortal) {
+    syncHtmlLang(locale.locale)
+    updateHreflangLinks(to.fullPath, true)
     visitApi
       .report({
         path: to.fullPath,
@@ -167,6 +191,8 @@ router.afterEach((to) => {
         locale: locale.locale || ''
       })
       .catch(() => {})
+  } else {
+    updateHreflangLinks('', false)
   }
 })
 

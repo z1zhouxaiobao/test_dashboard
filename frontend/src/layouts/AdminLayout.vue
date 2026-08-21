@@ -3,7 +3,7 @@
     <el-aside :width="collapsed ? '64px' : '220px'" class="admin-aside">
       <div class="aside-logo" @click="$router.push('/admin/dashboard')">
         <img
-          src="/logo.svg"
+          :src="siteLogo"
           alt="LIQUICOOL"
           class="aside-logo-img"
           :class="{ 'is-mini': collapsed }"
@@ -78,6 +78,9 @@
             </template>
             <el-menu-item index="/admin/honors">
               <template #title>{{ t('adminHonors') }}</template>
+            </el-menu-item>
+            <el-menu-item index="/admin/jobs">
+              <template #title>{{ t('adminJobs') }}</template>
             </el-menu-item>
           </el-sub-menu>
 
@@ -205,7 +208,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   DataAnalysis, Picture, Reading, Trophy,
@@ -216,11 +219,14 @@ import { useAuthStore } from '@/stores/auth'
 import { useTagsStore } from '@/stores/tags'
 import { resolveMediaUrl } from '@/utils/media'
 import { useI18n } from '@/composables/useI18n'
+import { useSiteLogo } from '@/composables/useSiteLogo'
 import { adminTitleKeys } from '@/i18n/admin'
 import LangSwitcher from '@/components/LangSwitcher.vue'
 import HeaderClock from '@/components/HeaderClock.vue'
 
 const { t } = useI18n()
+const { siteLogo, loadSiteLogo } = useSiteLogo()
+onMounted(loadSiteLogo)
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()

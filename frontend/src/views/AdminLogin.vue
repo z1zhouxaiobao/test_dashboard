@@ -12,7 +12,7 @@
     <div class="shell">
       <section class="hero">
         <div class="logo-row">
-          <img src="/logo.svg" alt="LIQUICOOL" class="login-logo" />
+          <img :src="siteLogo" alt="LIQUICOOL" class="login-logo" />
           <div class="logo-cn">{{ t('adminHub') }}</div>
         </div>
         <h2>{{ t('adminHeroTitle1') }}<br />{{ t('adminHeroTitle2') }}</h2>
@@ -72,15 +72,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from '@/composables/useI18n'
+import { useSiteLogo } from '@/composables/useSiteLogo'
 import CodeLocator from '@/components/CodeLocator.vue'
 import LangSwitcher from '@/components/LangSwitcher.vue'
 
 const { t } = useI18n()
+const { siteLogo, loadSiteLogo } = useSiteLogo()
+onMounted(loadSiteLogo)
 const router = useRouter()
 const auth = useAuthStore()
 const formRef = ref()
